@@ -10,14 +10,8 @@
 ## Introduction
 Join us，阅读互联网公司主流框架源码，目前开放的有spring系列框架、mybatis框架、netty框架，欢迎各位大佬加入我们，开拓新的领地。本项目主要用于记录框架源码的阅读经验及解析，抽空更新中...
 
-<div align="center"> <img src="./images/use-this-template-button.png"/> </div>
+## Notes
 
-The template repository gets a new URL endpoint called `/generate` that allows you to distribute your template more efficiently. And all you need to do is name your project and clone your new repository to get started.
-
-This is just the beginning for repository templates. The GitHub Team will bring more capabilities to all of the template types—repositories, issues, and pull requests—to help us spend less time repeating work so we can get back to building new things.
-
-## Reference
-[The GitHub Blog: Generate new repositories with repository templates](https://github.blog/2019-06-06-generate-new-repositories-with-repository-templates/)
 
 ## License
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
