@@ -1,6 +1,6 @@
 <div align="center"> <img src="./images/repository-template-demo.png"/> </div>
 
-# Doc-Type Repository Template
+# 互联网公司常用框架源码赏析
 [![license](https://badgen.net/github/license/doocs/doc-template?color=green)](https://github.com/doocs/doc-template/blob/master/LICENSE)
 [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](http://makeapullrequest.com)
 [![stars](https://badgen.net/github/stars/doocs/doc-template)](https://github.com/doocs/doc-template/stargazers)
@@ -10,7 +10,7 @@
 [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](http://makeapullrequest.com)
 
 ## Introduction
-Now you're viewing a doc-type template repository, you’ll see a brand new <kbd>Use this template</kbd> button that enables you to get started with that codebase in seconds. 
+Join us，阅读互联网公司主流框架源码，目前开放的有spring系列框架、mybatis框架、netty框架，欢迎各位大佬加入我们，开拓新的领地。本项目主要用于记录框架源码的阅读经验及解析，抽空更新中...
 
 <div align="center"> <img src="./images/use-this-template-button.png"/> </div>
 
