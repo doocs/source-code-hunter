@@ -1,5 +1,3 @@
-<div align="center"> <img src="./images/repository-template-demo.png"/> </div>
-
 # 互联网公司常用框架源码赏析
 [![license](https://badgen.net/github/license/doocs/doc-template?color=green)](https://github.com/doocs/doc-template/blob/master/LICENSE)
 [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](http://makeapullrequest.com)
