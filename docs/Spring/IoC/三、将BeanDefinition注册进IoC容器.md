@@ -1,6 +1,8 @@
 ﻿这篇文章分享一下spring IoC容器初始化第三部分的代码，也就是将前面解析得到的BeanDefinition注册进IoC容器，其实就是存入一个ConcurrentHashMap<String, BeanDefinition>中。
 	（PS：可以结合我GitHub上对spring框架源码的翻译注解一起看，会更有助于各位同学理解，地址：
+
 spring-beans	 https://github.com/AmyliaY/spring-beans-reading
+
 spring-context  https://github.com/AmyliaY/spring-context-reading
 ）
 ## 1、回过头看一下前面在DefaultBeanDefinitionDocumentReader中实现的processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate)方法
