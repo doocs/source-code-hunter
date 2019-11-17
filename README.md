@@ -7,7 +7,7 @@
 [![issues](https://badgen.net/github/open-issues/doocs/source-code-hunter)](https://github.com/doocs/source-code-hunter/issues)
 [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](http://makeapullrequest.com)
 
-阅读互联网公司主流框架源码，目前开放的有 Spring 系列框架、Mybatis 框架、Netty 框架，欢迎各位大佬加入我们，开拓新的领地。本项目主要用于记录框架源码的阅读经验、个人理解及解析，希望能够使阅读源码变成一件更简单有趣，且有价值的事情，抽空更新中...
+阅读互联网公司主流框架及中间件源码，目前开放的有 Spring 系列框架、Mybatis 框架、Netty 框架，及Redis中间件等，欢迎各位大佬加入我们，开拓新的领地。本项目主要用于记录框架及中间件源码的阅读经验、个人理解及解析，希望能够使阅读源码变成一件更简单有趣，且有价值的事情，抽空更新中...
 
 ## spring系列
 ### IoC容器
@@ -30,6 +30,8 @@
 ## MyBatis
 
 ## Netty
+
+## Redis
 
 ## 学习心得
 ### 初级开发者应该从源码中学习什么？
