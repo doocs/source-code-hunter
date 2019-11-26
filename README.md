@@ -11,13 +11,15 @@
 
 ## spring系列
 ### IoC容器
-- [BeanDefinition的资源定位过程](/docs/Spring/IoC/一、BeanDefinition的资源定位过程.md)
-- [将bean解析封装成BeanDefinition](/docs/Spring/IoC/二、将bean解析封装成BeanDefinition.md)
-- [将BeanDefinition注册进IoC容器](/docs/Spring/IoC/三、将BeanDefinition注册进IoC容器.md)
+- [BeanDefinition 的资源定位过程](/docs/Spring/IoC/一、BeanDefinition的资源定位过程.md)
+- [将 bean 解析封装成 BeanDefinition](/docs/Spring/IoC/二、将bean解析封装成BeanDefinition.md)
+- [将 BeanDefinition 注册进 IoC 容器](/docs/Spring/IoC/三、将BeanDefinition注册进IoC容器.md)
 - [依赖注入(DI)](/docs/Spring/IoC/四、依赖注入(DI).md)
+
 ### AOP
-- [AOP源码实现及分析](/docs/Spring/AOP/AOP源码实现及分析.md)
-- [JDK动态代理的实现原理解析](/docs/Spring/AOP/JDK动态代理的实现原理解析.md)
+- [AOP 源码实现及分析](/docs/Spring/AOP/AOP源码实现及分析.md)
+- [JDK 动态代理的实现原理解析](/docs/Spring/AOP/JDK动态代理的实现原理解析.md)
+
 ### SpringMVC
 
 ### SpringJDBC
@@ -25,7 +27,7 @@
 ### Spring事务
 
 ### Spring源码故事（瞎编版）
-- [面筋哥IoC容器的一天(上)](/docs/Spring/IoC/面筋哥IoC容器的一天(上).md)
+- [面筋哥 IoC 容器的一天(上)](/docs/Spring/IoC/面筋哥IoC容器的一天(上).md)
 
 ## MyBatis
 
@@ -35,7 +37,7 @@
 
 ## 学习心得
 ### 个人经验
-- [初级开发者应该从spring源码中学什么](docs/学习心得/个人经验/初级开发者应该从spring源码中学什么.md)
+- [初级开发者应该从 spring 源码中学什么](docs/学习心得/个人经验/初级开发者应该从spring源码中学什么.md)
 
 ### 编码规范
 

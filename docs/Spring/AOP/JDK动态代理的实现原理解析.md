@@ -1,9 +1,10 @@
-﻿最近在看springAOP部分的源码，所以对JDK动态代理具体是如何实现的这件事产生了很高的兴趣，而且能从源码上了解这个原理的话，也有助于对spring-aop模块的理解。话不多说，上代码。
+﻿最近在看 SpringAOP 部分的源码，所以对 JDK 动态代理具体是如何实现的这件事产生了很高的兴趣，而且能从源码上了解这个原理的话，也有助于对 spring-aop 模块的理解。话不多说，上代码。
+
 ```java
 /**
- * 一般会使用实现了InvocationHandler的类 作为代理对象的生产工厂，
- * 并且通过持有被代理对象target，来在invoke()方法中对被代理对象的目标方法进行调用和增强，
- * 这些我们都能通过下面这段代码看懂，但代理对象是如何生成的？invoke()方法又是如何被调用的呢？
+ * 一般会使用实现了 InvocationHandler 的类 作为代理对象的生产工厂，
+ * 并且通过持有被代理对象 target，来在 invoke() 方法中对被代理对象的目标方法进行调用和增强，
+ * 这些我们都能通过下面这段代码看懂，但代理对象是如何生成的？invoke() 方法又是如何被调用的呢？
  */
 public class ProxyFactory implements InvocationHandler{
 	
@@ -29,7 +30,7 @@ public class ProxyFactory implements InvocationHandler{
 }
 
 /**
- * 实现了接口MyInterface和接口的play()方法，可以作为被代理类
+ * 实现了接口 MyInterface 和接口的 play() 方法，可以作为被代理类
  */
 public class TargetObject implements MyInterface {
 
@@ -47,25 +48,25 @@ public class ProxyTest {
 
 	public static void main(String[] args) {
 		TargetObject target = new TargetObject();
-		//ProxyFactory实现了InvocationHandler接口，其中的getInstanse()方法利用Proxy类帮助生成了
-		//target目标对象的代理对象，并返回；且ProxyFactory持有对target的引用，可以在invoke()中完成对target相应方法
+		//ProxyFactory 实现了 InvocationHandler 接口，其中的 getInstanse() 方法利用 Proxy 类帮助生成了
+		//target 目标对象的代理对象，并返回；且 ProxyFactory 持有对 target 的引用，可以在 invoke() 中完成对 target 相应方法
 		//的调用，以及目标方法前置后置的增强处理
 		ProxyFactory proxyFactory = new ProxyFactory();
-		//这个mi就是JDK的Proxy类生成的代理类$Proxy0的对象，这个对象中的方法都持有对invoke()方法的回调
-		//所以当调用其方法时，就能够执行invoke()中的增强处理
+		//这个 mi 就是 JDK 的 Proxy 类生成的代理类$Proxy0 的对象，这个对象中的方法都持有对 invoke() 方法的回调
+		//所以当调用其方法时，就能够执行 invoke() 中的增强处理
 		MyInterface mi = (MyInterface)proxyFactory.getInstanse(target);
-		//这样可以看到mi的Class到底是什么
+		//这样可以看到 mi 的 Class 到底是什么
 		System.out.println(mi.getClass());
-		//这里实际上调用的就是$Proxy0中对play()方法的实现，可以看到play方法通过super.h.invoke()
-		//完成了对InvocationHandler对象proxyFactory的invoke()方法的回调
-		//所以我才能够通过invoke()方法实现对target对象方法的前置后置增强处理
+		//这里实际上调用的就是$Proxy0 中对 play() 方法的实现，可以看到 play 方法通过 super.h.invoke()
+		//完成了对 InvocationHandler 对象 proxyFactory 的 invoke() 方法的回调
+		//所以我才能够通过 invoke() 方法实现对 target 对象方法的前置后置增强处理
 		mi.play();
-		//总的来说，就是在invoke()方法中完成target目标方法的调用，及前置后置增强
-		//然后通过生成的代理类完成对对invoke()的回调
+		//总的来说，就是在 invoke() 方法中完成 target 目标方法的调用，及前置后置增强
+		//然后通过生成的代理类完成对对 invoke() 的回调
 	}
 	
 	/**
-	 * 将ProxyGenerator生成的动态代理类的输出到文件中，利用反编译工具luyten等就可
+	 * 将 ProxyGenerator 生成的动态代理类的输出到文件中，利用反编译工具 luyten 等就可
 	 * 以看到生成的代理类的源码咯，下面给出了其反编译好的代码实现
 	 */
 	@Test
@@ -92,7 +93,7 @@ public class ProxyTest {
 }
 
 /**
- * Proxy生成的代理类，可以看到，其继承了Proxy，并且实现了被代理类的接口
+ * Proxy 生成的代理类，可以看到，其继承了 Proxy，并且实现了被代理类的接口
  */
 public final class $Proxy0 extends Proxy implements MyInterface
 {
@@ -105,7 +106,7 @@ public final class $Proxy0 extends Proxy implements MyInterface
         try {
             $Proxy0.m1 = Class.forName("java.lang.Object").getMethod("equals", Class.forName("java.lang.Object"));
             $Proxy0.m0 = Class.forName("java.lang.Object").getMethod("hashCode", (Class<?>[])new Class[0]);
-            //实例化MyInterface的play方法
+            //实例化 MyInterface 的 play 方法
             $Proxy0.m3 = Class.forName("com.shuitu.test.MyInterface").getMethod("play", (Class<?>[])new Class[0]);
             $Proxy0.m2 = Class.forName("java.lang.Object").getMethod("toString", (Class<?>[])new Class[0]);
         }
@@ -123,8 +124,8 @@ public final class $Proxy0 extends Proxy implements MyInterface
     
     public final void play() {
         try {
-        	//这个h其实就是我们调用Proxy.newProxyInstance()方法时传进去的ProxyFactory对象，
-        	//该对象的invoke()方法中实现了对目标对象的目标方法的增强。看到这里，利用动态代理实现方法增强的
+        	//这个 h 其实就是我们调用 Proxy.newProxyInstance() 方法时传进去的 ProxyFactory 对象，
+        	//该对象的 invoke() 方法中实现了对目标对象的目标方法的增强。看到这里，利用动态代理实现方法增强的
         	//调用原理就全部理清咯
             super.h.invoke(this, $Proxy0.m3, null);
         }
