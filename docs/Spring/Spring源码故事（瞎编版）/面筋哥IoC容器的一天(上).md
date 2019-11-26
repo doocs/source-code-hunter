@@ -21,7 +21,6 @@ Reader 家有一对兄妹，哥哥 beanDefinitionReader 虎背熊腰大老粗，
 	经过上面的步骤，一个配置文件中的面筋 bean 就被处理包装成了半成品 BeanDefinitionHolder。
 
 ## 第三阶段：将 BeanDefinition 注册进 IoC 容器（BeanDefinitionReaderUtils）
-
 妹妹在用神器 BeanDefinitionParserDelegate 经过一顿疯狂操作之后，将包装好的半成品 BeanDefinitionHolder 扔进传输机 BeanDefinitionReaderUtils，并且输入哥哥给她的神秘人地址，就继续处理下一个面筋 bean 咯。
 之后，传输机将 BeanDefinitionHolder 的包装打开，分别取出 beanName（面筋的唯一标识）和 BeanDefinition（面筋本筋），传输的目的地是 BeanDefinitionRegistry 的工作室（这就是我前面给哥哥 beanDefinitionReader 的地址）。
 这家工作室的 BeanDefinitionRegistry 其实就是我的影分身之一，因为我的祖先实现了这个接口。影分身 Registry 检查一下传输过来的 beanName（面筋的唯一标识）和 BeanDefinition（面筋本筋），如果没什么问题，就把它们用根绳子系在一起扔进我的“王之面筋宝库”，一个 ConcurrentHashMap<String, BeanDefinition>(64)，也有人把我的“面筋宝库”称作“IoC 容器本器”，我也无可辩驳，谁让他们吃面筋付钱了呢。
