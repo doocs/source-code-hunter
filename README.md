@@ -11,9 +11,9 @@
 
 ## spring系列
 ### IoC容器
-- [BeanDefinition 的资源定位过程](/docs/Spring/IoC/一、BeanDefinition的资源定位过程.md)
-- [将 bean 解析封装成 BeanDefinition](/docs/Spring/IoC/二、将bean解析封装成BeanDefinition.md)
-- [将 BeanDefinition 注册进 IoC 容器](/docs/Spring/IoC/三、将BeanDefinition注册进IoC容器.md)
+- [BeanDefinition 的资源定位过程](/docs/Spring/IoC/1、BeanDefinition的资源定位过程.md)
+- [将 bean 解析封装成 BeanDefinition](/docs/Spring/IoC/2、将bean解析封装成BeanDefinition.md)
+- [将 BeanDefinition 注册进 IoC 容器](/docs/Spring/IoC/3、将BeanDefinition注册进IoC容器.md)
 - [依赖注入(DI)](/docs/Spring/IoC/四、依赖注入(DI).md)
 
 ### AOP
@@ -31,9 +31,9 @@
 
 ## MyBatis
 ### 基础支持层
-- [反射工具箱和TypeHandler系列]
-- [DataSource及Transaction]
-- [binding模块和缓存模块]
+- [反射工具箱和TypeHandler系列](docs/Mybatis/基础支持层/1、反射工具箱和TypeHandler系列.md)
+- [DataSource及Transaction](docs/Mybatis/基础支持层/2、DataSource及Transaction.md)
+- [binding模块和缓存模块](docs/Mybatis/基础支持层/3、binding模块和缓存模块.md)
 
 ## Netty
 ### IO
