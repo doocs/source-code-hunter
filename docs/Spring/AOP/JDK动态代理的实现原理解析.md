@@ -175,6 +175,8 @@ public final class $Proxy0 extends Proxy implements MyInterface
     
 }
 ```
+#### 动态代理原理图
 
 ![avatar](/images/动态代理原理图1.png)
+
 ![avatar](/images/动态代理原理图2.png)
