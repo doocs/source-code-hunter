@@ -1,382 +1,346 @@
-基础支持层主要看一下mybatis实现ORM的基础代码实现。
-## 反射工具包
-### Reflector
-Reflector类主要实现了对JavaBean的元数据属性的封装，比如：可读属性列表，可写属性列表；及反射操作的封装，如：属性对应的setter方法，getter方法的反射调用。源码实现如下：
+在数据持久层，数据源和事务是两个非常重要的组件，对数据持久层的影响很大，在实际开发中，一般会使用mybatis集成第三方数据源组件，如：c3p0、Druid，另外，mybatis也提供了自己的数据源实现。而事务方面，一般使用spring进行事务的管理。下面我们看一下mybatis是如何对这两部分进行封装的。
+## 1 DataSource
+常见的数据源都会实现javax.sql.DataSource接口，mybatis中提供了两个该接口的实现类，分别是：PooledDataSource和UnpooledDataSource，并使用不同的工厂类分别管理这两个类的对象。
+### 1.1 DataSourceFactory
+DataSourceFactory系列类的设计比较简单，DataSourceFactory作为顶级接口，UnpooledDataSourceFactory实现了该接口，PooledDataSourceFactory又继承了UnpooledDataSourceFactory。
 ```java
-public class Reflector {
+public interface DataSourceFactory {
 
-  /** JavaBean的Class类型，在调用Reflector的构造方法时初始化该值 */
-  private final Class<?> type;
+  // 设置DataSource的属性，一般紧跟在DataSource初始化之后
+  void setProperties(Properties props);
 
-  /** 可读的属性列表 */
-  private final String[] readablePropertyNames;
-  private final String[] writablePropertyNames;
-
-  /** key属性名，value该属性名对应的setter方法调用器 */
-  private final Map<String, Invoker> setMethods = new HashMap<>();
-  private final Map<String, Invoker> getMethods = new HashMap<>();
-
-  /** key属性名称，value该属性setter方法的返回值类型 */
-  private final Map<String, Class<?>> setTypes = new HashMap<>();
-  private final Map<String, Class<?>> getTypes = new HashMap<>();
-
-  /** type的默认构造方法 */
-  private Constructor<?> defaultConstructor;
-
-  /** 所有属性名称的集合 */
-  private Map<String, String> caseInsensitivePropertyMap = new HashMap<>();
-
-  /**
-   * 里面的大部分方法都是通过简单的JDK反射操作实现的
-   * @param clazz
-   */
-  public Reflector(Class<?> clazz) {
-    type = clazz;
-    addDefaultConstructor(clazz);
-
-    // 处理clazz中的所有getter方法，填充getMethods集合和getTypes集合
-    addGetMethods(clazz);
-    addSetMethods(clazz);
-
-    // 处理没有getter、setter方法的字段
-    addFields(clazz);
-
-    // 根据getMethods、setMethods集合初始化可读、可写的属性
-    readablePropertyNames = getMethods.keySet().toArray(new String[0]);
-    writablePropertyNames = setMethods.keySet().toArray(new String[0]);
-
-    // 初始化caseInsensitivePropertyMap集合，key属性名的大写，value属性名
-    for (String propName : readablePropertyNames) {
-      caseInsensitivePropertyMap.put(propName.toUpperCase(Locale.ENGLISH), propName);
-    }
-    for (String propName : writablePropertyNames) {
-      caseInsensitivePropertyMap.put(propName.toUpperCase(Locale.ENGLISH), propName);
-    }
-  }
-}
-```
-### ReflectorFactory
-顾名思义，Reflector的工厂模式，跟大部分工厂类一样，里面肯定有通过标识获取对象的方法。类的设计也遵照了 接口，实现类的模式，虽然本接口只有一个默认实现。
-```java
-public interface ReflectorFactory {
-
-  boolean isClassCacheEnabled();
-
-  void setClassCacheEnabled(boolean classCacheEnabled);
-
-  /**
-   * 主要看一下这个方法，通过JavaBean的clazz获取该JavaBean对应的Reflector
-   */
-  Reflector findForClass(Class<?> type);
+  // 获取DataSource对象
+  DataSource getDataSource();
 }
 
-public class DefaultReflectorFactory implements ReflectorFactory {
-  private boolean classCacheEnabled = true;
 
-  /** 大部分容器及工厂设计模式的管用伎俩，key：JavaBean的clazz，value：JavaBean对应的Reflector实例 */
-  private final ConcurrentMap<Class<?>, Reflector> reflectorMap = new ConcurrentHashMap<>();
+public class UnpooledDataSourceFactory implements DataSourceFactory {
 
-  /**
-   * 实例化一个ConcurrentMap全局变量，然后暴露一个方法从map中获取目标对象，这种设计是很多框架都会用的
-   */
-  @Override
-  public Reflector findForClass(Class<?> type) {
-    if (classCacheEnabled) {
-      // synchronized (type) removed see issue #461
-      return reflectorMap.computeIfAbsent(type, Reflector::new);
-    } else {
-      return new Reflector(type);
-    }
-  }
-  
-  public DefaultReflectorFactory() {
+  private static final String DRIVER_PROPERTY_PREFIX = "driver.";
+  private static final int DRIVER_PROPERTY_PREFIX_LENGTH = DRIVER_PROPERTY_PREFIX.length();
+
+  protected DataSource dataSource;
+
+  // 在实例化该工厂时，就完成了DataSource的实例化
+  public UnpooledDataSourceFactory() {
+    this.dataSource = new UnpooledDataSource();
   }
 
   @Override
-  public boolean isClassCacheEnabled() {
-    return classCacheEnabled;
-  }
-
-  @Override
-  public void setClassCacheEnabled(boolean classCacheEnabled) {
-    this.classCacheEnabled = classCacheEnabled;
-  }
-}
-
-/**
- * 支持定制化ReflectorFactory
- */
-public class CustomReflectorFactory extends DefaultReflectorFactory {
-
-}
-```
-### ObjectFactory
-改类也是接口+一个默认实现类，并且支持自定义扩展。
-```java
-/**
- * MyBatis uses an ObjectFactory to create all needed new Objects.
- */
-public interface ObjectFactory {
-
-  /**
-   * Sets configuration properties.
-   */
-  default void setProperties(Properties properties) {
-    // NOP
-  }
-
-  /**
-   * Creates a new object with default constructor.
-   */
-  <T> T create(Class<T> type);
-
-  /**
-   * Creates a new object with the specified constructor and params.
-   */
-  <T> T create(Class<T> type, List<Class<?>> constructorArgTypes, List<Object> constructorArgs);
-
-  /**
-   * Returns true if this object can have a set of other objects.
-   * It's main purpose is to support non-java.util.Collection objects like Scala collections.
-   */
-  <T> boolean isCollection(Class<T> type);
-
-}
-
-/**
- * ObjectFactory接口的唯一直接实现，反射工厂，根据传入的参数列表，选择
- * 合适的构造函数实例化对象，不传参数，则直接调用其午餐构造方法
- */
-public class DefaultObjectFactory implements ObjectFactory, Serializable {
-
-  private static final long serialVersionUID = -8855120656740914948L;
-
-  @Override
-  public <T> T create(Class<T> type) {
-    return create(type, null, null);
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  public <T> T create(Class<T> type, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
-    Class<?> classToCreate = resolveInterface(type);
-    // we know types are assignable
-    return (T) instantiateClass(classToCreate, constructorArgTypes, constructorArgs);
-  }
-
-  /**
-   * 通过反射来实例化给定的类，如果调用无参构造方法，则直接constructor.newInstance()
-   * 如果有参，则根据参数类型和参数值进行调用
-   */
-  private  <T> T instantiateClass(Class<T> type, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
-    try {
-      Constructor<T> constructor;
-      if (constructorArgTypes == null || constructorArgs == null) {
-        constructor = type.getDeclaredConstructor();
-        try {
-          return constructor.newInstance();
-        } catch (IllegalAccessException e) {
-          if (Reflector.canControlMemberAccessible()) {
-            constructor.setAccessible(true);
-            return constructor.newInstance();
-          } else {
-            throw e;
-          }
-        }
+  public void setProperties(Properties properties) {
+    Properties driverProperties = new Properties();
+    // 创建dataSource对应的MetaObject
+    MetaObject metaDataSource = SystemMetaObject.forObject(dataSource);
+    // 处理properties中配置的数据源信息
+    for (Object key : properties.keySet()) {
+      String propertyName = (String) key;
+      if (propertyName.startsWith(DRIVER_PROPERTY_PREFIX)) {
+        // 以"driver."开头的配置项是对DataSource的配置，将其记录到driverProperties中
+        String value = properties.getProperty(propertyName);
+        driverProperties.setProperty(propertyName.substring(DRIVER_PROPERTY_PREFIX_LENGTH), value);
+      } else if (metaDataSource.hasSetter(propertyName)) {
+        String value = (String) properties.get(propertyName);
+        Object convertedValue = convertValue(metaDataSource, propertyName, value);
+        metaDataSource.setValue(propertyName, convertedValue);
+      } else {
+        throw new DataSourceException("Unknown DataSource property: " + propertyName);
       }
-      constructor = type.getDeclaredConstructor(constructorArgTypes.toArray(new Class[constructorArgTypes.size()]));
-      try {
-        return constructor.newInstance(constructorArgs.toArray(new Object[constructorArgs.size()]));
-      } catch (IllegalAccessException e) {
-        if (Reflector.canControlMemberAccessible()) {
-          constructor.setAccessible(true);
-          return constructor.newInstance(constructorArgs.toArray(new Object[constructorArgs.size()]));
-        } else {
-          throw e;
-        }
-      }
-    } catch (Exception e) {
-      String argTypes = Optional.ofNullable(constructorArgTypes).orElseGet(Collections::emptyList)
-          .stream().map(Class::getSimpleName).collect(Collectors.joining(","));
-      String argValues = Optional.ofNullable(constructorArgs).orElseGet(Collections::emptyList)
-          .stream().map(String::valueOf).collect(Collectors.joining(","));
-      throw new ReflectionException("Error instantiating " + type + " with invalid types (" + argTypes + ") or values (" + argValues + "). Cause: " + e, e);
     }
+    if (driverProperties.size() > 0) {
+      // 设置数据源UnpooledDataSource的driverProperties属性，
+      // PooledDataSource中持有UnpooledDataSource对象
+      metaDataSource.setValue("driverProperties", driverProperties);
+    }
+  }
+
+  @Override
+  public DataSource getDataSource() {
+    return dataSource;
+  }
+}
+
+
+public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
+
+  // 与UnpooledDataSourceFactory的不同之处是，其初始化的DataSource为PooledDataSource
+  public PooledDataSourceFactory() {
+    this.dataSource = new PooledDataSource();
   }
 }
 ```
-## 类型转换
-类型转换是实现ORM的重要一环，由于 数据库中的数据类型与Java语言的数据类型并不对等，所以在PrepareStatement为sql语句绑定参数时，需要从Java类型转换成JDBC类型，而从结果集获取数据时，又要将JDBC类型转换成Java类型，mybatis使用TypeHandler完成了上述的双向转换。
-### JdbcType
-mybatis通过JdbcType这个枚举类型代表了JDBC中的数据类型
+
+### 1.2 UnpooledDataSource
+本实现类实现了DataSource接口中的getConnection()及其重载方法，用于获取数据库连接。其中的主要属性及方法如下：
 ```java
-/**
- * 该枚举类描述了JDBC中的数据类型
- */
-public enum JdbcType {
-  /*
-   * This is added to enable basic support for the
-   * ARRAY data type - but a custom type handler is still required
+public class UnpooledDataSource implements DataSource {
+
+  // 加载Driver驱动类的 类加载器
+  private ClassLoader driverClassLoader;
+
+  // 数据库连接驱动的相关配置，通过UnpooledDataSourceFactory的setProperties()方法设置进来的
+  private Properties driverProperties;
+
+  // 缓存所有已注册的数据库连接驱动Driver
+  private static Map<String, Driver> registeredDrivers = new ConcurrentHashMap<>();
+
+  // 数据库连接驱动名称
+  private String driver;
+  // 数据库url
+  private String url;
+  // 用户名
+  private String username;
+  // 密码
+  private String password;
+
+  // 是否自动提交事务
+  private Boolean autoCommit;
+  // 默认的事务隔离级别
+  private Integer defaultTransactionIsolationLevel;
+  // 默认的网络连接超时时间
+  private Integer defaultNetworkTimeout;
+
+  /**
+   * UnpooledDataSource被加载时，会通过该静态代码块将已经在DriverManager
+   * 中注册JDBC Driver复制一份到registeredDrivers
    */
-  ARRAY(Types.ARRAY),
-  BIT(Types.BIT),
-  TINYINT(Types.TINYINT),
-  SMALLINT(Types.SMALLINT),
-  INTEGER(Types.INTEGER),
-  BIGINT(Types.BIGINT),
-  FLOAT(Types.FLOAT),
-  REAL(Types.REAL),
-  DOUBLE(Types.DOUBLE),
-  NUMERIC(Types.NUMERIC),
-  DECIMAL(Types.DECIMAL),
-  CHAR(Types.CHAR),
-  VARCHAR(Types.VARCHAR),
-  LONGVARCHAR(Types.LONGVARCHAR),
-  DATE(Types.DATE),
-  TIME(Types.TIME),
-  TIMESTAMP(Types.TIMESTAMP),
-  BINARY(Types.BINARY),
-  VARBINARY(Types.VARBINARY),
-  LONGVARBINARY(Types.LONGVARBINARY),
-  NULL(Types.NULL),
-  OTHER(Types.OTHER),
-  BLOB(Types.BLOB),
-  CLOB(Types.CLOB),
-  BOOLEAN(Types.BOOLEAN),
-  CURSOR(-10), // Oracle
-  UNDEFINED(Integer.MIN_VALUE + 1000),
-  NVARCHAR(Types.NVARCHAR), // JDK6
-  NCHAR(Types.NCHAR), // JDK6
-  NCLOB(Types.NCLOB), // JDK6
-  STRUCT(Types.STRUCT),
-  JAVA_OBJECT(Types.JAVA_OBJECT),
-  DISTINCT(Types.DISTINCT),
-  REF(Types.REF),
-  DATALINK(Types.DATALINK),
-  ROWID(Types.ROWID), // JDK6
-  LONGNVARCHAR(Types.LONGNVARCHAR), // JDK6
-  SQLXML(Types.SQLXML), // JDK6
-  DATETIMEOFFSET(-155), // SQL Server 2008
-  TIME_WITH_TIMEZONE(Types.TIME_WITH_TIMEZONE), // JDBC 4.2 JDK8
-  TIMESTAMP_WITH_TIMEZONE(Types.TIMESTAMP_WITH_TIMEZONE); // JDBC 4.2 JDK8
-
-  public final int TYPE_CODE;
-
-  /** 该静态集合维护了 常量编码 与  JdbcType之间的关系 */
-  private static Map<Integer,JdbcType> codeLookup = new HashMap<>();
-
   static {
-    for (JdbcType type : JdbcType.values()) {
-      codeLookup.put(type.TYPE_CODE, type);
+    Enumeration<Driver> drivers = DriverManager.getDrivers();
+    while (drivers.hasMoreElements()) {
+      Driver driver = drivers.nextElement();
+      registeredDrivers.put(driver.getClass().getName(), driver);
     }
   }
 
-  JdbcType(int code) {
-    this.TYPE_CODE = code;
+  // getConnection()及其重载方法、doGetConnection(String username, String password)方法
+  // 最终都会调用本方法
+  private Connection doGetConnection(Properties properties) throws SQLException {
+    // 初始化数据库驱动，该方法会创建配置中指定的Driver对象，
+    // 并将其注册到DriverManager和registeredDrivers中
+    initializeDriver();
+    Connection connection = DriverManager.getConnection(url, properties);
+    // 配置数据库连接属性，如：连接超时时间、是否自动提交事务、事务隔离级别
+    configureConnection(connection);
+    return connection;
   }
 
-  public static JdbcType forCode(int code)  {
-    return codeLookup.get(code);
-  }
-
-}
-```
-### TypeHandler
-TypeHandler是mybatis中所有类型转换器的顶层接口，主要用于 数据从Java类型到JdbcType类型的相互转换。
-```java
-public interface TypeHandler<T> {
-
-  /** 通过PreparedStatement为SQL语句绑定参数时，将数据从Java类型转换为JDBC类型 */
-  void setParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException;
-
-  /** 从结果集获取数据时，将数据由JDBC类型转换成Java类型 */
-  T getResult(ResultSet rs, String columnName) throws SQLException;
-
-  T getResult(ResultSet rs, int columnIndex) throws SQLException;
-
-  T getResult(CallableStatement cs, int columnIndex) throws SQLException;
-
-}
-
-/**
- * 可用于实现自定义的TypeHandler
- */
-public abstract class BaseTypeHandler<T> extends TypeReference<T> implements TypeHandler<T> {
-
-  /**
-   * 只是处理了一些数据为空的特殊情况，非空数据的处理都交给子类去处理
-   */
-  @Override
-  public void setParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException {
-    if (parameter == null) {
-      if (jdbcType == null) {
-        throw new TypeException("JDBC requires that the JdbcType must be specified for all nullable parameters.");
-      }
+  private synchronized void initializeDriver() throws SQLException {
+    // 判断驱动是否已注册
+    if (!registeredDrivers.containsKey(driver)) {
+      Class<?> driverType;
       try {
-        ps.setNull(i, jdbcType.TYPE_CODE);
-      } catch (SQLException e) {
-        throw new TypeException("Error setting null for parameter #" + i + " with JdbcType " + jdbcType + " . "
-              + "Try setting a different JdbcType for this parameter or a different jdbcTypeForNull configuration property. "
-              + "Cause: " + e, e);
-      }
-    } else {
-      try {
-        setNonNullParameter(ps, i, parameter, jdbcType);
+        if (driverClassLoader != null) {
+          // 注册驱动
+          driverType = Class.forName(driver, true, driverClassLoader);
+        } else {
+          driverType = Resources.classForName(driver);
+        }
+        // 通过反射 获取Driver实例对象
+        Driver driverInstance = (Driver)driverType.newInstance();
+        // 注册驱动到DriverManager，DriverProxy是UnpooledDataSource的内部类
+        // 也是Driver的静态代理类
+        DriverManager.registerDriver(new DriverProxy(driverInstance));
+        // 将driver缓存到registeredDrivers
+        registeredDrivers.put(driver, driverInstance);
       } catch (Exception e) {
-        throw new TypeException("Error setting non null for parameter #" + i + " with JdbcType " + jdbcType + " . "
-              + "Try setting a different JdbcType for this parameter or a different configuration property. "
-              + "Cause: " + e, e);
+        throw new SQLException("Error setting driver on UnpooledDataSource. Cause: " + e);
       }
     }
   }
 
-  @Override
-  public T getResult(ResultSet rs, String columnName) throws SQLException {
-    try {
-      return getNullableResult(rs, columnName);
-    } catch (Exception e) {
-      throw new ResultMapException("Error attempting to get column '" + columnName + "' from result set.  Cause: " + e, e);
+  private void configureConnection(Connection conn) throws SQLException {
+    // 连接超时时间
+    if (defaultNetworkTimeout != null) {
+      conn.setNetworkTimeout(Executors.newSingleThreadExecutor(), defaultNetworkTimeout);
+    }
+    // 是否自动提交事务
+    if (autoCommit != null && autoCommit != conn.getAutoCommit()) {
+      conn.setAutoCommit(autoCommit);
+    }
+    // 事务隔离级别
+    if (defaultTransactionIsolationLevel != null) {
+      conn.setTransactionIsolation(defaultTransactionIsolationLevel);
     }
   }
 }
+```
+### 1.3 PooledDataSource
+数据库建立连接是非常耗时的，且并发的连接数也非常有限。而数据库连接池可以实现数据库的重用、提高响应速度、防止数据库因连接过多而假死等。
+数据库连接池的设计思路一般为：
+1. 连接池初始化时创建一定数量的连接，并添加到连接池中备用；
+2. 当程序需要使用数据库连接时，从连接池中请求，用完后会将其返还给连接池，而不是直接关闭；
+3. 连接池会控制总连接上限及空闲连接上线，如果连接池中的连接总数已达上限，且都被占用，后续的连接请求会进入阻塞队列等待，直到有连接可用；
+4. 如果连接池中空闲连接较多，已达到空闲连接上限，则返回的连接会被关闭掉，以降低系统开销。
 
+PooledDataSource实现了简易的数据库连接池功能，其创建数据库连接的功能依赖了上面的UnpooledDataSource。
+#### 1.3.1 PooledConnection
+PooledDataSource通过管理PooledConnection来实现对java.sql.Connection的管理。PooledConnection封装了java.sql.Connection数据库连接对象及其代理对象（JDK动态代理生成的）。PooledConnection继承了JDK动态代理的InvocationHandler接口。
+```java
+class PooledConnection implements InvocationHandler {
 
-public class IntegerTypeHandler extends BaseTypeHandler<Integer> {
+  // 记录当前PooledConnection对象所属的PooledDataSource对象
+  // 当调用close()方法时会将PooledConnection放回该PooledDataSource
+  private final PooledDataSource dataSource;
+  // 真正的数据库连接对象
+  private final Connection realConnection;
+  // 代理连接对象
+  private final Connection proxyConnection;
+  // 从连接池中取出该连接时的时间戳
+  private long checkoutTimestamp;
+  // 创建该连接时的时间戳
+  private long createdTimestamp;
+  // 最后一次使用的 时间戳
+  private long lastUsedTimestamp;
+  // 由 数据库URL、用户名、密码 计算出来的hash值，可用于标识该连接所在的连接池
+  private int connectionTypeCode;
+  // 检测当前PooledConnection连接池连接对象是否有效，主要用于 防止程序通过close()方法将
+  // 连接还给连接池之后，依然通过该连接操作数据库
+  private boolean valid;
 
   /**
-   * NonNull就是NoneNull，非空的意思
+   * invoke()方法是本类的重点实现，也是proxyConnection代理连接对象的代理逻辑实现
+   * 它会对close()方法的调用进行处理，并在调用realConnection的方法之前进行校验
    */
   @Override
-  public void setNonNullParameter(PreparedStatement ps, int i, Integer parameter, JdbcType jdbcType)
-      throws SQLException {
-    // IntegerTypeHandler就调用PreparedStatement的setInt方法
-    // BooleanTypeHandler就调用PreparedStatement的setBoolean方法
-    // 其它的基本数据类型，以此类推
-    ps.setInt(i, parameter);
+  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    String methodName = method.getName();
+    // 如果调用的是close()方法，则将其放进连接池，而不是真的关闭连接
+    if (CLOSE.hashCode() == methodName.hashCode() && CLOSE.equals(methodName)) {
+      dataSource.pushConnection(this);
+      return null;
+    }
+    try {
+      if (!Object.class.equals(method.getDeclaringClass())) {
+        // 通过上面的valid字段 校验连接是否有效
+        checkConnection();
+      }
+      // 调用realConnection的对应方法
+      return method.invoke(realConnection, args);
+    } catch (Throwable t) {
+      throw ExceptionUtil.unwrapThrowable(t);
+    }
+
   }
 
-  @Override
-  public Integer getNullableResult(ResultSet rs, String columnName)
-      throws SQLException {
-    int result = rs.getInt(columnName);
-    return result == 0 && rs.wasNull() ? null : result;
-  }
-
-  @Override
-  public Integer getNullableResult(ResultSet rs, int columnIndex)
-      throws SQLException {
-    int result = rs.getInt(columnIndex);
-    return result == 0 && rs.wasNull() ? null : result;
-  }
-
-  @Override
-  public Integer getNullableResult(CallableStatement cs, int columnIndex)
-      throws SQLException {
-    int result = cs.getInt(columnIndex);
-    return result == 0 && cs.wasNull() ? null : result;
+  private void checkConnection() throws SQLException {
+    if (!valid) {
+      throw new SQLException("Error accessing PooledConnection. Connection is invalid.");
+    }
   }
 }
 ```
-TypeHandler主要用于单个参数的类型转换，如果多列值转换成一个Java对象，可以在映射文件中定义合适的映射规则<resultMap>
+#### 1.3.2 PoolState
+PoolState主要用于管理PooledConnection对象状态，其通过持有两个List&lt;PooledConnection&gt;集合分别管理空闲状态的连接 和 活跃状态的连接。另外，PoolState还定义了一系列用于统计的字段。
+```java
+public class PoolState {
+
+  // 所属的连接池对象
+  protected PooledDataSource dataSource;
+
+  // 空闲的连接
+  protected final List<PooledConnection> idleConnections = new ArrayList<>();
+  // 活跃的连接
+  protected final List<PooledConnection> activeConnections = new ArrayList<>();
+
+  // 请求数据库连接的次数
+  protected long requestCount = 0;
+  // 获取连接的累计时间（accumulate累计）
+  protected long accumulatedRequestTime = 0;
+  // CheckoutTime = 记录 应用从连接池取出连接到归还连接的时长
+  // accumulatedCheckoutTime = 所有连接累计的CheckoutTime
+  protected long accumulatedCheckoutTime = 0;
+  // 超时连接的个数（当连接长时间未归还给连接池时，会被认为连接超时）
+  protected long claimedOverdueConnectionCount = 0;
+  // 累计超时时间
+  protected long accumulatedCheckoutTimeOfOverdueConnections = 0;
+  // 累计等待时间
+  protected long accumulatedWaitTime = 0;
+  // 等待次数
+  protected long hadToWaitCount = 0;
+  // 无效的连接数
+  protected long badConnectionCount = 0;
+
+  public PoolState(PooledDataSource dataSource) {
+    this.dataSource = dataSource;
+  }
+
+  public synchronized long getRequestCount() {
+    return requestCount;
+  }
+
+  public synchronized long getAverageRequestTime() {
+    return requestCount == 0 ? 0 : accumulatedRequestTime / requestCount;
+  }
+
+  public synchronized long getAverageWaitTime() {
+    return hadToWaitCount == 0 ? 0 : accumulatedWaitTime / hadToWaitCount;
+
+  }
+
+  public synchronized long getHadToWaitCount() {
+    return hadToWaitCount;
+  }
+
+  public synchronized long getBadConnectionCount() {
+    return badConnectionCount;
+  }
+
+  public synchronized long getClaimedOverdueConnectionCount() {
+    return claimedOverdueConnectionCount;
+  }
+
+  public synchronized long getAverageOverdueCheckoutTime() {
+    return claimedOverdueConnectionCount == 0 ? 0 : accumulatedCheckoutTimeOfOverdueConnections / claimedOverdueConnectionCount;
+  }
+
+  public synchronized long getAverageCheckoutTime() {
+    return requestCount == 0 ? 0 : accumulatedCheckoutTime / requestCount;
+  }
+
+  public synchronized int getIdleConnectionCount() {
+    return idleConnections.size();
+  }
+
+  public synchronized int getActiveConnectionCount() {
+    return activeConnections.size();
+  }
+
+  @Override
+  public synchronized String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("\n===CONFINGURATION==============================================");
+    builder.append("\n jdbcDriver                     ").append(dataSource.getDriver());
+    builder.append("\n jdbcUrl                        ").append(dataSource.getUrl());
+    builder.append("\n jdbcUsername                   ").append(dataSource.getUsername());
+    builder.append("\n jdbcPassword                   ").append(dataSource.getPassword() == null ? "NULL" : "************");
+    builder.append("\n poolMaxActiveConnections       ").append(dataSource.poolMaximumActiveConnections);
+    builder.append("\n poolMaxIdleConnections         ").append(dataSource.poolMaximumIdleConnections);
+    builder.append("\n poolMaxCheckoutTime            ").append(dataSource.poolMaximumCheckoutTime);
+    builder.append("\n poolTimeToWait                 ").append(dataSource.poolTimeToWait);
+    builder.append("\n poolPingEnabled                ").append(dataSource.poolPingEnabled);
+    builder.append("\n poolPingQuery                  ").append(dataSource.poolPingQuery);
+    builder.append("\n poolPingConnectionsNotUsedFor  ").append(dataSource.poolPingConnectionsNotUsedFor);
+    builder.append("\n ---STATUS-----------------------------------------------------");
+    builder.append("\n activeConnections              ").append(getActiveConnectionCount());
+    builder.append("\n idleConnections                ").append(getIdleConnectionCount());
+    builder.append("\n requestCount                   ").append(getRequestCount());
+    builder.append("\n averageRequestTime             ").append(getAverageRequestTime());
+    builder.append("\n averageCheckoutTime            ").append(getAverageCheckoutTime());
+    builder.append("\n claimedOverdue                 ").append(getClaimedOverdueConnectionCount());
+    builder.append("\n averageOverdueCheckoutTime     ").append(getAverageOverdueCheckoutTime());
+    builder.append("\n hadToWait                      ").append(getHadToWaitCount());
+    builder.append("\n averageWaitTime                ").append(getAverageWaitTime());
+    builder.append("\n badConnectionCount             ").append(getBadConnectionCount());
+    builder.append("\n===============================================================");
+    return builder.toString();
+  }
+}
+```
+#### 1.3.3 PooledDataSource
+PooledDataSource管理的数据库连接对象 是由其持有的UnpooledDataSource对象创建的，并由PoolState管理所有连接的状态。
+PooledDataSource的getConnection()方法会首先调用popConnection()方法获取PooledConnection对象，然后通过PooledConnection的getProxyConnection()方法获取数据库连接的代理对象。popConnection()方法是PooledDataSource的核心逻辑之一，其整体的逻辑关系如下图：
+
+
+
+## 2 Transaction
 
 
