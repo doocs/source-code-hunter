@@ -1,6 +1,6 @@
-基础支持层主要看一下mybatis实现ORM的底层代码实现。
-## 反射工具包
-### Reflector
+在Mybatis的基础支持层主要看一下支撑ORM实现的底层代码。
+## 1 反射工具包
+### 1.1Reflector
 Reflector类主要实现了对JavaBean的元数据属性的封装，比如：可读属性列表，可写属性列表；及反射操作的封装，如：属性对应的setter方法，getter方法的反射调用。源码实现如下：
 ```java
 public class Reflector {
@@ -55,7 +55,7 @@ public class Reflector {
   }
 }
 ```
-### ReflectorFactory
+### 1.2 ReflectorFactory
 顾名思义，Reflector的工厂模式，跟大部分工厂类一样，里面肯定有通过标识获取对象的方法。类的设计也遵照了 接口，实现类的模式，虽然本接口只有一个默认实现。
 ```java
 public interface ReflectorFactory {
@@ -110,8 +110,8 @@ public class CustomReflectorFactory extends DefaultReflectorFactory {
 
 }
 ```
-### ObjectFactory
-改类也是接口+一个默认实现类，并且支持自定义扩展。
+### 1.3 ObjectFactory
+该类也是接口+一个默认实现类，并且支持自定义扩展，mybatis中有很多这样的设计方式。
 ```java
 /**
  * MyBatis uses an ObjectFactory to create all needed new Objects.
@@ -205,9 +205,9 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
   }
 }
 ```
-## 类型转换
+## 2 类型转换
 类型转换是实现ORM的重要一环，由于 数据库中的数据类型与Java语言的数据类型并不对等，所以在PrepareStatement为sql语句绑定参数时，需要从Java类型转换成JDBC类型，而从结果集获取数据时，又要将JDBC类型转换成Java类型，mybatis使用TypeHandler完成了上述的双向转换。
-### JdbcType
+### 2.1 JdbcType
 mybatis通过JdbcType这个枚举类型代表了JDBC中的数据类型
 ```java
 /**
@@ -281,8 +281,8 @@ public enum JdbcType {
 
 }
 ```
-### TypeHandler
-TypeHandler是mybatis中所有类型转换器的顶层接口，主要用于 数据从Java类型到JdbcType类型的相互转换。
+### 2.2 TypeHandler
+TypeHandler是mybatis中所有类型转换器的顶层接口，主要用于实现 数据从Java类型到JdbcType类型的相互转换。
 ```java
 public interface TypeHandler<T> {
 
@@ -344,7 +344,7 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
 public class IntegerTypeHandler extends BaseTypeHandler<Integer> {
 
   /**
-   * NonNull就是NoneNull，非空的意思
+ 1. NonNull就是NoneNull，非空的意思
    */
   @Override
   public void setNonNullParameter(PreparedStatement ps, int i, Integer parameter, JdbcType jdbcType)
@@ -377,6 +377,172 @@ public class IntegerTypeHandler extends BaseTypeHandler<Integer> {
   }
 }
 ```
-TypeHandler主要用于单个参数的类型转换，如果多列值转换成一个Java对象，可以在映射文件中定义合适的映射规则<resultMap>
+TypeHandler主要用于单个参数的类型转换，如果要将多个列的值转换成一个Java对象，可以在映射文件中定义合适的映射规则&lt;resultMap&gt; 完成映射。
+### 2.3 TypeHandlerRegistry
+TypeHandlerRegistry主要负责管理所有已知的TypeHandler，mybatis在初始化过程中会为所有已知的TypeHandler创建对象，并注册到TypeHandlerRegistry。
+```java
+  //TypeHandlerRegistry中的核心字段
+  
+  /** 该集合主要用于从结果集读取数据时，将数据从JDBC类型转换成Java类型 */
+  private final Map<JdbcType, TypeHandler<?>>  jdbcTypeHandlerMap = new EnumMap<>(JdbcType.class);
+
+  /**
+   * 记录了Java类型向指定JdbcType转换时，需要使用的TypeHandler对象。
+   * 如：String可能转换成数据库的char、varchar等多种类型，所以存在一对多的关系
+   */
+  private final Map<Type, Map<JdbcType, TypeHandler<?>>> typeHandlerMap = new ConcurrentHashMap<>();
+
+  /** key TypeHandler的类型；value 该TypeHandler类型对应的TypeHandler对象 */
+  private final Map<Class<?>, TypeHandler<?>> allTypeHandlersMap = new HashMap<>();
+```
+1. **注册TypeHandler对象**
+TypeHandlerRegistry中的register()方法实现了注册TypeHandler对象的功能，该方法存在多种重载，但大多数register()方法最终都会走register(Type javaType, JdbcType jdbcType, TypeHandler<?> handler)的处理逻辑，该重载方法中分别指定了TypeHandler能够处理的Java类型、JDBC类型、TypeHandler对象。
+```java
+  /**
+   * TypeHandlerRegistry中对register方法实现了多种重载，本register方法
+   * 被很多重载方法调用，用来完成注册功能。
+   */
+  private void register(Type javaType, JdbcType jdbcType, TypeHandler<?> handler) {
+    if (javaType != null) {
+      Map<JdbcType, TypeHandler<?>> map = typeHandlerMap.get(javaType);
+      if (map == null || map == NULL_TYPE_HANDLER_MAP) {
+        map = new HashMap<>();
+        typeHandlerMap.put(javaType, map);
+      }
+      map.put(jdbcType, handler);
+    }
+    allTypeHandlersMap.put(handler.getClass(), handler);
+  }
+```
+另外，TypeHandlerRegistry还提供了扫描并注册指定包目录下TypeHandler实现类 的register()方法重载。
+```java
+  /**
+   * 从指定包名packageName中获取自定义的TypeHandler实现类
+   */
+  public void register(String packageName) {
+    ResolverUtil<Class<?>> resolverUtil = new ResolverUtil<>();
+    // 查找指定包下的TypeHandler接口实现类
+    resolverUtil.find(new ResolverUtil.IsA(TypeHandler.class), packageName);
+    Set<Class<? extends Class<?>>> handlerSet = resolverUtil.getClasses();
+    for (Class<?> type : handlerSet) {
+      // 忽略掉 内部类、接口 及 抽象类
+      if (!type.isAnonymousClass() && !type.isInterface() && !Modifier.isAbstract(type.getModifiers())) {
+        register(type);
+      }
+    }
+  }
+```
+最后看一下TypeHandlerRegistry的构造方法，其通过多种register()方法重载，完成了所有已知的TypeHandler的重载。
+```java
+  /**
+   * 进行Java及JDBC基本数据类型的TypeHandler注册
+   * 除了注册mybatis提供的基本TypeHandler外，我们也可以添加自定义的TypeHandler
+   * 接口实现，在mybatis-config.xml配置文件中<typeHandlers>节点下 添加相应的
+   * <typeHandlers>节点配置，并指定自定义的TypeHandler实现类。mybatis在初始化时
+   * 会解析该节点，并将TypeHandler类型的对象注册到TypeHandlerRegistry中 供mybatis后续使用
+   */
+  public TypeHandlerRegistry() {
+    register(Boolean.class, new BooleanTypeHandler());
+    register(boolean.class, new BooleanTypeHandler());
+    register(JdbcType.BOOLEAN, new BooleanTypeHandler());
+    register(JdbcType.BIT, new BooleanTypeHandler());
+
+    register(Byte.class, new ByteTypeHandler());
+    register(byte.class, new ByteTypeHandler());
+    register(JdbcType.TINYINT, new ByteTypeHandler());
+
+    register(Short.class, new ShortTypeHandler());
+    register(short.class, new ShortTypeHandler());
+    register(JdbcType.SMALLINT, new ShortTypeHandler());
+
+    register(Integer.class, new IntegerTypeHandler());
+    register(int.class, new IntegerTypeHandler());
+    register(JdbcType.INTEGER, new IntegerTypeHandler());
+
+    register(Long.class, new LongTypeHandler());
+    register(long.class, new LongTypeHandler());
+
+    register(Float.class, new FloatTypeHandler());
+    register(float.class, new FloatTypeHandler());
+    register(JdbcType.FLOAT, new FloatTypeHandler());
+
+    register(Double.class, new DoubleTypeHandler());
+    register(double.class, new DoubleTypeHandler());
+    register(JdbcType.DOUBLE, new DoubleTypeHandler());
+
+    register(Reader.class, new ClobReaderTypeHandler());
+    register(String.class, new StringTypeHandler());
+    register(String.class, JdbcType.CHAR, new StringTypeHandler());
+    register(String.class, JdbcType.CLOB, new ClobTypeHandler());
+    register(String.class, JdbcType.VARCHAR, new StringTypeHandler());
+    register(String.class, JdbcType.LONGVARCHAR, new StringTypeHandler());
+    register(String.class, JdbcType.NVARCHAR, new NStringTypeHandler());
+    register(String.class, JdbcType.NCHAR, new NStringTypeHandler());
+    register(String.class, JdbcType.NCLOB, new NClobTypeHandler());
+    register(JdbcType.CHAR, new StringTypeHandler());
+    register(JdbcType.VARCHAR, new StringTypeHandler());
+    register(JdbcType.CLOB, new ClobTypeHandler());
+    register(JdbcType.LONGVARCHAR, new StringTypeHandler());
+    register(JdbcType.NVARCHAR, new NStringTypeHandler());
+    register(JdbcType.NCHAR, new NStringTypeHandler());
+    register(JdbcType.NCLOB, new NClobTypeHandler());
+
+    register(Object.class, JdbcType.ARRAY, new ArrayTypeHandler());
+    register(JdbcType.ARRAY, new ArrayTypeHandler());
+
+    register(BigInteger.class, new BigIntegerTypeHandler());
+    register(JdbcType.BIGINT, new LongTypeHandler());
+
+    register(BigDecimal.class, new BigDecimalTypeHandler());
+    register(JdbcType.REAL, new BigDecimalTypeHandler());
+    register(JdbcType.DECIMAL, new BigDecimalTypeHandler());
+    register(JdbcType.NUMERIC, new BigDecimalTypeHandler());
 
 
+
+    register(String.class, JdbcType.SQLXML, new SqlxmlTypeHandler());
+
+    register(Instant.class, new InstantTypeHandler());
+    register(LocalDateTime.class, new LocalDateTimeTypeHandler());
+    register(LocalDate.class, new LocalDateTypeHandler());
+    register(LocalTime.class, new LocalTimeTypeHandler());
+    register(OffsetDateTime.class, new OffsetDateTimeTypeHandler());
+    register(OffsetTime.class, new OffsetTimeTypeHandler());
+    register(ZonedDateTime.class, new ZonedDateTimeTypeHandler());
+    register(Month.class, new MonthTypeHandler());
+    register(Year.class, new YearTypeHandler());
+    register(YearMonth.class, new YearMonthTypeHandler());
+    register(JapaneseDate.class, new JapaneseDateTypeHandler());
+  }
+```
+2. **查找TypeHandler**
+TypeHandlerRegistry其实就是一个容器，前面注册了一堆东西，也就是为了方便获取，其对应的方法为getTypeHandler()，也是存在多种重载，其中最重要的一个重载为getTypeHandler(Type type, JdbcType jdbcType)，它会根据指定的Java类型和JdbcType类型查找相应的TypeHandler对象。
+```java
+  /**
+   * 获取TypeHandler对象
+   * getTypeHandler方法亦存在多种重载，而本重载方法被其它多个重载方法调用
+   */
+  private <T> TypeHandler<T> getTypeHandler(Type type, JdbcType jdbcType) {
+    if (ParamMap.class.equals(type)) {
+      return null;
+    }
+    // Java数据类型与JDBC数据类型的关系往往是一对多，
+    // 所以一般会先根据Java数据类型获取Map<JdbcType, TypeHandler<?>>
+    // 再根据JDBC数据类型获取对应的TypeHandler
+    Map<JdbcType, TypeHandler<?>> jdbcHandlerMap = getJdbcHandlerMap(type);
+    TypeHandler<?> handler = null;
+    if (jdbcHandlerMap != null) {
+      handler = jdbcHandlerMap.get(jdbcType);
+      if (handler == null) {
+        handler = jdbcHandlerMap.get(null);
+      }
+      if (handler == null) {
+        // #591
+        handler = pickSoleHandler(jdbcHandlerMap);
+      }
+    }
+    // type drives generics here
+    return (TypeHandler<T>) handler;
+  }
+```
+除了mabatis本身自带的TypeHandler实现，我们还可以添加自定义的TypeHandler实现类，在配置文件mybatis-config.xml中的&lt;typeHandler&gt;标签下配置好自定义TypeHandler，mybatis就会在初始化时解析该标签内容，完成自定义TypeHandler的注册。
