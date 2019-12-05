@@ -339,7 +339,42 @@ public class PoolState {
 PooledDataSource管理的数据库连接对象 是由其持有的UnpooledDataSource对象创建的，并由PoolState管理所有连接的状态。
 PooledDataSource的getConnection()方法会首先调用popConnection()方法获取PooledConnection对象，然后通过PooledConnection的getProxyConnection()方法获取数据库连接的代理对象。popConnection()方法是PooledDataSource的核心逻辑之一，其整体的逻辑关系如下图：
 
+![avatar](/images/mybatis连接池获取连接逻辑图.png)
 
+```java
+public class PooledDataSource implements DataSource {
+
+  private static final Log log = LogFactory.getLog(PooledDataSource.class);
+
+  // 管理连接池状态 并统计连接信息
+  private final PoolState state = new PoolState(this);
+
+  // 该对象用于生成真正的数据库连接对象，构造函数中会初始化该字段
+  private final UnpooledDataSource dataSource;
+
+  // 最大活跃连接数
+  protected int poolMaximumActiveConnections = 10;
+  // 最大空闲连接数
+  protected int poolMaximumIdleConnections = 5;
+  // 最大Checkout时长
+  protected int poolMaximumCheckoutTime = 20000;
+  // 在无法获取连接时，线程需要等待的时间
+  protected int poolTimeToWait = 20000;
+  // 本地坏连接最大数
+  protected int poolMaximumLocalBadConnectionTolerance = 3;
+  // 检测数据库连接是否可用时，给数据库发送的sql语句
+  protected String poolPingQuery = "NO PING QUERY SET";
+  // 是否允许发送上述语句
+  protected boolean poolPingEnabled;
+  // 当连接超过poolPingConnectionsNotUsedFor毫秒未使用，
+  // 就发送一次上述sql，检测连接连接是否正常
+  protected int poolPingConnectionsNotUsedFor;
+
+  // 根据数据库URL、用户名、密码 生成的一个hash值，
+  // 该hash值用于标记当前的连接池，在构造函数中初始化
+  private int expectedConnectionTypeCode;
+}
+```
 
 ## 2 Transaction
 
