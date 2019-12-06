@@ -7,7 +7,7 @@
 [![issues](https://badgen.net/github/open-issues/doocs/source-code-hunter)](https://github.com/doocs/source-code-hunter/issues)
 [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](http://makeapullrequest.com)
 
-有被“读过哪些开源项目？”这种问题所困扰过吗？加入我们，一起通读互联网公司主流框架及中间件源码，成为强大的“源码猎人”，目前开放的有 Spring 系列框架、Mybatis 框架、Netty 框架，及Redis中间件等，让我们一起开拓新的领地，揭开这些源码的神秘面纱。本项目主要用于记录框架及中间件源码的阅读经验、个人理解及解析，希望能够使阅读源码变成一件更简单有趣，且有价值的事情，抽空更新中...
+有被“读过哪些知名的开源项目源码？”这种问题所困扰过吗？加入我们，一起通读互联网公司主流框架及中间件源码，成为强大的“源码猎人”，目前开放的有 Spring 系列框架、Mybatis 框架、Netty 框架，及Redis中间件等，让我们一起开拓新的领地，揭开这些源码的神秘面纱。本项目主要用于记录框架及中间件源码的阅读经验、个人理解及解析，希望能够使阅读源码变成一件更简单有趣，且有价值的事情，抽空更新中...
 
 ## spring系列
 ### IoC容器
