@@ -1,4 +1,4 @@
-在数据持久层，数据源和事务是两个非常重要的组件，对数据持久层的影响很大，在实际开发中，一般会使用mybatis集成第三方数据源组件，如：c3p0、Druid，另外，mybatis也提供了自己的数据源实现。而事务方面，一般使用spring进行事务的管理。下面我们看一下mybatis是如何对这两部分进行封装的。
+在数据持久层，数据源和事务是两个非常重要的组件，对数据持久层的影响很大，在实际开发中，一般会使用mybatis集成第三方数据源组件，如：c3p0、Druid，另外，mybatis也提供了自己的数据库连接池实现，本文会通过mybatis的源码实现来了解数据库连接池的设计。而事务方面，一般使用spring进行事务的管理，这里不做详细分析。下面我们看一下mybatis是如何对这两部分进行封装的。
 ## 1 DataSource
 常见的数据源都会实现javax.sql.DataSource接口，mybatis中提供了两个该接口的实现类，分别是：PooledDataSource和UnpooledDataSource，并使用不同的工厂类分别管理这两个类的对象。
 ### 1.1 DataSourceFactory
@@ -701,5 +701,285 @@ public class PooledDataSource implements DataSource {
 }
 ```
 ## 2 Transaction
+遵循接口-实现类的设计原则，mybatis也是先使用Transaction接口对数据库事务做了抽象，而实现类则只提供了两个，即：JdbcTransaction和ManagedTransaction。这两种对象的获取，使用了两个对应的工厂类JdbcTransactionFactory和ManagedTransactionFactory。
+不过一般我们并不会使用mybatis管理事务，而是将mybatis集成到spring，由spring进行事务的管理。细节部分会在后面的文章中详细讲解。
+```java
+public interface Transaction {
 
+  /**
+   * 获取连接对象
+   */
+  Connection getConnection() throws SQLException;
 
+  /**
+   * 提交事务
+   */
+  void commit() throws SQLException;
+
+  /**
+   * 回滚事务
+   */
+  void rollback() throws SQLException;
+
+  /**
+   * 关闭数据库连接
+   */
+  void close() throws SQLException;
+
+  /**
+   * 获取配置的事务超时时间
+   */
+  Integer getTimeout() throws SQLException;
+}
+
+public class JdbcTransaction implements Transaction {
+
+  private static final Log log = LogFactory.getLog(JdbcTransaction.class);
+
+  // 当前事务对应的数据库连接
+  protected Connection connection;
+  // 当前事务对应的数据源
+  protected DataSource dataSource;
+  // 事务隔离级别
+  protected TransactionIsolationLevel level;
+  // 是否自动提交
+  protected boolean autoCommit;
+
+  public JdbcTransaction(DataSource ds, TransactionIsolationLevel desiredLevel, boolean desiredAutoCommit) {
+    dataSource = ds;
+    level = desiredLevel;
+    autoCommit = desiredAutoCommit;
+  }
+
+  public JdbcTransaction(Connection connection) {
+    this.connection = connection;
+  }
+
+  @Override
+  public Connection getConnection() throws SQLException {
+    if (connection == null) {
+      openConnection();
+    }
+    return connection;
+  }
+
+  // 提交、回滚、关闭等操作的代码都比较简单，只对原生的JDBC操作做了简单封装
+  @Override
+  public void commit() throws SQLException {
+    if (connection != null && !connection.getAutoCommit()) {
+      if (log.isDebugEnabled()) {
+        log.debug("Committing JDBC Connection [" + connection + "]");
+      }
+      connection.commit();
+    }
+  }
+
+  @Override
+  public void rollback() throws SQLException {
+    if (connection != null && !connection.getAutoCommit()) {
+      if (log.isDebugEnabled()) {
+        log.debug("Rolling back JDBC Connection [" + connection + "]");
+      }
+      connection.rollback();
+    }
+  }
+
+  @Override
+  public void close() throws SQLException {
+    if (connection != null) {
+      resetAutoCommit();
+      if (log.isDebugEnabled()) {
+        log.debug("Closing JDBC Connection [" + connection + "]");
+      }
+      connection.close();
+    }
+  }
+
+  protected void setDesiredAutoCommit(boolean desiredAutoCommit) {
+    try {
+      if (connection.getAutoCommit() != desiredAutoCommit) {
+        if (log.isDebugEnabled()) {
+          log.debug("Setting autocommit to " + desiredAutoCommit + " on JDBC Connection [" + connection + "]");
+        }
+        connection.setAutoCommit(desiredAutoCommit);
+      }
+    } catch (SQLException e) {
+      // Only a very poorly implemented driver would fail here,
+      // and there's not much we can do about that.
+      throw new TransactionException("Error configuring AutoCommit.  "
+          + "Your driver may not support getAutoCommit() or setAutoCommit(). "
+          + "Requested setting: " + desiredAutoCommit + ".  Cause: " + e, e);
+    }
+  }
+
+  protected void resetAutoCommit() {
+    try {
+      if (!connection.getAutoCommit()) {
+        // MyBatis does not call commit/rollback on a connection if just selects were performed.
+        // Some databases start transactions with select statements
+        // and they mandate a commit/rollback before closing the connection.
+        // A workaround is setting the autocommit to true before closing the connection.
+        // Sybase throws an exception here.
+        if (log.isDebugEnabled()) {
+          log.debug("Resetting autocommit to true on JDBC Connection [" + connection + "]");
+        }
+        connection.setAutoCommit(true);
+      }
+    } catch (SQLException e) {
+      if (log.isDebugEnabled()) {
+        log.debug("Error resetting autocommit to true "
+            + "before closing the connection.  Cause: " + e);
+      }
+    }
+  }
+
+  protected void openConnection() throws SQLException {
+    if (log.isDebugEnabled()) {
+      log.debug("Opening JDBC Connection");
+    }
+    connection = dataSource.getConnection();
+    if (level != null) {
+      connection.setTransactionIsolation(level.getLevel());
+    }
+    setDesiredAutoCommit(autoCommit);
+  }
+
+  @Override
+  public Integer getTimeout() throws SQLException {
+    return null;
+  }
+
+}
+
+public class ManagedTransaction implements Transaction {
+
+  private static final Log log = LogFactory.getLog(ManagedTransaction.class);
+
+  // 数据源
+  private DataSource dataSource;
+  // 事务隔离级别
+  private TransactionIsolationLevel level;
+  // 对应的数据库连接
+  private Connection connection;
+  // 控制是否关闭持有的连接，在close()方法中用其判断是否真的关闭连接
+  private final boolean closeConnection;
+
+  // 本类的实现也很简单，commit、rollback方法都是空实现
+  public ManagedTransaction(Connection connection, boolean closeConnection) {
+    this.connection = connection;
+    this.closeConnection = closeConnection;
+  }
+
+  public ManagedTransaction(DataSource ds, TransactionIsolationLevel level, boolean closeConnection) {
+    this.dataSource = ds;
+    this.level = level;
+    this.closeConnection = closeConnection;
+  }
+
+  @Override
+  public Connection getConnection() throws SQLException {
+    if (this.connection == null) {
+      openConnection();
+    }
+    return this.connection;
+  }
+
+  @Override
+  public void commit() throws SQLException {
+    // Does nothing
+  }
+
+  @Override
+  public void rollback() throws SQLException {
+    // Does nothing
+  }
+
+  @Override
+  public void close() throws SQLException {
+    if (this.closeConnection && this.connection != null) {
+      if (log.isDebugEnabled()) {
+        log.debug("Closing JDBC Connection [" + this.connection + "]");
+      }
+      this.connection.close();
+    }
+  }
+
+  protected void openConnection() throws SQLException {
+    if (log.isDebugEnabled()) {
+      log.debug("Opening JDBC Connection");
+    }
+    this.connection = this.dataSource.getConnection();
+    if (this.level != null) {
+      this.connection.setTransactionIsolation(this.level.getLevel());
+    }
+  }
+
+  @Override
+  public Integer getTimeout() throws SQLException {
+    return null;
+  }
+
+}
+
+public interface TransactionFactory {
+
+  /**
+   * 配置TransactionFactory对象，一般会在完成TransactionFactory对象
+   * 初始化之后 就进行自定义属性配置
+   */
+  default void setProperties(Properties props) {
+    // NOP
+  }
+
+  /**
+   * 在指定的数据库连接上创建Transaction事务对象
+   */
+  Transaction newTransaction(Connection conn);
+
+  /**
+   * 从指定数据源获取数据库连接，并在此连接上创建Transaction对象
+   */
+  Transaction newTransaction(DataSource dataSource, TransactionIsolationLevel level, boolean autoCommit);
+}
+
+public class JdbcTransactionFactory implements TransactionFactory {
+
+  @Override
+  public Transaction newTransaction(Connection conn) {
+    return new JdbcTransaction(conn);
+  }
+
+  @Override
+  public Transaction newTransaction(DataSource ds, TransactionIsolationLevel level, boolean autoCommit) {
+    return new JdbcTransaction(ds, level, autoCommit);
+  }
+}
+
+public class ManagedTransactionFactory implements TransactionFactory {
+
+  private boolean closeConnection = true;
+
+  @Override
+  public void setProperties(Properties props) {
+    if (props != null) {
+      String closeConnectionProperty = props.getProperty("closeConnection");
+      if (closeConnectionProperty != null) {
+        closeConnection = Boolean.valueOf(closeConnectionProperty);
+      }
+    }
+  }
+
+  @Override
+  public Transaction newTransaction(Connection conn) {
+    return new ManagedTransaction(conn, closeConnection);
+  }
+
+  @Override
+  public Transaction newTransaction(DataSource ds, TransactionIsolationLevel level, boolean autoCommit) {
+    // Silently ignores autocommit and isolation level, as managed transactions are entirely
+    // controlled by an external manager.  It's silently ignored so that
+    // code remains portable between managed and unmanaged configurations.
+    return new ManagedTransaction(ds, level, closeConnection);
+  }
+}
+```
