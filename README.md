@@ -32,8 +32,11 @@
 ## MyBatis
 ### 基础支持层
 - [反射工具箱和TypeHandler系列](docs/Mybatis/基础支持层/1、反射工具箱和TypeHandler系列.md)
-- [DataSource及Transaction](docs/Mybatis/基础支持层/2、DataSource及Transaction.md)
-- [binding模块和缓存模块](docs/Mybatis/基础支持层/3、binding模块和缓存模块.md)
+- [DataSource及Transaction模块](docs/Mybatis/基础支持层/2、DataSource及Transaction模块.md)
+- [binding模块](docs/Mybatis/基础支持层/3、binding模块.md)
+- [缓存模块](docs/Mybatis/基础支持层/4、缓存模块.md)
+### 核心处理层
+- [MyBatis初始化](docs/Mybatis/核心处理层/1、MyBatis初始化.md)
 
 ## Netty
 ### IO
