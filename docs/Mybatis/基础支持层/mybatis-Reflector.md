@@ -167,3 +167,187 @@ class HfReflectorTest {
 
 
 
+## addGetMethods
+
+- 该方法获取了所有`get`和`is`开头的方法
+
+  ```java
+      private void addGetMethods(Class<?> clazz) {
+          // 反射方法
+          Map<String, List<Method>> conflictingGetters = new HashMap<>();
+          Method[] methods = getClassMethods(clazz);
+          // JDK8 filter 过滤get 开头的方法
+          Arrays.stream(methods).filter(m -> m.getParameterTypes().length == 0 && PropertyNamer.isGetter(m.getName()))
+                  .forEach(m -> addMethodConflict(conflictingGetters, PropertyNamer.methodToProperty(m.getName()), m));
+          resolveGetterConflicts(conflictingGetters);
+      }
+  ```
+
+- 该方法中依旧使用了JDK8语法通过`m.getParameterTypes().length == 0 && PropertyNamer.isGetter(m.getName())`来判断是否是`get`或·`is`开头的内容
+
+- 调用`org.apache.ibatis.reflection.property.PropertyNamer`
+
+  ```java
+      public static boolean isGetter(String name) {
+          // 在语义上 is 开头的也是get开头的
+          return (name.startsWith("get") && name.length() > 3) || (name.startsWith("is") && name.length() > 2);
+      }
+  ```
+
+- `resolveGetterConflicts`方法后续介绍
+
+
+
+## getClassMethods
+
+- `org.apache.ibatis.reflection.Reflector#getClassMethods`,该方法将传入对象的所有可见方法都获取到进行唯一标识处理成一个`Map`对象 添加方法为`org.apache.ibatis.reflection.Reflector#addUniqueMethods`
+
+  ```java
+      private Method[] getClassMethods(Class<?> clazz) {
+          // 方法唯一标识: 方法
+          Map<String, Method> uniqueMethods = new HashMap<>();
+          Class<?> currentClass = clazz;
+          while (currentClass != null && currentClass != Object.class) {
+              // getDeclaredMethods 获取 public ,private , protcted 方法
+              addUniqueMethods(uniqueMethods, currentClass.getDeclaredMethods());
+  
+              // we also need to look for interface methods -
+              // because the class may be abstract
+              // 当前类是否继承别的类(实现接口)如果继承则需要进行操作
+              Class<?>[] interfaces = currentClass.getInterfaces();
+              for (Class<?> anInterface : interfaces) {
+                  // getMethods 获取本身和父类的 public 方法
+                  addUniqueMethods(uniqueMethods, anInterface.getMethods());
+              }
+  
+              // 循环往上一层一层寻找最后回到 Object 类 的上级为null 结束
+              currentClass = currentClass.getSuperclass();
+          }
+  
+          Collection<Method> methods = uniqueMethods.values();
+  
+          return methods.toArray(new Method[0]);
+      }
+  
+  ```
+
+  
+
+- `org.apache.ibatis.reflection.Reflector#addUniqueMethods`
+
+  ```java
+      private void addUniqueMethods(Map<String, Method> uniqueMethods, Method[] methods) {
+          for (Method currentMethod : methods) {
+              // 桥接, 具体还不知道
+              // TODO: 2019/12/9 JAVA 桥接方法
+              if (!currentMethod.isBridge()) {
+                  // 方法的唯一标识
+                  String signature = getSignature(currentMethod);
+                  // check to see if the method is already known
+                  // if it is known, then an extended class must have
+                  // overridden a method
+                  if (!uniqueMethods.containsKey(signature)) {
+                      uniqueMethods.put(signature, currentMethod);
+                  }
+              }
+          }
+      }
+  ```
+
+  
+
+- 唯一标识方法`org.apache.ibatis.reflection.Reflector#getSignature`
+
+  ```java
+      /**
+       * 方法唯一标识,返回值类型#方法名称：参数列表
+       *
+       * @param method
+       * @return
+       */
+      private String getSignature(Method method) {
+          StringBuilder sb = new StringBuilder();
+          Class<?> returnType = method.getReturnType();
+          if (returnType != null) {
+              sb.append(returnType.getName()).append('#');
+          }
+          sb.append(method.getName());
+          Class<?>[] parameters = method.getParameterTypes();
+          for (int i = 0; i < parameters.length; i++) {
+              sb.append(i == 0 ? ':' : ',').append(parameters[i].getName());
+          }
+          return sb.toString();
+      }
+  ```
+
+  
+
+- 照旧我们进行 debug 当前方法为`toString`方法
+
+  ![1575891988804](/images/mybatis//1575891988804.png)
+
+  从返回结果可以看到`sb.toString`返回的是： `返回值类型#方法名`
+
+  ![1575892046692](/images/mybatis//1575892046692.png)
+
+  上图返回结果为`void#setName:java.lang.String` 命名规则：`返回值类型#方法名称:参数列表`
+
+  回过头看看`uniqueMethods`里面是什么
+
+  ![1575892167982](/images/mybatis//1575892167982.png)
+
+  方法签名:方法
+
+  目前完成了一部分还有一个继承问题需要debug看一下, 编写一个`Man`继承`People` 还需要实现接口
+
+  ```java
+  public class Man extends People implements TestManInterface {
+      @Override
+      public Integer inte() {
+          return 1;
+      }
+  
+      public String hello() {
+          return "hello";
+      }
+  }
+  
+  ```
+
+  ```java
+  public interface TestManInterface {
+      public Integer inte();
+  }
+  ```
+
+  目标明确了就直接在
+
+  ![1575892414120](/images/mybatis//1575892414120.png)
+
+  这里打断点了
+
+  ![1575892511471](/images/mybatis//1575892511471.png)
+
+  在进入循环之前回率先加载本类的所有可见方法
+
+  ```java
+       if (!uniqueMethods.containsKey(signature)) {
+           // 如果存在该方法唯一签名则不添加
+                      uniqueMethods.put(signature, currentMethod);
+                  }
+  ```
+
+  接下来断点继续往下走
+
+  ![1575892645405](/images/mybatis//1575892645405.png)
+
+  走到这一步我们来看看`currentClass.getSuperclass()`是不是上一级的类
+
+  ![1575892687076](/images/mybatis//1575892687076.png)
+
+  通过断点可见这个`currentClass`现在是`People`类,根据之前所说的最终`uniqueMethods`应该存在父类的方法
+
+  ![1575892763661](/images/mybatis//1575892763661.png)
+
+  可以看到父类的方法也都存在了
+
