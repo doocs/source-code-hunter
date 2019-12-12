@@ -29,7 +29,7 @@
 
 
 ### Spring源码故事（瞎编版）
-- [面筋哥 IoC 容器的一天(上)](/docs/Spring/IoC/面筋哥IoC容器的一天(上).md)
+- [面筋哥 IoC 容器的一天(上)](/docs/Spring/Spring源码故事（瞎编版）/面筋哥IoC容器的一天(上).md)
 
 ## MyBatis
 ### 基础支持层
