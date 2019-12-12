@@ -186,16 +186,161 @@ mybatis中的标签很多，所以相对应的解析方法也很多，这里挑�
   }
 ```
 ### 2.3 解析&lt;databaseIdProvider&gt;标签
-```java
+mybatis不像hibernate那样，通过hql的方式直接帮助开发人员屏蔽不同数据库产品在sql语法上的差异，针对不同的数据库产品，mybatis往往要编写不同的sql语句。但在mybatis-config.xml配置文件中，可以通过&lt;databaseIdProvider&gt;定义所有支持的数据库产品的databaseId，然后在映射配置文件中定义sql语句节点时，通过databaseId指定该sql语句应用的数据库产品，也可以达到类似的屏蔽数据库产品的功能。
 
+mybatis初始化时，会根据前面解析到的DataSource来确认当前使用的数据库产品，然后在解析映射文件时，加载不带databaseId属性的sql语句 及 带有databaseId属性的sql语句，其中，带有databaseId属性的sql语句优先级更高，会被优先选中。
+```java
+  /**
+   * 解析<databaseIdProvider>节点，并创建指定的DatabaseIdProvider对象，
+   * 该对象会返回databaseId的值，mybatis会根据databaseId选择对应的sql语句去执行
+   */
+  private void databaseIdProviderElement(XNode context) throws Exception {
+    DatabaseIdProvider databaseIdProvider = null;
+    if (context != null) {
+      String type = context.getStringAttribute("type");
+      // 为了保证兼容性，修改type取值
+      if ("VENDOR".equals(type)) {
+          type = "DB_VENDOR";
+      }
+      // 解析相关配置信息
+      Properties properties = context.getChildrenAsProperties();
+      // 创建DatabaseIdProvider对象
+      databaseIdProvider = (DatabaseIdProvider) resolveClass(type).newInstance();
+      // 配置DatabaseIdProvider，完成初始化
+      databaseIdProvider.setProperties(properties);
+    }
+    Environment environment = configuration.getEnvironment();
+    if (environment != null && databaseIdProvider != null) {
+      // 根据前面解析到的DataSource获取databaseId，并记录到configuration的configuration属性上
+      String databaseId = databaseIdProvider.getDatabaseId(environment.getDataSource());
+      configuration.setDatabaseId(databaseId);
+    }
+  }
+```
+mybatis提供了DatabaseIdProvider接口，该接口的核心方法为getDatabaseId(DataSource dataSource)，主要根据dataSource查找对应的databaseId并返回。该接口的主要实现类为VendorDatabaseIdProvider。
+```java
+public class VendorDatabaseIdProvider implements DatabaseIdProvider {
+
+  private static final Log log = LogFactory.getLog(VendorDatabaseIdProvider.class);
+
+  private Properties properties;
+
+  @Override
+  public void setProperties(Properties p) {
+    this.properties = p;
+  }
+
+  @Override
+  public String getDatabaseId(DataSource dataSource) {
+    if (dataSource == null) {
+      throw new NullPointerException("dataSource cannot be null");
+    }
+    try {
+      return getDatabaseName(dataSource);
+    } catch (Exception e) {
+      log.error("Could not get a databaseId from dataSource", e);
+    }
+    return null;
+  }
+
+  private String getDatabaseName(DataSource dataSource) throws SQLException {
+    // 解析到数据库产品名
+    String productName = getDatabaseProductName(dataSource);
+    if (this.properties != null) {
+      // 根据<databaseIdProvider>子节点配置的数据库产品 和 databaseId之间的对应关系，
+      // 确定最终使用的databaseId
+      for (Map.Entry<Object, Object> property : properties.entrySet()) {
+        if (productName.contains((String) property.getKey())) {
+          return (String) property.getValue();
+        }
+      }
+      // 没有合适的databaseId，则返回null
+      return null;
+    }
+    return productName;
+  }
+
+  // 根据dataSource获取 数据库产品名的具体实现
+  private String getDatabaseProductName(DataSource dataSource) throws SQLException {
+    Connection con = null;
+    try {
+      con = dataSource.getConnection();
+      DatabaseMetaData metaData = con.getMetaData();
+      return metaData.getDatabaseProductName();
+    } finally {
+      if (con != null) {
+        try {
+          con.close();
+        } catch (SQLException e) {
+          // ignored
+        }
+      }
+    }
+  }
+}
 ```
 ### 2.4 解析&lt;mappers&gt;标签
+mybatis初始化时，除了加载mybatis-config.xml文件，还会加载全部的映射配置文件，mybatis-config.xml文件的&lt;mapper&gt;节点会告诉mybatis去哪里查找映射配置文件，及使用了配置注解标识的接口。
 ```java
+  /**
+   * 解析<mappers>节点，本方法会创建XMLMapperBuilder对象加载映射文件，如果映射配置文件存在
+   * 相应的Mapper接口，也会加载相应的Mapper接口，解析其中的注解 并完成向MapperRegistry的注册
+   */
+  private void mapperElement(XNode parent) throws Exception {
+    if (parent != null) {
+      // 处理<mappers>的子节点
+      for (XNode child : parent.getChildren()) {
+        if ("package".equals(child.getName())) {
+          // 获取<package>子节点中的包名
+          String mapperPackage = child.getStringAttribute("name");
+          // 扫描指定的包目录，然后向MapperRegistry注册Mapper接口
+          configuration.addMappers(mapperPackage);
+        } else {
+          // 获取<mapper>节点的resource、url、mapperClass属性，这三个属性互斥，只能有一个不为空
+          // mybatis提供了通过包名、映射文件路径、类全名、URL四种方式引入映射器。
+          // 映射器由一个接口和一个XML配置文件组成，XML文件中定义了一个命名空间namespace，
+          // 它的值就是接口对应的全路径。
+          String resource = child.getStringAttribute("resource");
+          String url = child.getStringAttribute("url");
+          String mapperClass = child.getStringAttribute("class");
+          // 如果<mapper>节点指定了resource或是url属性，则创建XMLMapperBuilder对象解析
+          // resource或是url属性指定的Mapper配置文件
+          if (resource != null && url == null && mapperClass == null) {
+            ErrorContext.instance().resource(resource);
+            InputStream inputStream = Resources.getResourceAsStream(resource);
+            XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
+            mapperParser.parse();
+          } else if (resource == null && url != null && mapperClass == null) {
+            ErrorContext.instance().resource(url);
+            InputStream inputStream = Resources.getUrlAsStream(url);
+            XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, url, configuration.getSqlFragments());
+            mapperParser.parse();
+          } else if (resource == null && url == null && mapperClass != null) {
+            // 如果<mapper>节点指定了class属性，则向MapperRegistry注册该Mapper接口
+            Class<?> mapperInterface = Resources.classForName(mapperClass);
+            configuration.addMapper(mapperInterface);
+          } else {
+            throw new BuilderException("A mapper element may only specify a url, resource or class, but not more than one.");
+          }
+        }
+      }
+    }
+  }
 
 ```
+## 3 XMLMapperBuilder
+### 3.1 解析&lt;cache&gt;节点
+
+### 3.2 解析&lt;cache-ref&gt;节点
+
+### 3.3 解析&lt;resultMap&gt;节点
+
+### 3.4 解析&lt;sql&gt;节点
 
 
+## 4 XMLStatementBuilder
 
+## 5 绑定Mapper接口
 
 
 
