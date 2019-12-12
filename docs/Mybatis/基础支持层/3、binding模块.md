@@ -1,5 +1,5 @@
-binding模块主要为了解决一个历史遗留问题，原先查询一个VO对象时需要调用SqlSession.queryForObject(“selectXXVOById”, primaryKey)方法，执行指定的sql语句，第一个参数selectXXVOById指定了执行的sql语句id，如果我们不小心写错了参数，mybatis是无法在初始化时发现这个错误的，只会在实际调用queryForObject(“selectXXVOById”, primaryKey)方法时才会抛出异常，这对于工程师来说是非常难受的，就像泛型出来之前，很多类型转换不会在编译期发现错误一样。
-而binding模块就像Java的泛型机制一样，将程序的错误提前暴露出来，为开发人员省去不少排查问题的精力。
+binding模块主要为了解决一个历史遗留问题，原先查询一个VO对象时需要调用SqlSession.queryForObject(“selectXXVOById”, primaryKey)方法，执行指定的sql语句，第一个参数selectXXVOById指定了执行的sql语句id，如果我们不小心写错了参数，mybatis是无法在初始化时发现这个错误的，只会在实际调用queryForObject(“selectXXVOById”, primaryKey)方法时才会抛出异常，这对于工程师来说是非常难受的，就像泛型出来之前，很多类型转换不会在编译期发现错误一样。而binding模块就像Java的泛型机制一样，将程序的错误提前暴露出来，为开发人员省去不少排查问题的精力。
+
 binding模块的解决方案是，定义一个Mapper接口，在接口中定义sql语句对应的方法名(Id)及参数，这些方法在mybatis的初始化过程中，会与该Mapper接口对应的映射配置文件中的sql语句相关联，如果存在无法关联的sql语句，mybatis就会抛出异常，帮助我们及时发现问题。示例代码如下：
 ```java
 public interface HeroMapper {
