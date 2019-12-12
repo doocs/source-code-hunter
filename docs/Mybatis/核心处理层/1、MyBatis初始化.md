@@ -326,16 +326,93 @@ mybatis初始化时，除了加载mybatis-config.xml文件，还会加载全部�
       }
     }
   }
-
 ```
 ## 3 XMLMapperBuilder
-### 3.1 解析&lt;cache&gt;节点
+和XMLConfigBuilder一样，XMLMapperBuilder也继承了BaseBuilder，其主要负责解析映射配置文件，其解析配置文件的入口方法也是parse()，另外，XMLMapperBuilder也将各个节点的解析过程拆分成了一个个小方法，然后由configurationElement()方法统一调用。
+```java
+public class XMLMapperBuilder extends BaseBuilder {
+  public void parse() {
+    // 是否已经加载过该配置文件
+    if (!configuration.isResourceLoaded(resource)) {
+      // 解析<mapper>节点
+      configurationElement(parser.evalNode("/mapper"));
+      // 将resource添加到configuration的loadedResources属性中，
+      // 该属性是一个HashSet<String>类型的集合，其中记录了已经加载过的映射文件
+      configuration.addLoadedResource(resource);
+      // 注册Mapper接口
+      bindMapperForNamespace();
+    }
+    // 处理configurationElement()方法中解析失败的<resultMap>节点
+    parsePendingResultMaps();
+    // 处理configurationElement()方法中解析失败的<cacheRef>节点
+    parsePendingCacheRefs();
+    // 处理configurationElement()方法中解析失败的<statement>节点
+    parsePendingStatements();
+  }
 
-### 3.2 解析&lt;cache-ref&gt;节点
+  private void configurationElement(XNode context) {
+    try {
+      // 获取<mapper>节点的namespace属性
+      String namespace = context.getStringAttribute("namespace");
+      if (namespace == null || namespace.equals("")) {
+        throw new BuilderException("Mapper's namespace cannot be empty");
+      }
+      // 使用MapperBuilderAssistant对象的currentNamespace属性 记录namespace命名空间
+      builderAssistant.setCurrentNamespace(namespace);
+      // 解析<cache-ref>节点，后面的解析方法 也都见名知意
+      cacheRefElement(context.evalNode("cache-ref"));
+      cacheElement(context.evalNode("cache"));
+      parameterMapElement(context.evalNodes("/mapper/parameterMap"));
+      resultMapElements(context.evalNodes("/mapper/resultMap"));
+      sqlElement(context.evalNodes("/mapper/sql"));
+      buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
+    } catch (Exception e) {
+      throw new BuilderException("Error parsing Mapper XML. The XML location is '" + resource + "'. Cause: " + e, e);
+    }
+  }
+}
+```
+XMLMapperBuilder也根据配置文件进行了一系列节点解析，我们着重分析一下比较重要且常见的&lt;resultMap&gt;节点和&lt;sql&gt;节点
+### 3.1 解析&lt;resultMap&gt;节点
+select语句查询得到的结果是一张二维表，水平方向上是一个个字段，垂直方向上是一条条记录。而Java是面向对象的程序设计语言，对象是根据类的定义创建的，类之间的引用关系可以认为是嵌套结构。JDBC编程中，为了将结果集中的数据映射成VO对象，我们需要自己写代码从结果集中获取数据，然后将数据封装成对应的VO对象，并设置好对象之间的关系，这种ORM的过程中存在大量重复的代码。
 
-### 3.3 解析&lt;resultMap&gt;节点
+mybatis通过&lt;resultMap&gt;节点定义了ORM规则，可以满足大部分的映射需求，减少重复代码，提高开发效率。
 
-### 3.4 解析&lt;sql&gt;节点
+在分析&lt;resultMap&gt;节点的解析过程之前，先看一下该过程使用的数据结构。每个ResultMapping对象记录了结果集中的一列与JavaBean中一个属性之间的映射关系。&lt;resultMap&gt;节点下除了&lt;discriminator&gt;子节点的其它子节点 都会被解析成对应的ResultMapping对象。
+```java
+public class ResultMapping {
+
+  private Configuration configuration;
+  // 对应节点的property属性，表示 该列进行映射的属性
+  private String property;
+  // 对应节点的column属性，表示 从数据库中得到的列名或列名的别名
+  private String column;
+  // 表示 一个JavaBean的完全限定名，或一个类型别名
+  private Class<?> javaType;
+  // 进行映射列的JDBC类型
+  private JdbcType jdbcType;
+  // 类型处理器
+  private TypeHandler<?> typeHandler;
+  // 该属性通过id引用了另一个<resultMap>节点，它负责将结果集中的一部分列映射成
+  // 它所关联的结果对象。这样我们就可以通过join方式进行关联查询，然后直接映射成
+  // 多个对象，并同时设置这些对象之间的组合关系(nested嵌套的)
+  private String nestedResultMapId;
+  // 该属性通过id引用了另一个<select>节点，它会把指定的列值传入select属性指定的
+  // select语句中 作为参数进行查询。使用该属性可能会导致ORM中的N+1问题，请谨慎使用
+  private String nestedQueryId;
+  private Set<String> notNullColumns;
+  private String columnPrefix;
+  // 处理后的标志，共有两个：id和constructor
+  private List<ResultFlag> flags;
+  private List<ResultMapping> composites;
+  private String resultSet;
+  private String foreignColumn;
+  // 是否延迟加载
+  private boolean lazy;
+}
+```
+
+### 3.2 解析&lt;sql&gt;节点
 
 
 ## 4 XMLStatementBuilder
