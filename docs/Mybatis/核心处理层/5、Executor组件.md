@@ -276,8 +276,76 @@ public abstract class BaseExecutor implements Executor {
   }
 ```
 ## 2 SimpleExecutor
+SimpleExecutor继承了BaseExecutor抽象类，它是最简单的Executor接口实现。Executor组件使用了模板方法模式，一级缓存等固定不变的操作都封装到了BaseExecutor中，在SimpleExecutor中就不必再关心一级缓存等操作，只需要专注实现4 个基本方法的实现即可。
+```java
+public class SimpleExecutor extends BaseExecutor {
 
+  public SimpleExecutor(Configuration configuration, Transaction transaction) {
+    super(configuration, transaction);
+  }
 
+  @Override
+  public <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException {
+    Statement stmt = null;
+    try {
+      // 获取配置对象
+      Configuration configuration = ms.getConfiguration();
+      // 创建StatementHandler对象
+      StatementHandler handler = configuration.newStatementHandler(wrapper, ms, parameter, rowBounds, resultHandler, boundSql);
+      // 完成Statement的创建和初始化，该方法首先会调用StatementHandler的prepare()方法
+      // 创建Statement对象，然后调用StatementHandler的parameterize()方法处理占位符
+      stmt = prepareStatement(handler, ms.getStatementLog());
+      // 调用StatementHandler的query()方法，执行sql语句，并通过ResultSetHandler
+      // 完成结果集的映射
+      return handler.<E>query(stmt, resultHandler);
+    } finally {
+      // 关闭Statement对象
+      closeStatement(stmt);
+    }
+  }
+
+  private Statement prepareStatement(StatementHandler handler, Log statementLog) throws SQLException {
+    Statement stmt;
+    Connection connection = getConnection(statementLog);
+    // 创建Statement对象
+    stmt = handler.prepare(connection, transaction.getTimeout());
+    // 处理占位符
+    handler.parameterize(stmt);
+    return stmt;
+  }
+
+  /**
+   * 与前面doQuery()方法的实现非常类似
+   */
+  @Override
+  public int doUpdate(MappedStatement ms, Object parameter) throws SQLException {
+    Statement stmt = null;
+    try {
+      Configuration configuration = ms.getConfiguration();
+      StatementHandler handler = configuration.newStatementHandler(this, ms, parameter, RowBounds.DEFAULT, null, null);
+      stmt = prepareStatement(handler, ms.getStatementLog());
+      return handler.update(stmt);
+    } finally {
+      closeStatement(stmt);
+    }
+  }
+
+  @Override
+  protected <E> Cursor<E> doQueryCursor(MappedStatement ms, Object parameter, RowBounds rowBounds, BoundSql boundSql) throws SQLException {
+    Configuration configuration = ms.getConfiguration();
+    StatementHandler handler = configuration.newStatementHandler(wrapper, ms, parameter, rowBounds, null, boundSql);
+    Statement stmt = prepareStatement(handler, ms.getStatementLog());
+    return handler.<E>queryCursor(stmt);
+  }
+
+  @Override
+  public List<BatchResult> doFlushStatements(boolean isRollback) throws SQLException {
+    // SimpleExecutor不提供sql语句批处理，所以直接返回空集合
+    return Collections.emptyList();
+  }
+
+}
+```
 ## 3 ReuseExecutor
 
 
