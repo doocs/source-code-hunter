@@ -1,5 +1,7 @@
 ﻿前面我们主要分析了 FileSystemXmlApplicationContext 这个具体的 IoC 容器的初始化源码实现，在 IoC 容器中建立了 BeanDefinition 的数据映射，将其和 beanName 一起绑定在一个 ConcurrentHashMap 中。现在我们来看一下 spring 是如何将 IoC 容器中的 Bean 根据配置关联在一起的。
+ 
 Spring 中触发 IoC 容器“依赖注入”的方式有两种，一个是通过 getBean() 向容器索要 bean 时触发依赖注入；另一个是给 bean 配置 lazy-init 属性，spring 会自动调用此 bean 的 getBean() 方法，提前完成依赖注入。总的来说，想提高运行时获取 bean 的效率，可以考虑配置此属性。
+
 下面我将分别解读这两种依赖注入的触发方式，先看 getBean() 的，因为 lazy-init 最后也是通过调用 getBean 完成的依赖注入。
 	
 （PS：可以结合我 GitHub 上对 spring 框架源码的阅读及个人理解一起看，会更有助于各位开发姥爷理解，地址：
