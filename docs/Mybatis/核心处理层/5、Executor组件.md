@@ -347,8 +347,78 @@ public class SimpleExecutor extends BaseExecutor {
 }
 ```
 ## 3 ReuseExecutor
+在传统的JDBC编程中，复用Statement对象是常用的一种优化手段，该优化手段可以减少SQL预编译的开销以及创建和销毁Statement对象的开销，从而提高性能（Reuse，复用）。
+ReuseExecutor提供了Statement复用的功能，ReuseExecutor中通过statementMap 字段缓存使用过的Statement对象，key是SQL语句，value是SQL对应的Statement 对象。
+ReuseExecutor.doQuery()、doQueryCursor()、doUpdate()方法的实现与SimpleExecutor中对应方法的实现一样，区别在于其中调用的prepareStatement()方法，SimpleExecutor每次都会通过JDBC的Connection对象创建新的Statement对象，而ReuseExecutor则会先尝试重用StaternentMap中缓存的Statement对象。
+```java
+  // 本map用于缓存使用过的Statement，以提升本框架的性能
+  // key SQL语句，value 该SQL语句对应的Statement
+  private final Map<String, Statement> statementMap = new HashMap<String, Statement>();
 
+  private Statement prepareStatement(StatementHandler handler, Log statementLog) throws SQLException {
+    Statement stmt;
+    BoundSql boundSql = handler.getBoundSql();
+    // 获取要执行的sql语句
+    String sql = boundSql.getSql();
+    // 如果之前执行过该sql，则从缓存中取出对应的Statement对象
+    // 不再创建新的Statement，减少系统开销
+    if (hasStatementFor(sql)) {
+      stmt = getStatement(sql);
+      // 修改超时时间
+      applyTransactionTimeout(stmt);
+    } else {
+      // 获取数据库连接
+      Connection connection = getConnection(statementLog);
+      // 从连接中获取Statement对象
+      stmt = handler.prepare(connection, transaction.getTimeout());
+      // 将sql语句 和 其对应的Statement对象缓存起来
+      putStatement(sql, stmt);
+    }
+    // 处理占位符
+    handler.parameterize(stmt);
+    return stmt;
+  }
 
+  /**
+   * 当事务提交或回滚、连接关闭时，都需要关闭这些缓存的Statement对象。前面分析的BaseExecutor的
+   * commit()、rollback()和close()方法中都会调用doFlushStatements()方法，
+   * 所以在该方法中关闭Statement对象的逻辑非常合适
+   */
+  @Override
+  public List<BatchResult> doFlushStatements(boolean isRollback) throws SQLException {
+    // 遍历Statement对象集合，并依次关闭
+    for (Statement stmt : statementMap.values()) {
+      closeStatement(stmt);
+    }
+    // 清除对Statement对象的缓存
+    statementMap.clear();
+    // 返回一个空集合
+    return Collections.emptyList();
+  }
+```
+#### 拓展内容：SQL预编译
+**1、数据库预编译起源**
+（1）数据库SQL语句编译特性
+数据库接收到sql语句之后，需要词法和语义解析，以优化sql语句，制定执行计划。这需要花费一些时间。但是很多情况，我们的同一条sql语句可能会反复执行，或者每次执行的时候只有个别的值不同（比如：query的where子句值不同，update的set子句值不同，insert的values值不同）。
+（2）减少编译的方法
+如果每次都需要经过上面的词法语义解析、语句优化、制定执行计划等，则效率就明显不行了。为了解决上面的问题，于是就有了预编译，预编译语句就是将这类语句中的值用占位符替代，可以视为将sql语句模板化或者说参数化。一次编译、多次运行，省去了解析优化等过程。
+（3）缓存预编译
+预编译语句被DB的编译器编译后的执行代码被缓存下来，那么下次调用时只要是相同的预编译语句就不需要重复编译，只要将参数直接传入编译过的语句执行代码中(相当于一个函数)就会得到执行。并不是所以预编译语句都一定会被缓存，数据库本身会用一种策略（内部机制）。
+(4) 预编译的实现方法
+预编译是通过PreparedStatement和占位符来实现的。
+**2.预编译作用**
+（1）减少编译次数 提升性能
+预编译之后的 sql 多数情况下可以直接执行，DBMS（数据库管理系统）不需要再次编译。越复杂的sql，往往编译的复杂度就越大。
+（2）防止SQL注入
+使用预编译，后面注入的参数将不会再次触发SQL编译。也就是说，对于后面注入的参数，系统将不会认为它会是一个SQL命令，而默认其是一个参数，参数中的or或and等（SQL注入常用技俩）就不是SQL语法保留字了。
+**3.mybatis是如何实现预编译的**
+mybatis默认情况下，将对所有的 sql 进行预编译。mybatis底层使用PreparedStatement，过程是，先将带有占位符（即”?”）的sql模板发送至数据库服务器，由服务器对此无参数的sql进行编译后，将编译结果缓存，然后直接执行带有真实参数的sql。核心是通过 “#{ }” 实现的。在预编译之前，#{ } 被解析为一个预编译语句（PreparedStatement）的占位符 ?。
+```sql
+// sqlMap 中如下的 sql 语句
+select * from user where name = #{name};
+// 解析成为预编译语句
+select * from user where name = ?;
+```
 ## 4 BatchExecutor
 
 
