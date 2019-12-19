@@ -1,5 +1,6 @@
 # mybatis 反射
-
+- Author: [HuiFer](https://github.com/huifer)
+- Description: 该文简单介 mybatis 反射相关类的源码
 ## addDefaultConstructor
 
 -  mybatis 的反射相关内容在`org.apache.ibatis.reflection` 下存放. 本片主要讲解`org.apache.ibatis.reflection.Reflector`类, 先看一下该类的属性
