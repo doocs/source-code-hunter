@@ -1,6 +1,6 @@
 # GenericTokenParser
 - Author: [HuiFer](https://github.com/huifer)
-
+- 
 ```java
 /**
  * Copyright 2009-2019 the original author or authors.

@@ -1,4 +1,7 @@
 # sqlCommand 
+- Author: [HuiFer](https://github.com/huifer)
+- Description: 该文介绍 mybatis sqlCommand类的源码
+
 - `org.apache.ibatis.binding.MapperMethod.SqlCommand`
 ```java
     /**

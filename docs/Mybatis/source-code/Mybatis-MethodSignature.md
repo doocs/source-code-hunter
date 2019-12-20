@@ -1,4 +1,6 @@
 # MethodSignature
+- Author: [HuiFer](https://github.com/huifer)
+- Description: 该文介绍 mybatis MethodSignature 类
 - `org.apache.ibatis.binding.MapperMethod.MethodSignature`
 ```java
     /**
