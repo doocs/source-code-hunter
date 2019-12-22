@@ -338,7 +338,9 @@ public class PoolState {
 #### 1.3.3 PooledDataSource
 PooledDataSource管理的数据库连接对象 是由其持有的UnpooledDataSource对象创建的，并由PoolState管理所有连接的状态。
 PooledDataSource的getConnection()方法会首先调用popConnection()方法获取PooledConnection对象，然后通过PooledConnection的getProxyConnection()方法获取数据库连接的代理对象。popConnection()方法是PooledDataSource的核心逻辑之一，其整体的逻辑关系如下图：
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20191205213903828.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4MDM4Mzk2,size_16,color_FFFFFF,t_70)
+
+![avatar](/images/mybatis/数据库连接池流程图.png)
+
 ```java
 public class PooledDataSource implements DataSource {
 
