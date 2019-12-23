@@ -1,4 +1,6 @@
 # Mybatis DataSource
+- Author: [HuiFer](https://github.com/huifer)
+- Description: 该文介绍 mybatis DataSource 源码
 - `org.apache.ibatis.datasource.DataSourceFactory`
 ```java
 /**
