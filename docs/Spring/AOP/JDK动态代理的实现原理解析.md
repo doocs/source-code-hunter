@@ -123,9 +123,9 @@ public final class $Proxy0 extends Proxy implements MyInterface
     
     public final void play() {
         try {
-        	//这个 h 其实就是我们调用 Proxy.newProxyInstance() 方法时传进去的 ProxyFactory 对象，
-        	//该对象的 invoke() 方法中实现了对目标对象的目标方法的增强。看到这里，利用动态代理实现方法增强的
-        	//调用原理就全部理清咯
+            //这个 h 其实就是我们调用 Proxy.newProxyInstance() 方法时传进去的 ProxyFactory 对象，
+            //该对象的 invoke() 方法中实现了对目标对象的目标方法的增强。看到这里，利用动态代理实现方法增强的
+            //调用原理就全部理清咯
             super.h.invoke(this, $Proxy0.m3, null);
         }
         catch (Error | RuntimeException error) {
