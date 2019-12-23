@@ -72,9 +72,13 @@ public abstract class BaseExecutor implements Executor {
 ```
 ### 1.1 一级缓存简介
 常见的应用系统中，数据库是比较珍贵的资源，很容易成为整个系统的瓶颈。在设计和维护系统时，会进行多方面的权衡，并且利用多种优化手段，减少对数据库的直接访问。
+
 使用缓存是一种比较有效的优化手段，使用缓存可以减少应用系统与数据库的网络交互、减少数据库访问次数、降低数据库的负担、降低重复创建和销毁对象等一系列开销，从而提高整个系统的性能。
+
 MyBatis提供的缓存功能，分别为一级缓存和二级缓存。BaseExecutor主要实现了一级缓存的相关内容。一级缓存是会话级缓存，在MyBatis中每创建一个SqlSession对象，就表示开启一次数据库会话。在一次会话中，应用程序可能会在短时间内(一个事务内)，反复执行完全相同的查询语句，如果不对数据进行缓存，那么每一次查询都会执行一次数据库查询操作，而多次完全相同的、时间间隔较短的查询语句得到的结果集极有可能完全相同，这会造成数据库资源的浪费。
+
 为了避免上述问题，MyBatis会在Executor对象中建立一个简单的一级缓存，将每次查询的结果集缓存起来。在执行查询操作时，会先查询一级缓存，如果存在完全一样的查询情况，则直接从一级缓存中取出相应的结果对象并返回给用户，减少数据库访问次数，从而减小了数据库的压力。
+
 一级缓存的生命周期与SqlSession相同，其实也就与SqISession中封装的Executor 对象的生命周期相同。当调用Executor对象的close()方法时（断开连接），该Executor 对象对应的一级缓存就会被废弃掉。一级缓存中对象的存活时间受很多方面的影响，例如，在调用Executor的update()方法时，也会先请空一级缓存。一级缓存默认是开启的，一般情况下，不需要用户进行特殊配置。
 ### 1.2 一级缓存的管理
 BaseExecutor的query()方法会首先创建CacheKey对象，并根据该CacheKey对象查找一级缓存，如果缓存命中则返回缓存中记录的结果对象，如果缓存未命中则查询数据库得到结果集，之后将结果集映射成结果对象并保存到一级缓存中，同时返回结果对象。
@@ -178,6 +182,7 @@ public abstract class BaseExecutor implements Executor {
 }
 ```
 从上面的代码中可以看到，BaseExecutor的query()方法会根据flushCache属性和localCacheScope配置 决定是否清空一级缓存。
+
 另外，BaseExecutor的update()方法在调用doUpdate()方法之前，也会清除一级缓存。update()方法负责执行insert、update、delete三类SQL 语句，它是调用doUpdate()方法实现的。
 ```java
   @Override
@@ -348,7 +353,9 @@ public class SimpleExecutor extends BaseExecutor {
 ```
 ## 3 ReuseExecutor
 在传统的JDBC编程中，复用Statement对象是常用的一种优化手段，该优化手段可以减少SQL预编译的开销以及创建和销毁Statement对象的开销，从而提高性能（Reuse，复用）。
+
 ReuseExecutor提供了Statement复用的功能，ReuseExecutor中通过statementMap 字段缓存使用过的Statement对象，key是SQL语句，value是SQL对应的Statement 对象。
+
 ReuseExecutor.doQuery()、doQueryCursor()、doUpdate()方法的实现与SimpleExecutor中对应方法的实现一样，区别在于其中调用的prepareStatement()方法，SimpleExecutor每次都会通过JDBC的Connection对象创建新的Statement对象，而ReuseExecutor则会先尝试重用StaternentMap中缓存的Statement对象。
 ```java
   // 本map用于缓存使用过的Statement，以提升本框架的性能
@@ -398,20 +405,35 @@ ReuseExecutor.doQuery()、doQueryCursor()、doUpdate()方法的实现与SimpleEx
 ```
 #### 拓展内容：SQL预编译
 **1、数据库预编译起源**
+
 （1）数据库SQL语句编译特性
+
 数据库接收到sql语句之后，需要词法和语义解析，以优化sql语句，制定执行计划。这需要花费一些时间。但是很多情况，我们的同一条sql语句可能会反复执行，或者每次执行的时候只有个别的值不同（比如：query的where子句值不同，update的set子句值不同，insert的values值不同）。
+
 （2）减少编译的方法
+
 如果每次都需要经过上面的词法语义解析、语句优化、制定执行计划等，则效率就明显不行了。为了解决上面的问题，于是就有了预编译，预编译语句就是将这类语句中的值用占位符替代，可以视为将sql语句模板化或者说参数化。一次编译、多次运行，省去了解析优化等过程。
+
 （3）缓存预编译
+
 预编译语句被DB的编译器编译后的执行代码被缓存下来，那么下次调用时只要是相同的预编译语句就不需要重复编译，只要将参数直接传入编译过的语句执行代码中(相当于一个函数)就会得到执行。并不是所以预编译语句都一定会被缓存，数据库本身会用一种策略（内部机制）。
-(4) 预编译的实现方法
+
+（4） 预编译的实现方法
+ 
 预编译是通过PreparedStatement和占位符来实现的。
+
 **2.预编译作用**
+
 （1）减少编译次数 提升性能
+
 预编译之后的 sql 多数情况下可以直接执行，DBMS（数据库管理系统）不需要再次编译。越复杂的sql，往往编译的复杂度就越大。
+
 （2）防止SQL注入
+
 使用预编译，后面注入的参数将不会再次触发SQL编译。也就是说，对于后面注入的参数，系统将不会认为它会是一个SQL命令，而默认其是一个参数，参数中的or或and等（SQL注入常用技俩）就不是SQL语法保留字了。
+
 **3.mybatis是如何实现预编译的**
+
 mybatis默认情况下，将对所有的 sql 进行预编译。mybatis底层使用PreparedStatement，过程是，先将带有占位符（即”?”）的sql模板发送至数据库服务器，由服务器对此无参数的sql进行编译后，将编译结果缓存，然后直接执行带有真实参数的sql。核心是通过 “#{ }” 实现的。在预编译之前，#{ } 被解析为一个预编译语句（PreparedStatement）的占位符 ?。
 ```sql
 // sqlMap 中如下的 sql 语句
@@ -420,8 +442,152 @@ select * from user where name = #{name};
 select * from user where name = ?;
 ```
 ## 4 BatchExecutor
+应用系统在执行一条SQL语句时，会将SQL语句以及相关参数通过网络发送到数据库系统。对于频繁操作数据库的应用系统来说，如果执行一条SQL语句就向数据库发送一次请求，很多时间会浪费在网络通信上。使用批量处理的优化方式可以在客户端缓存多条SQL语句，并在合适的时机将多条SQL语句打包发送给数据库执行，从而减少网络方面的开销，提升系统的性能。
 
+需要注意的是，在批量执行多条SQL 语句时，每次向数据库发送的SQL语句条数
+是有上限的，若超出上限，数据库会拒绝执行这些SQL语句井抛出异常，所以批量发送SQL语句的时机很重要。
 
-## 5 CachingExecutor
+mybatis的BatchExecutor实现了批处理多条SQL 语句的功能。
+```java
+public class BatchExecutor extends BaseExecutor {
+
+  public static final int BATCH_UPDATE_RETURN_VALUE = Integer.MIN_VALUE + 1002;
+  // 缓存多个Statement对象，其中每个Statement对象中都可以缓存多条
+  // 结构相同 但参数不同的sql语句
+  private final List<Statement> statementList = new ArrayList<Statement>();
+  // 记录批处理的结果，BatchResult中通过updateCounts字段
+  // 记录每个Statement对象 执行批处理的结果
+  private final List<BatchResult> batchResultList = new ArrayList<BatchResult>();
+  // 记录当前执行的sql语句
+  private String currentSql;
+  // 记录当前执行的MappedStatement对象
+  private MappedStatement currentStatement;
+
+  /**
+   * JDBC中的批处理只支持insert、update、delete等类型的SQL语句，不支持select类型的
+   * SQL语句，所以doUpdate()方法是BatchExecutor中最重要的一个方法。
+   * 本方法在添加一条SQL语句时，首先会将currentSql字段记录的SQL语句以及currentStatement字段
+   * 记录的MappedStatement对象与当前添加的SQL以及MappedStatement对象进行比较，
+   * 如果相同则添加到同一个Statement对象中等待执行，如果不同则创建新的Statement对象
+   * 井将其缓存到statementList集合中等待执行
+   */
+  @Override
+  public int doUpdate(MappedStatement ms, Object parameterObject) throws SQLException {
+    // 获取configuration配置对象
+    final Configuration configuration = ms.getConfiguration();
+    // 实例化一个StatementHandler，并返回
+    final StatementHandler handler = configuration.newStatementHandler(this, ms, parameterObject, RowBounds.DEFAULT, null, null);
+    // 获取需要执行的sql语句
+    final BoundSql boundSql = handler.getBoundSql();
+    final String sql = boundSql.getSql();
+    final Statement stmt;
+    // 判断要执行的sql语句结构 及 MappedStatement对象 是否与上次的相同
+    if (sql.equals(currentSql) && ms.equals(currentStatement)) {
+      // 相同则添加到同一个Statement对象中等待执行
+      // 首先获取statementList集合中最后一个Statement对象
+      int last = statementList.size() - 1;
+      stmt = statementList.get(last);
+      // 重新设置事务超时时间
+      applyTransactionTimeout(stmt);
+      // 绑定实参，处理占位符？
+      handler.parameterize(stmt);
+      // 查找对应的BatchResult对象，并记录用户传入的实参
+      BatchResult batchResult = batchResultList.get(last);
+      batchResult.addParameterObject(parameterObject);
+    } else {
+      // 不同则创建新的Statement对象井将其缓存到statementList集合中等待执行
+      Connection connection = getConnection(ms.getStatementLog());
+      // 创建新的Statement对象
+      stmt = handler.prepare(connection, transaction.getTimeout());
+      // 绑定实参，处理占位符？
+      handler.parameterize(stmt);
+      // 记录本次的sql语句 及 Statement对象
+      currentSql = sql;
+      currentStatement = ms;
+      // 将新创建的Statement对象添加到statementList集合
+      statementList.add(stmt);
+      // 添加新的BatchResult对象
+      batchResultList.add(new BatchResult(ms, sql, parameterObject));
+    }
+    // 底层通过调用java.sql.Statement的addBatch()方法添加sql语句
+    handler.batch(stmt);
+    return BATCH_UPDATE_RETURN_VALUE;
+  }
+
+  /**
+   * 上面的doUpdate()方法负责添加待执行的sql语句，
+   * 而doFlushStatements()方法则将上面添加的sql语句进行批量处理
+   */
+  @Override
+  public List<BatchResult> doFlushStatements(boolean isRollback) throws SQLException {
+    try {
+      // 用于存储批处理结果的集合
+      List<BatchResult> results = new ArrayList<BatchResult>();
+      // 如果要回滚 则返回一个空集合
+      if (isRollback) {
+        return Collections.emptyList();
+      }
+      // 批处理statementList集合中的所以Statement对象
+      for (int i = 0, n = statementList.size(); i < n; i++) {
+        // 获取Statement对象 和其对应的 BatchResult对象
+        Statement stmt = statementList.get(i);
+        applyTransactionTimeout(stmt);
+        BatchResult batchResult = batchResultList.get(i);
+        try {
+          // 调用Statement对象的executeBatch()方法，批量执行其中记录的sql语句
+          // 将执行返回的int[]数组set进batchResult的updateCounts字段，
+          // 其中的每一个int值都代表了对应的sql语句 影响的记录条数
+          batchResult.setUpdateCounts(stmt.executeBatch());
+          MappedStatement ms = batchResult.getMappedStatement();
+          List<Object> parameterObjects = batchResult.getParameterObjects();
+          // 获取配置的KeyGenerator对象
+          KeyGenerator keyGenerator = ms.getKeyGenerator();
+          if (Jdbc3KeyGenerator.class.equals(keyGenerator.getClass())) {
+            Jdbc3KeyGenerator jdbc3KeyGenerator = (Jdbc3KeyGenerator) keyGenerator;
+            // 获取数据库生成的主键 并设置到parameterObjects中
+            jdbc3KeyGenerator.processBatch(ms, stmt, parameterObjects);
+          } else if (!NoKeyGenerator.class.equals(keyGenerator.getClass())) {
+            // 对于其它类型的KeyGenerator，则调用其processAfter进行处理
+            for (Object parameter : parameterObjects) {
+              keyGenerator.processAfter(this, ms, stmt, parameter);
+            }
+          }
+          closeStatement(stmt);
+        } catch (BatchUpdateException e) {
+          StringBuilder message = new StringBuilder();
+          message.append(batchResult.getMappedStatement().getId())
+                  .append(" (batch index #")
+                  .append(i + 1)
+                  .append(")")
+                  .append(" failed.");
+          if (i > 0) {
+            message.append(" ")
+                    .append(i)
+                    .append(" prior sub executor(s) completed successfully, but will be rolled back.");
+          }
+          throw new BatchExecutorException(message.toString(), e, results, batchResult);
+        }
+        // 添加处理完的BatchResult对象到要返回的List<BatchResult>集合中
+        results.add(batchResult);
+      }
+      return results;
+    } finally {
+      // 关闭所有的Statement对象
+      for (Statement stmt : statementList) {
+        closeStatement(stmt);
+      }
+      // 清空currentSql、statementList、batchResultList对象
+      currentSql = null;
+      statementList.clear();
+      batchResultList.clear();
+    }
+  }
+}
+```
+通过了解JDBC的批处理功能 我们可以知道，Statement中可以添加不同语句结构的SQL，但是每添加一个新结构的SQL语句都会触发一次编译操作。而PreparedStatement中只能添加同一语句结构的SQL语句，只会触发一次编译操作，但是可以通过绑定多组不同的实参实现批处理。通过上面对doUpdate()方法的分析可知，BatchExecutor会将连续添加的、相同语句结构的SQL语句添加到同一个Statement/PreparedStatement对象中，这样可以有效地减少编译操作的次数。
+
+BatchExecutor中doQuery()和doQueryCursor()方法的实现与前面介绍的SimpleExecutor类似，主要区别就是BatchExecutor中的这两个方法在最开始都会先调用flushStatements()方法，执行缓存的SQL语句，以保证 从数据库中查询到的数据是最新的。
+
+CachingExecutor中为Executor对象增加了二级缓存相关功能，而mybatis的二级缓存在实际使用中往往利大于弊，被redis等产品所替代，所以这里不做分析。
 
 
