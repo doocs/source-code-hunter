@@ -1,9 +1,9 @@
-﻿最近在看 SpringAOP 部分的源码，所以对 JDK 动态代理具体是如何实现的这件事产生了很高的兴趣，而且能从源码上了解这个原理的话，也有助于对 spring-aop 模块的理解。话不多说，上代码。
+最近在看 SpringAOP 部分的源码，所以对 JDK 动态代理具体是如何实现的这件事产生了很高的兴趣，而且能从源码上了解这个原理的话，也有助于对 spring-aop 模块的理解。话不多说，上代码。
 
 ```java
 /**
- * 一般会使用实现了 InvocationHandler 的类 作为代理对象的生产工厂，
- * 并且通过持有被代理对象 target，来在 invoke() 方法中对被代理对象的目标方法进行调用和增强，
+ * 一般会使用实现了 InvocationHandler接口的类 作为代理对象生成工厂，
+ * 并且通过持有被代理对象 target，在 invoke() 方法中对被代理对象的目标方法进行调用和增强，
  * 这些我们都能通过下面这段代码看懂，但代理对象是如何生成的？invoke() 方法又是如何被调用的呢？
  */
 public class ProxyFactory implements InvocationHandler{
@@ -36,8 +36,7 @@ public class TargetObject implements MyInterface {
 
 	@Override
 	public void play() {
-		System.out.println("妲己，陪你玩 ~");
-		
+		System.out.println("妲己，陪你玩 ~");		
 	}
 }
 
@@ -48,21 +47,21 @@ public class ProxyTest {
 
 	public static void main(String[] args) {
 		TargetObject target = new TargetObject();
-		//ProxyFactory 实现了 InvocationHandler 接口，其中的 getInstanse() 方法利用 Proxy 类帮助生成了
-		//target 目标对象的代理对象，并返回；且 ProxyFactory 持有对 target 的引用，可以在 invoke() 中完成对 target 相应方法
-		//的调用，以及目标方法前置后置的增强处理
+		// ProxyFactory 实现了 InvocationHandler 接口，其中的 getInstanse() 方法利用 Proxy 类帮助生成了
+		// target 目标对象的代理对象，并返回；且 ProxyFactory 持有对 target 的引用，可以在 invoke() 中完成对 target 相应方法
+		// 的调用，以及目标方法前置后置的增强处理
 		ProxyFactory proxyFactory = new ProxyFactory();
-		//这个 mi 就是 JDK 的 Proxy 类生成的代理类$Proxy0 的对象，这个对象中的方法都持有对 invoke() 方法的回调
-		//所以当调用其方法时，就能够执行 invoke() 中的增强处理
-		MyInterface mi = (MyInterface)proxyFactory.getInstanse(target);
-		//这样可以看到 mi 的 Class 到底是什么
+		// 这个 mi 就是 JDK 的 Proxy 类生成的代理类$Proxy0 的对象，这个对象中的方法都持有对 invoke() 方法的回调
+		// 所以当调用其方法时，就能够执行 invoke() 中的增强处理
+		MyInterface mi = (MyInterface) proxyFactory.getInstanse(target);
+		// 这样可以看到 mi 的 Class 到底是什么
 		System.out.println(mi.getClass());
-		//这里实际上调用的就是$Proxy0 中对 play() 方法的实现，可以看到 play 方法通过 super.h.invoke()
-		//完成了对 InvocationHandler 对象 proxyFactory 的 invoke() 方法的回调
-		//所以我才能够通过 invoke() 方法实现对 target 对象方法的前置后置增强处理
+		// 这里实际上调用的就是$Proxy0 中对 play() 方法的实现，可以看到 play 方法通过 super.h.invoke()
+		// 完成了对 InvocationHandler 对象 proxyFactory 的 invoke() 方法的回调
+		// 所以我才能够通过 invoke() 方法实现对 target 对象方法的前置后置增强处理
 		mi.play();
-		//总的来说，就是在 invoke() 方法中完成 target 目标方法的调用，及前置后置增强
-		//然后通过生成的代理类完成对对 invoke() 的回调
+		// 总的来说，就是在 invoke() 方法中完成 target 目标方法的调用，及前置后置增强
+		// 然后通过生成的代理类完成对对 invoke() 的回调
 	}
 	
 	/**
