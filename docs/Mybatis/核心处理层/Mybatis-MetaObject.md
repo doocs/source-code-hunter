@@ -1,5 +1,6 @@
 # Mybatis MetaObject
 - Author: [HuiFer](https://github.com/huifer)
+- 源码阅读工程: [huifer-mybatis](https://github.com/huifer/javaBook-src/tree/old/mybatis-3)
 - 源码位于:`org.apache.ibatis.reflection.MetaObject`
 ```java
 /**

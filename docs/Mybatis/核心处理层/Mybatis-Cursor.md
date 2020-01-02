@@ -1,6 +1,7 @@
 # Mybatis Cursor
 - Author: [HuiFer](https://github.com/huifer)
 - Description: 该文介绍 mybatis Cursor 源码
+- 源码阅读工程: [huifer-mybatis](https://github.com/huifer/javaBook-src/tree/old/mybatis-3)
 ## Cursor
 - 源码位置:`org.apache.ibatis.cursor.Cursor`
 - 继承`Iterable`说明是一个迭代器,继承`Closeable`说明有一个东西需要关闭
