@@ -131,20 +131,211 @@ public class XmlWebApplicationContext extends AbstractRefreshableWebApplicationC
 ```
 从上面的代码中可以看到，在XmlWebApplicationContext中，基本的上下文功能都已经通过类的继承获得，这里需要处理的是，如何获取Bean定义信息，在这里，就转化为如何在Web容器环境中获得Bean定义信息。在获得Bean定义信息之后，后面的过程基本上就和前面分析的XmlFileSystemBeanFactory一样，是通过XmlBeanDefinitionReader来载人Bean定义信息的，最终完成整个上下文的初始化过程。
 ## 4 ContextLoader的设计与实现
-对于Spring承载的Web应用而言，可以指定在Web应用程序启动时载入IoC容器（或者称为WebApplicationContext）。这个功能是由ContextLoaderListener这样的类来完成的，它是在Web容器中配置的监听器。这个ContextLoaderListener通过使用ContextLoader来完成实际的WebApplicationContext，也就是IoC容器的初始化工作。这个ContextLoader就像Spring应用程序在Web容器中的启动器。这个启动过程是在Web容器中发生的，所以需要根据Web容器部署的要求来定义ContextLoader，相关的配置在概述中已经看到了，这里就不重复了。
+对于Spring承载的Web应用而言，可以指定在Web应用程序启动时载入IoC容器（或者称为WebApplicationContext）。这个功能是由ContextLoaderListener来完成的，它是在Web容器中配置的监听器，会监听Web容器的启动，然后载入IoC容器。这个ContextLoaderListener通过使用ContextLoader来完成实际的WebApplicationContext，也就是IoC容器的初始化工作。这个ContextLoader就像Spring应用程序在Web容器中的启动器。这个启动过程是在Web容器中发生的，所以需要根据Web容器部署的要求来定义ContextLoader，相关的配置在概述中已经看到了，这里就不重复了。
 
-为了了解IoC容器在Web容器中的启动原理，这里对启动器ContextLoaderListener的实现进行分析。这个监听器是启动根IoC容器并把它载入到Web容器的主要功能模块，也是整个Spring Web应用加载IoC的第一个地方。从加载过程可以看到，首先从Servlet事件中得到ServletContext，然后可以读取配置在web.xml中的各个相关的属性值，接着ContextLoader会实例化WebApplicationContext，并完成其载人和初始化过程。这个被初始化的第一个上下文，作为根上下文而存在，这个根上下文载入后，被绑定到Web应用程序的ServletContext上。任何需要访问根上下文的应用程序代码都可以从WebApplicationContextUtils类的静态方法中得到。
+为了了解IoC容器在Web容器中的启动原理，这里对启动器ContextLoaderListener的实现进行分析。**这个监听器是启动根IoC容器并把它载入到Web容器的主要功能模块，也是整个Spring Web应用加载IoC的第一个地方**。从加载过程可以看到，首先从Servlet事件中得到ServletContext，然后可以读取配置在web.xml中的各个相关的属性值，接着ContextLoader会实例化WebApplicationContext，并完成其载人和初始化过程。这个被初始化的第一个上下文，作为根上下文而存在，这个根上下文载入后，被绑定到Web应用程序的ServletContext上。任何需要访问根上下文的应用程序代码都可以从WebApplicationContextUtils类的静态方法中得到。
 
-下面分析具体的根上下文的载人过程。在ContextLoaderListener中，实现的是ServletContextListener接口，这个接口里的函数会结合Web容器的生命周期被调用。因为ServletContextListener是ServletContext的监听者，如果ServletContext发生变化，会触发出相应的事件，而监听器一直在对这些事件进行监听，如果接收到了监听的事件，就会做出预先设计好的响应动作。由于ServletContext的变化而触发的监听器的响应具体包括:在服务器启动时，ServletContext被创建的时候，服务器关闭时，ServletContext将被销毁的时候等。对应这些事件及Web容器状态的变化，在监听器中定义了对应的事件响应的回调方法。比如，在服务器启动时，ServletContextListener的contextInitialized()方法被调用，服务器将要关闭时，ServletContextListener的contextDestroyed()方法被调用。了解了Web容器中监听器的工作原理，下面看看服务器启动时 ContextLoaderListener的调用完成了什么。在这个初始化回调中，创建了ContextLoader，同时会利用创建出来的ContextLoader来完成IoC容器的初始化。
+下面分析具体的根上下文的载人过程。在ContextLoaderListener中，实现的是**ServletContextListener接口，这个接口里的函数会结合Web容器的生命周期被调用**。因为ServletContextListener是ServletContext的监听者，如果ServletContext发生变化，会触发出相应的事件，而监听器一直在对这些事件进行监听，如果接收到了监听的事件，就会做出预先设计好的响应动作。由于ServletContext的变化而触发的监听器的响应具体包括：在服务器启动时，ServletContext被创建的时候，服务器关闭时，ServletContext将被销毁的时候等。对应这些事件及Web容器状态的变化，在监听器中定义了对应的事件响应的回调方法。比如，在服务器启动时，ServletContextListener的contextInitialized()方法被调用，服务器将要关闭时，ServletContextListener的contextDestroyed()方法被调用。了解了Web容器中监听器的工作原理，下面看看服务器启动时 ContextLoaderListener的调用完成了什么。在这个初始化回调中，创建了ContextLoader，同时会利用创建出来的ContextLoader来完成IoC容器的初始化。
+```java
+public class ContextLoaderListener extends ContextLoader implements ServletContextListener {
+
+	private ContextLoader contextLoader;
+	
+	/**
+	 * 启动web应用的 根上下文
+	 */
+	public void contextInitialized(ServletContextEvent event) {
+		// 由于本类直接继承了ContextLoader，所以能直接使用ContextLoader来初始化IoC容器
+		this.contextLoader = createContextLoader();
+		if (this.contextLoader == null) {
+			this.contextLoader = this;
+		}
+		// 具体的初始化工作交给ContextLoader完成
+		this.contextLoader.initWebApplicationContext(event.getServletContext());
+	}
+}
 
 
+public class ContextLoader {
 
+	public static final String CONTEXT_CLASS_PARAM = "contextClass";
 
+	public static final String CONTEXT_ID_PARAM = "contextId";
 
+	public static final String CONTEXT_INITIALIZER_CLASSES_PARAM = "contextInitializerClasses";
 
+	public static final String CONFIG_LOCATION_PARAM = "contextConfigLocation";
 
+	public static final String LOCATOR_FACTORY_SELECTOR_PARAM = "locatorFactorySelector";
 
+	public static final String LOCATOR_FACTORY_KEY_PARAM = "parentContextKey";
 
+	private static final String DEFAULT_STRATEGIES_PATH = "ContextLoader.properties";
 
+	private static final Properties defaultStrategies;
 
+	static {
+		// Load default strategy implementations from properties file.
+		// This is currently strictly internal and not meant to be customized
+		// by application developers.
+		try {
+			ClassPathResource resource = new ClassPathResource(DEFAULT_STRATEGIES_PATH, ContextLoader.class);
+			defaultStrategies = PropertiesLoaderUtils.loadProperties(resource);
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Could not load 'ContextLoader.properties': " + ex.getMessage());
+		}
+	}
 
+	/**
+	 * 由ContextLoader完成根上下文在Web容器中的创建。这个根上下文是作为Web容器中唯一的实例而存在的，
+	 * 根上下文创建成功后 会被存到Web容器的ServletContext中，供需要时使用。存取这个根上下文的路径是由
+	 * Spring预先设置好的，在WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE中进行了定义
+	 */
+	public WebApplicationContext initWebApplicationContext(ServletContext servletContext) {
+		// 如果ServletContext中已经包含了根上下文，则抛出异常
+		if (servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE) != null) {
+			throw new IllegalStateException(
+					"Cannot initialize context because there is already a root application context present - " +
+					"check whether you have multiple ContextLoader* definitions in your web.xml!");
+		}
+		Log logger = LogFactory.getLog(ContextLoader.class);
+		servletContext.log("Initializing Spring root WebApplicationContext");
+		if (logger.isInfoEnabled()) {
+			logger.info("Root WebApplicationContext: initialization started");
+		}
+		long startTime = System.currentTimeMillis();
+
+		try {
+			if (this.context == null) {
+				// 这里创建在ServletContext中存储的根上下文
+				this.context = createWebApplicationContext(servletContext);
+			}
+			if (this.context instanceof ConfigurableWebApplicationContext) {
+				ConfigurableWebApplicationContext cwac = (ConfigurableWebApplicationContext) this.context;
+				if (!cwac.isActive()) {
+					if (cwac.getParent() == null) {
+						// 载入根上下文的 双亲上下文
+						ApplicationContext parent = loadParentContext(servletContext);
+						cwac.setParent(parent);
+					}
+					// 配置 并且初始化IoC容器，看到Refresh应该能想到AbstractApplicationContext
+					// 中的refresh()方法，猜到它是前面介绍的IoC容器的初始化入口
+					configureAndRefreshWebApplicationContext(cwac, servletContext);
+				}
+			}
+			// 将上面创建的WebApplicationContext实例 存到ServletContext中，注意同时被存入的常量
+			// ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE，以后的应用都会根据这个属性获取根上下文
+			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
+
+			ClassLoader ccl = Thread.currentThread().getContextClassLoader();
+			if (ccl == ContextLoader.class.getClassLoader()) {
+				currentContext = this.context;
+			}
+			else if (ccl != null) {
+				currentContextPerThread.put(ccl, this.context);
+			}
+
+			if (logger.isDebugEnabled()) {
+				logger.debug("Published root WebApplicationContext as ServletContext attribute with name [" +
+						WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE + "]");
+			}
+			if (logger.isInfoEnabled()) {
+				long elapsedTime = System.currentTimeMillis() - startTime;
+				logger.info("Root WebApplicationContext: initialization completed in " + elapsedTime + " ms");
+			}
+
+			return this.context;
+		}
+		catch (RuntimeException ex) {
+			logger.error("Context initialization failed", ex);
+			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, ex);
+			throw ex;
+		}
+		catch (Error err) {
+			logger.error("Context initialization failed", err);
+			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, err);
+			throw err;
+		}
+	}
+
+	/**
+	 * 创建WebApplicationContext的实例化对象
+	 */
+	protected WebApplicationContext createWebApplicationContext(ServletContext sc) {
+		// 判断使用什么样的类在Web容器中作为IoC容器
+		Class<?> contextClass = determineContextClass(sc);
+		if (!ConfigurableWebApplicationContext.class.isAssignableFrom(contextClass)) {
+			throw new ApplicationContextException("Custom context class [" + contextClass.getName() +
+					"] is not of type [" + ConfigurableWebApplicationContext.class.getName() + "]");
+		}
+		// 直接实例化需要产生的IoC容器
+		return (ConfigurableWebApplicationContext) BeanUtils.instantiateClass(contextClass);
+	}
+	
+	/**
+	 * 在确定使用何种IoC容器的过程中可以看到，应用可以在部署描述符中指定使用什么样的IoC容器，
+	 * 这个指定操作是通过CONTEXT_ CLASS_ PARAM参数的设置完成的。如果没有指定特定的IoC容器，
+	 * 将使用默认的IoC容器，也就是XmlWebApplicationContext对象作为在Web环境中使用的IoC容器。
+	 */
+	protected Class<?> determineContextClass(ServletContext servletContext) {
+		// 获取servletContext中对CONTEXT_CLASS_PARAM（contextClass）参数的配置
+		String contextClassName = servletContext.getInitParameter(CONTEXT_CLASS_PARAM);
+		if (contextClassName != null) {
+			try {
+				// 获取配置的contextClassName对应的clazz对象
+				return ClassUtils.forName(contextClassName, ClassUtils.getDefaultClassLoader());
+			}
+			catch (ClassNotFoundException ex) {
+				throw new ApplicationContextException(
+						"Failed to load custom context class [" + contextClassName + "]", ex);
+			}
+		}
+		else {
+			// 如果没有配置CONTEXT_CLASS_PARAM，则使用默认的ContextClass
+			contextClassName = defaultStrategies.getProperty(WebApplicationContext.class.getName());
+			try {
+				return ClassUtils.forName(contextClassName, ContextLoader.class.getClassLoader());
+			}
+			catch (ClassNotFoundException ex) {
+				throw new ApplicationContextException(
+						"Failed to load default context class [" + contextClassName + "]", ex);
+			}
+		}
+	}
+
+	protected void configureAndRefreshWebApplicationContext(ConfigurableWebApplicationContext wac, ServletContext sc) {
+		if (ObjectUtils.identityToString(wac).equals(wac.getId())) {
+			// The application context id is still set to its original default value
+			// -> assign a more useful id based on available information
+			String idParam = sc.getInitParameter(CONTEXT_ID_PARAM);
+			if (idParam != null) {
+				wac.setId(idParam);
+			}
+			else {
+				// Generate default id...
+				if (sc.getMajorVersion() == 2 && sc.getMinorVersion() < 5) {
+					// Servlet <= 2.4: resort to name specified in web.xml, if any.
+					wac.setId(ConfigurableWebApplicationContext.APPLICATION_CONTEXT_ID_PREFIX +
+							ObjectUtils.getDisplayString(sc.getServletContextName()));
+				}
+				else {
+					wac.setId(ConfigurableWebApplicationContext.APPLICATION_CONTEXT_ID_PREFIX +
+							ObjectUtils.getDisplayString(sc.getContextPath()));
+				}
+			}
+		}
+
+		// 设置ServletContext 及配置文件的位置参数
+		wac.setServletContext(sc);
+		String initParameter = sc.getInitParameter(CONFIG_LOCATION_PARAM);
+		if (initParameter != null) {
+			wac.setConfigLocation(initParameter);
+		}
+		customizeContext(sc, wac);
+		// IoC容器初始化的入口，想不起来的把前面IoC容器初始化的博文再读10遍
+		wac.refresh();
+	}
+}
+```
+这就是IoC容器在Web容器中的启动过程，与 应用中启动IoC容器的方式相类似，所不同的是这里需要考虑Web容器的环境特点，比如各种参数的设置，IoC容器与Web容器ServletContext的结合等。在初始化这个上下文以后，该上下文会被存储到SevletContext中，这样就建立了一个全局的关于整个应用的上下文。同时，在启动Spring MVC时，我们还会看到这个上下文被以后的DispatcherServlet在进行自己持有的上下文的初始化时，设置为DispatcherServlet自带的上下文的双亲上下文。
