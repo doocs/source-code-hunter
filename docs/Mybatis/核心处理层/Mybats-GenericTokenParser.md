@@ -1,6 +1,7 @@
 # GenericTokenParser
 - Author: [HuiFer](https://github.com/huifer)
-- 
+- 源码阅读工程: [huifer-mybatis](https://github.com/huifer/javaBook-src/tree/old/mybatis-3)
+
 ```java
 /**
  * Copyright 2009-2019 the original author or authors.
