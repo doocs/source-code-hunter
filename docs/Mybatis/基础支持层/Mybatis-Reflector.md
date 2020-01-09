@@ -1,6 +1,8 @@
 # mybatis 反射
 - Author: [HuiFer](https://github.com/huifer)
 - Description: 该文介绍 mybatis 反射相关类的源码
+- 源码阅读工程: [huifer-mybatis](https://github.com/huifer/javaBook-src/tree/old/mybatis-3)
+
 ## addDefaultConstructor
 
 -  mybatis 的反射相关内容在`org.apache.ibatis.reflection` 下存放. 本片主要讲解`org.apache.ibatis.reflection.Reflector`类, 先看一下该类的属性

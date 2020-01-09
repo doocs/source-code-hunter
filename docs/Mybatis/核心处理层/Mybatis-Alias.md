@@ -1,6 +1,7 @@
 # Mybatis Alias
 - Author: [HuiFer](https://github.com/huifer)
 - Description: 该文介绍 mybatis Alias 源码
+- 源码阅读工程: [huifer-mybatis](https://github.com/huifer/javaBook-src/tree/old/mybatis-3)
 - 源码位置 :`org.apache.ibatis.type.Alias`
 - 与 Alias 相关的一个方法`org.apache.ibatis.type.TypeAliasRegistry.registerAlias(java.lang.String, java.lang.Class<?>)`(别名注册)
 

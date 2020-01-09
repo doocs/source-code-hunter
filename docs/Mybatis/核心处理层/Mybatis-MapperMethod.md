@@ -2,6 +2,7 @@
 - Author: [HuiFer](https://github.com/huifer)
 - Description: 该文介绍 mybatis MapperMethod 源码
 - 源码地址: `org.apache.ibatis.binding.MapperMethod`,核心方法是`execute`
+- 源码阅读工程: [huifer-mybatis](https://github.com/huifer/javaBook-src/tree/old/mybatis-3)
 
 ```java
     /**

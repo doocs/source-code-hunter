@@ -1,6 +1,8 @@
 # mybatis 日志源码
 - Author: [HuiFer](https://github.com/huifer)
 - Description: 该文介绍 mybatis 日志相关源码
+- 源码阅读工程: [huifer-mybatis](https://github.com/huifer/javaBook-src/tree/old/mybatis-3)
+
 ## 核心类
 - `org.apache.ibatis.logging.Log`
 - `org.apache.ibatis.logging.LogFactory`

@@ -1,6 +1,8 @@
 #  ParamNameResolver 源码解析
 - Author: [HuiFer](https://github.com/huifer)
 - Description: 该文介绍 mybatis `@Param` 注解和`ParamNameResolver`
+- 源码阅读工程: [huifer-mybatis](https://github.com/huifer/javaBook-src/tree/old/mybatis-3)
+
 ## 源码
 - `org.apache.ibatis.reflection.ParamNameResolver`
 ```java
