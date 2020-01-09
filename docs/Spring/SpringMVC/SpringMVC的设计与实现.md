@@ -761,6 +761,255 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping {
 经过这一系列对HTTP请求进行解析和匹配handler的过程，得到了与请求对应的handler处理器。在返回的handler中，已经完成了在HandlerExecutionChain中进行封装的工作，为handler对HTTP请求的响应做好了准备。
 
 ### 4.3 DispatcherServlet对HTTP请求的分发处理
+DispatcherServlet是Spring MVC框架中非常重要的一个类，不但建立了自己持有的IoC容器，还肩负着请求分发处理的重任，对HTTP请求的处理是在doService()方法中完成的。DispatcherServlet是HttpServlet的子类 ，与其他HttpServlet一样，可以通过doService()来响应HTTP的请求。然而，依照Spring MVC的使用，业务逻辑的调用入口是在handler的handler()方法中实现的，这是连接Spring MVC和应用业务逻辑实现的地方。
+```java
+public class DispatcherServlet extends FrameworkServlet {
+
+	/** 此servlet使用的HandlerMappings列表 */
+	private List<HandlerMapping> handlerMappings;
+
+	/** 此servlet使用的HandlerAdapter列表 */
+	private List<HandlerAdapter> handlerAdapters;
+
+
+	/**
+	 * 公开DispatcherServlet特定的请求属性，并将其委托给doDispatch()方法进行实际的分发
+	 */
+	@Override
+	protected void doService(HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		if (logger.isDebugEnabled()) {
+			// 得到请求的URI
+			String requestUri = urlPathHelper.getRequestUri(request);
+			String resumed = WebAsyncUtils.getAsyncManager(request).hasConcurrentResult()
+					? " resumed" : "";
+			logger.debug("DispatcherServlet with name '" + getServletName() + "'"
+					+ resumed + " processing " + request.getMethod() + " request for ["
+					+ requestUri + "]");
+		}
+
+		// Keep a snapshot of the request attributes in case of an include,
+		// to be able to restore the original attributes after the include.
+		Map<String, Object> attributesSnapshot = null;
+		if (WebUtils.isIncludeRequest(request)) {
+			logger.debug("Taking snapshot of request attributes before include");
+			attributesSnapshot = new HashMap<String, Object>();
+			Enumeration<?> attrNames = request.getAttributeNames();
+			while (attrNames.hasMoreElements()) {
+				String attrName = (String) attrNames.nextElement();
+				if (this.cleanupAfterInclude
+						|| attrName.startsWith("org.springframework.web.servlet")) {
+					attributesSnapshot.put(attrName, request.getAttribute(attrName));
+				}
+			}
+		}
+
+		// 使框架对象对处理程序和视图对象可用
+		request.setAttribute(WEB_APPLICATION_CONTEXT_ATTRIBUTE,
+				getWebApplicationContext());
+		request.setAttribute(LOCALE_RESOLVER_ATTRIBUTE, this.localeResolver);
+		request.setAttribute(THEME_RESOLVER_ATTRIBUTE, this.themeResolver);
+		request.setAttribute(THEME_SOURCE_ATTRIBUTE, getThemeSource());
+
+		FlashMap inputFlashMap = this.flashMapManager.retrieveAndUpdate(request,
+				response);
+		if (inputFlashMap != null) {
+			request.setAttribute(INPUT_FLASH_MAP_ATTRIBUTE,
+					Collections.unmodifiableMap(inputFlashMap));
+		}
+		request.setAttribute(OUTPUT_FLASH_MAP_ATTRIBUTE, new FlashMap());
+		request.setAttribute(FLASH_MAP_MANAGER_ATTRIBUTE, this.flashMapManager);
+
+		try {
+			doDispatch(request, response);
+		}
+		finally {
+			if (WebAsyncUtils.getAsyncManager(request).isConcurrentHandlingStarted()) {
+				return;
+			}
+			// Restore the original attribute snapshot, in case of an include.
+			if (attributesSnapshot != null) {
+				restoreAttributesAfterInclude(request, attributesSnapshot);
+			}
+		}
+	}
+
+	/** 
+	 * 中央控制器,控制请求的转发
+	 * 对请求的处理实际上是由doDispatch()来完成的，它是DispatcherServlet完成HTTP请求分发处理的主要方法,
+	 * 包括准备ModelAndView，调用getHandler()方法来响应HTTP请求，然后通过执行Handler的处理来获取请求的
+	 * 处理结果，最后把结果返回出去
+	 */
+	protected void doDispatch(HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		HttpServletRequest processedRequest = request;
+		HandlerExecutionChain mappedHandler = null;
+		boolean multipartRequestParsed = false;
+
+		WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
+
+		try {
+			// 为视图准备好一个ModelAndView，这个ModelAndView持有handler处理请求的结果
+			ModelAndView mv = null;
+			Exception dispatchException = null;
+
+			try {
+				// 1.检查是否是文件上传的请求
+				processedRequest = checkMultipart(request);
+				multipartRequestParsed = processedRequest != request;
+
+				// 2.取得处理当前请求的controller，这里也称为hanlder处理器，这里并不是
+				// 直接返回controller，而是返回的HandlerExecutionChain请求处理器链对象，
+				// 该对象封装了handler和interceptors
+				mappedHandler = getHandler(processedRequest, false);
+				// 如果handler为空,则返回404
+				if (mappedHandler == null || mappedHandler.getHandler() == null) {
+					noHandlerFound(processedRequest, response);
+					return;
+				}
+
+				// 3. 获取处理request的处理器适配器handler adapter
+				HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
+
+				// 获取请求方式，如：GET, POST, PUT
+				String method = request.getMethod();
+				boolean isGet = "GET".equals(method);
+				if (isGet || "HEAD".equals(method)) {
+
+					long lastModified = ha.getLastModified(request,
+							mappedHandler.getHandler());
+					if (logger.isDebugEnabled()) {
+						String requestUri = urlPathHelper.getRequestUri(request);
+						logger.debug("Last-Modified value for [" + requestUri + "] is: "
+								+ lastModified);
+					}
+					if (new ServletWebRequest(request, response).checkNotModified(
+							lastModified) && isGet) {
+						return;
+					}
+				}
+
+				// 4.拦截器的预处理方法
+				if (!mappedHandler.applyPreHandle(processedRequest, response)) {
+					return;
+				}
+
+				try {
+					// 5.实际的处理器处理请求,返回结果视图对象
+					mv = ha.handle(processedRequest, response,
+							mappedHandler.getHandler());
+				}
+				finally {
+					if (asyncManager.isConcurrentHandlingStarted()) {
+						return;
+					}
+				}
+
+				// 结果视图对象的处理
+				applyDefaultViewName(request, mv);
+				// 6.拦截器的后处理方法
+				mappedHandler.applyPostHandle(processedRequest, response, mv);
+			}
+			catch (Exception ex) {
+				dispatchException = ex;
+			}
+			processDispatchResult(processedRequest, response, mappedHandler, mv,
+					dispatchException);
+		}
+		catch (Exception ex) {
+			// 请求成功响应之后的方法
+			triggerAfterCompletion(processedRequest, response, mappedHandler, ex);
+		}
+		catch (Error err) {
+			triggerAfterCompletionWithError(processedRequest, response, mappedHandler,
+					err);
+		}
+		finally {
+			if (asyncManager.isConcurrentHandlingStarted()) {
+				// Instead of postHandle and afterCompletion
+				mappedHandler.applyAfterConcurrentHandlingStarted(processedRequest,
+						response);
+				return;
+			}
+			// 清除多部分请求使用的所有资源
+			if (multipartRequestParsed) {
+				cleanupMultipart(processedRequest);
+			}
+		}
+	}
+
+	/**
+	 * 返回此请求的HandlerExecutionChain，按顺序尝试所有的HandlerMapping
+	 */
+	@Deprecated
+	protected HandlerExecutionChain getHandler(HttpServletRequest request, boolean cache)
+			throws Exception {
+		return getHandler(request);
+	}
+	
+	/**
+	 * 返回此请求的HandlerExecutionChain
+	 */
+	protected HandlerExecutionChain getHandler(HttpServletRequest request)
+			throws Exception {
+		// 遍历 此servlet使用的HandlerMapping列表
+		for (HandlerMapping hm : this.handlerMappings) {
+			if (logger.isTraceEnabled()) {
+				logger.trace("Testing handler map [" + hm
+						+ "] in DispatcherServlet with name '" + getServletName() + "'");
+			}
+			// 查找给定请求的handler
+			HandlerExecutionChain handler = hm.getHandler(request);
+			if (handler != null) {
+				return handler;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * 返回此处理程序对象handler的HandlerAdapter
+	 */
+	protected HandlerAdapter getHandlerAdapter(Object handler) throws ServletException {
+		// 对所有持有的HandlerAdapter进行匹配
+		for (HandlerAdapter ha : this.handlerAdapters) {
+			if (logger.isTraceEnabled()) {
+				logger.trace("Testing handler adapter [" + ha + "]");
+			}
+			if (ha.supports(handler)) {
+				return ha;
+			}
+		}
+		throw new ServletException("No adapter for handler [" + handler
+				+ "]: The DispatcherServlet configuration needs to include a HandlerAdapter that supports this handler");
+	}
+}
+```
+通过判断，可以知道这个handler是不是Controller接口的实现，比如可以通过具体HandlerAdapter的实现来了解这个适配过程。以SimpleControllerHandlerAdapter的实现为例来了解这个判断是怎样起作用的。
+```java
+public class SimpleControllerHandlerAdapter implements HandlerAdapter {
+
+	// 判断要执行的handler是不是Controller类型的
+	public boolean supports(Object handler) {
+		return (handler instanceof Controller);
+	}
+
+	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
+
+		return ((Controller) handler).handleRequest(request, response);
+	}
+
+	public long getLastModified(HttpServletRequest request, Object handler) {
+		if (handler instanceof LastModified) {
+			return ((LastModified) handler).getLastModified(request);
+		}
+		return -1L;
+	}
+
+}
+```
+经过上面一系列的处理，得到了handler对象，接着就可以开始调用handler对象中的HTTP响应动作了。在handler中封装了应用业务逻辑，由这些逻辑对HTTP请求进行相应的处理，生成需要的数据，并把这些数据封装到ModelAndView对象中去，这个ModelAndView的数据封装是Spring MVC框架的要求。对handler来说， 这些都是通过调用handler()方法中的handleRequest()方法来触发完成的。在得到ModelAndView对象以后，这个ModelAndView对象会被交给MVC模式中的视图类，由视图类对ModelAndView对象中的数据进行呈现。
 
 
 
