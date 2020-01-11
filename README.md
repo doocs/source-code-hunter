@@ -62,11 +62,13 @@
 
 ## 学习心得
 ### 个人经验
-- [初级开发者应该从 spring 源码中学什么](docs/学习心得/个人经验/初级开发者应该从spring源码中学什么.md)
+- [初级开发者应该从 spring 源码中学什么](docs/LearningExperience/PersonalExperience/初级开发者应该从spring源码中学什么.md)
 
 ### 编码规范
+- [由量变到质变写出高质量代码](docs/LearningExperience/EncodingSpecification/由量变到质变写出高质量代码.md)
 
 ### 设计模式
+- [从框架源码中学习设计模式](docs/LearningExperience/DesignPattern/从框架源码中学习设计模式.md)
 
 ## 贡献者
 感谢以下所有朋友对 [GitHub 技术社区 Doocs](https://github.com/doocs) 所做出的贡献，[参与项目维护请戳这儿](https://doocs.github.io/#/?id=how-to-join)。
