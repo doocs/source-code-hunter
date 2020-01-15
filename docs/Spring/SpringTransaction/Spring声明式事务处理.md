@@ -274,3 +274,150 @@ public class NameMatchTransactionAttributeSource implements TransactionAttribute
 通过以上过程可以得到与目标对象调用方法相关的TransactionAttribute对象，在这个对象中，封装了事务处理的配置。具体来说，在前面的匹配过程中，如果匹配返回的结果是null，那么说明当前的调用方法不是一个事务方法，不需要纳入Spring统一的事务管理中，因为它并没有配置在TransactionProxyFactoryBean的事务处理设置中。如果返回的TransactionAttribute对象不是null,那么这个返回的TransactionAttribute对象就已经包含了对事务方法的配置信息，对应这个事务方法的具体事务配置也已经读入到TransactionAttribute对象中了，为TransactionInterceptor做好了对调用的目标方法添加事务处理的准备。
 
 ### 2.3 事务处理拦截器的设计与实现
+在完成以上的准备工作后，经过TransactionProxyFactoryBean的AOP包装， 此时如果对目标对象进行方法调用，起作用的对象实际上是一个Proxy代理对象，对目标对象方法的调用，不会直接作用在TransactionProxyFactoryBean设置的目标对象上，而会被设置的事务处理拦截器拦截。而在TransactionProxyFactoryBean的AOP实现中，获取Proxy对象的过程并不复杂，TransactionProxyFactoryBean作为一个FactoryBean，对这个Bean的对象的引用是通过调用其父类AbstractSingletonProxyFactoryBean的getObject()方法来得到的。
+```java
+public abstract class AbstractSingletonProxyFactoryBean extends ProxyConfig
+		implements FactoryBean<Object>, BeanClassLoaderAware, InitializingBean {
+		
+	private Object proxy;
+	// 返回的是一个proxy代理对象，这个proxy是ProxyFactory生成的AOP代理，
+	// 已经封装了对事务处理的拦截器配置
+	public Object getObject() {
+		if (this.proxy == null) {
+			throw new FactoryBeanNotInitializedException();
+		}
+		return this.proxy;
+	}
+}
+```
+InvocationHandler的实现类中有一个非常重要的方法invoke()，该方法是proxy代理对象的回调方法，在调用proxy对象的代理方法时触发这个回调。事务处理拦截器TransactionInterceptor中实现了InvocationHandler的invoke()方法，其过程是，首先获得调用方法的事务处理配置；在得到事务处理配置以后，会取得配置的PlatformTransactionManager，由这个事务处理器来实现事务的创建、提交、回滚操作。
+```java
+public class TransactionInterceptor extends TransactionAspectSupport implements MethodInterceptor, Serializable {
+
+	public Object invoke(final MethodInvocation invocation) throws Throwable {
+		// 得到代理的目标对象，并将事务属性传递给目标对象
+		Class<?> targetClass = (invocation.getThis() != null ? AopUtils.getTargetClass(invocation.getThis()) : null);
+
+		// 在其父类TransactionAspectSupport中进行后续的事务处理
+		return invokeWithinTransaction(invocation.getMethod(), targetClass, new InvocationCallback() {
+			public Object proceedWithInvocation() throws Throwable {
+				return invocation.proceed();
+			}
+		});
+	}
+}
+
+public abstract class TransactionAspectSupport implements BeanFactoryAware, InitializingBean {
+
+	private static final ThreadLocal<TransactionInfo> transactionInfoHolder =
+			new NamedThreadLocal<TransactionInfo>("Current aspect-driven transaction");
+			
+	protected Object invokeWithinTransaction(Method method, Class targetClass, final InvocationCallback invocation)
+			throws Throwable {
+
+		// 获取事务属性，如果属性为空，则该方法是非事务性的
+		final TransactionAttribute txAttr = getTransactionAttributeSource().getTransactionAttribute(method, targetClass);
+		final PlatformTransactionManager tm = determineTransactionManager(txAttr);
+		final String joinpointIdentification = methodIdentification(method, targetClass);
+
+		// 这里区分不同类型的PlatformTransactionManager，因为他们的调用方式不同，
+		// 对CallbackPreferringPlatformTransactionManager来说，需要回调函数
+		// 来实现事务的创建和提交，而非CallbackPreferringPlatformTransactionManager
+		// 则不需要
+		if (txAttr == null || !(tm instanceof CallbackPreferringPlatformTransactionManager)) {
+			// 这里创建事务，同时把创建事务过程中得到的信息放到TransactionInfo中，
+			// TransactionInfo是保存当前事务状态的对象
+			TransactionInfo txInfo = createTransactionIfNecessary(tm, txAttr, joinpointIdentification);
+			Object retVal = null;
+			try {
+				// 这里的调用使处理沿着拦截器链进行，使最后目标对象的方法得以调用
+				retVal = invocation.proceedWithInvocation();
+			}
+			catch (Throwable ex) {
+				// 如果在事务处理方法调用中出现了异常，事务如何进行处理需要
+				// 根据具体情况考虑回滚或提交
+				completeTransactionAfterThrowing(txInfo, ex);
+				throw ex;
+			}
+			finally {
+				// 这里把 与线程绑定的TransactionInfo设置为oldTransactionInfo
+				cleanupTransactionInfo(txInfo);
+			}
+			// 这里通过事务处理器来对事务进行提交
+			commitTransactionAfterReturning(txInfo);
+			return retVal;
+		} else {
+			// 使用回调的方式来使用事务处理器
+			try {
+				Object result = ((CallbackPreferringPlatformTransactionManager) tm).execute(txAttr,
+						new TransactionCallback<Object>() {
+							public Object doInTransaction(TransactionStatus status) {
+								TransactionInfo txInfo = prepareTransactionInfo(tm, txAttr, joinpointIdentification, status);
+								try {
+									return invocation.proceedWithInvocation();
+								}
+								catch (Throwable ex) {
+									if (txAttr.rollbackOn(ex)) {
+										// RuntimeException会导致事务回滚
+										if (ex instanceof RuntimeException) {
+											throw (RuntimeException) ex;
+										}
+										else {
+											throw new ThrowableHolderException(ex);
+										}
+									}
+									else {
+										// 如果正常返回，则提交该事务
+										return new ThrowableHolder(ex);
+									}
+								}
+								finally {
+									cleanupTransactionInfo(txInfo);
+								}
+							}
+						});
+
+				// Check result: It might indicate a Throwable to rethrow.
+				if (result instanceof ThrowableHolder) {
+					throw ((ThrowableHolder) result).getThrowable();
+				}
+				else {
+					return result;
+				}
+			}
+			catch (ThrowableHolderException ex) {
+				throw ex.getCause();
+			}
+		}
+	}
+
+	/**
+	 * 用于保存事务信息的不透明对象。子类必须将其传递回该类上的方法，但看不到其内部。
+	 */
+	protected final class TransactionInfo {
+
+		private final PlatformTransactionManager transactionManager;
+
+		private final TransactionAttribute transactionAttribute;
+
+		private final String joinpointIdentification;
+
+		private TransactionStatus transactionStatus;
+
+		private TransactionInfo oldTransactionInfo;
+
+		public TransactionInfo(PlatformTransactionManager transactionManager,
+				TransactionAttribute transactionAttribute, String joinpointIdentification) {
+			this.transactionManager = transactionManager;
+			this.transactionAttribute = transactionAttribute;
+			this.joinpointIdentification = joinpointIdentification;
+		}
+	}
+}
+```
+以事务提交为例，简要的说明下该过程。在调用代理的事务方法时，因为前面已经完成了一系列AOP配置，对事务方法的调用，最终启动
+TransactionInterceptor拦截器的invoke()方法。在这个方法中，首先会读取该事务方法的事务属性配置，然后根据事务属性配置以及具体事务处理器的配置来决定采用哪一个事务处理器，这个事务处理器实际上是一个PlatformTransactionManager。在确定好具体的事务处理器之后，会根据事务的运行情况和事务配置来决定是不是需要创建新的事务。
+
+对于Spring而言，事务的管理实际上是通过一个TransactionInfo对象来完成的，在该对象中，封装了事务对象和事务处理的状态信息，这是事务处理的抽象。在这一步完成以后，会对拦截器链进行处理，因为有可能在该事务对象中还配置了除事务处理AOP之外的其他拦截器。在结束对拦截器链处理之后，会对TransactionInfo中的信息进行更新，以反映最近的事务处理情况，在这个时候，也就完成了事务提交的准备，通过调用事务处理器PlatformTransactionManager的commitTransactionAfterReturning()方法来完成事务的提交。这个提交的处理过程已经封装在PlatformTransactionManager的事务处理器中了，而与具体数据源相关的处理过程，最终委托给相关的具体事务处理器来完成，比如DataSourceTransactionManager、Hibermate'TransactionManager等。
+
+在这个invoke()方法的实现中，可以看到整个事务处理在AOP拦截器中实现的全过程。同时，它也是Spring采用AOP封装事务处理和实现声明式事务处理的核心部分。这部分实现是一个桥梁，它胶合了具体的事务处理和Spring AOP框架，可以看成是一个Spring AOP应用，在这个桥梁搭建完成以后，Spring事务处理的实现就开始了。
