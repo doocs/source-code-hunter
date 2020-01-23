@@ -46,6 +46,8 @@
 - [Spring 标签解析类](/docs/Spring/clazz/Spring-BeanDefinitionParserDelegate.md)
 - [Spring ApplicationListener](/docs/Spring/clazz/Spring-ApplicationListener.md)
 - [Spring messageSource](/docs/Spring/clazz/Spring-MessageSource.md)
+- [Spring 自定义属性解析器](/docs/Spring/clazz/Spring-Custom-attribute-resolver.md)
+- [Spring 排序工具](/docs/Spring/clazz/Spring-OrderUtils.md)
 ### Spring5 新特性
 - [Spring5-spring.components解析](/docs/Spring/Spring5新特性/Spring-spring-components.md)
 
