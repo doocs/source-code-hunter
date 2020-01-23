@@ -1,0 +1,165 @@
+## 1 Spring事务处理的应用场景
+下面，我们以DataSourceTransactionManager事务管理器为例，看一下在具体的事务管理器中如何实现事务创建、提交和回滚这些底
+层的事务处理操作。DataSourceTransationManager和其他事务管理器一样，如JtaTransactionManager，JpaTransactionManager和JdoTransactionManager，都继承自AbstractPlatformManager，作为一个基类，AbstractPlatfromManager封装了Spring事务处理中通用的处理部分，比如事务的创建、提交、回滚，事务状态和信息的处理，与线程的绑定等，有了这些通用处理的支持，对于具体的事务管理器而言，它们只需要处理和具体数据源相关的组件设置就可以了，比如在HibernateTransactionManager中，就只需要配置好和Hibnernate事务处理相关的接口以及相关的设置。所以，从PlatformTransactionManager组件的设计关系上，我们也可以看到，Spring事务处理的主要过程是分两个部分完成的，通用的事务处理框架是在AbstractPlatformManager中完成，而Spring的事务接口与数据源实现的接口，多半是由具体
+的事务管理器来完成，它们都是作为AbstractPlatformManager的子类来是使用的。
+
+可以看到，在PlatformTransactionManager组件的设计中 ，通过PlatformTransactionManager接口 设计了一系列与事务处理息息相关的接口方法，如getTransaction()、commit()、rollback()这些和事务处理相关的统一接口。对于这些接口的实现，很大一部分是由AbstractTransactionManager抽象类来完成的，这个类中的doGetTransaction()、doCommit()等方法和PlatformTransactionManager的方法
+对应，实现的是事务处理中相对通用的部分。在这个AbstractPlatformManager下，为具体的数据源配置了不同的事务处理器，以处理不同数据源的事务处理，从而形成了一个从抽象到具体的事务处理中间平台设计，使应用通过声明式事务处理，即开即用事务处理服务，隔离那些与特定的数据源相关的具体实现。
+
+![avatar](/images/springTransaction/PlatformTransactionManager组件的设计.png)
+
+## 2 DataSourceTransactionManager的实现
+我们先看一下DataSourceTransactionManager，在这个事务管理器中，它的实现直接与事务处理的底层实现相关。在事
+务开始的时候，会调用doBegin()方法，首先会得到相对应的Connection，然后可以根据事务设置的需要，对Connection的相关属性进行配置，比如将Connection的autoCommit功能关闭，并对像TimeoutInSeconds这样的事务处理参数进行设置，最后通过TransactionSynchronizationManager来对资源进行绑定。
+
+从下面的代码中可以看到，DataSourceTransactionManager作为AbstractPlatformTransactionManager的子类，在AbstractPlatformTransactionManager中已经为事务实现设计好了一系列的模板方法，比如 事务的提交、回滚处理等。在DataSourceTransactionManager中， 可以看到对模板方法中一些抽象方法的具体实现。例如，由DataSourceTransactionManager的doBegin()方法实现负责事务的创建工作。具体来说，如果使用DataSource创建事务，最终通过设置Connection的autoCommit属性来对事务处理进行配置。在实现过程中，需要把数据库的Connection和当前的线程进行绑定。对于事务的提交和回滚，都是通过直接调用Connection的提交和回滚来完成的，在这个实现过程中，如何取得事务处理场景中的Connection对象，也是一个值得注意的地方。
+
+
+上面介绍了使用DataSourceTransactionManager实现事务创建、提交和回滚的过程，基本上与单独使用Connection实现事务处理是一样的，也是通过设置autoCommit属性，调用Connection的commit()和rollback()方法来完成的。而我们在声明式事务处理中看到的那些事务处理属性，并不在DataSourceTransactionManager中完成，这和我们在前面分析中看到的是一致的。
+
+![avatar](/images/springTransaction/PlatformTransactionManager组件的设计.png)
+
+```java
+public class DataSourceTransactionManager extends AbstractPlatformTransactionManager
+		implements ResourceTransactionManager, InitializingBean {
+
+	/** 这时注入的DataSource */
+	private DataSource dataSource;
+
+	/**
+	 * 这里是产生Transaction的地方，为Transaction的创建提供服务，对数据库而言，
+	 * 事务工作是由Connection来完成的。这里把数据库的Connection对象放到了ConnectionHolder中，
+	 * 然后封装到一个DataSourceTransactionObject对象中，在这个封装过程中增加了许多为事务处理服务的
+	 * 控制数据
+	 */
+	@Override
+	protected Object doGetTransaction() {
+		DataSourceTransactionObject txObject = new DataSourceTransactionObject();
+		txObject.setSavepointAllowed(isNestedTransactionAllowed());
+		// 获取与当前线程绑定的数据库Connection，这个Connection在第一个事务开始
+		// 的地方与线程绑定
+		ConnectionHolder conHolder =
+			(ConnectionHolder) TransactionSynchronizationManager.getResource(this.dataSource);
+		txObject.setConnectionHolder(conHolder, false);
+		return txObject;
+	}
+	
+	/**
+	 * 判断是否存在活跃的事务，由ConnectionHolder的transactionActive属性来控制
+	 */
+	@Override
+	protected boolean isExistingTransaction(Object transaction) {
+		DataSourceTransactionObject txObject = (DataSourceTransactionObject) transaction;
+		return (txObject.getConnectionHolder() != null && txObject.getConnectionHolder().isTransactionActive());
+	}
+	
+	/**
+	 * 这里是处理事务开始的地方
+	 * 此实现设置隔离级别，但忽略超时
+	 */
+	@Override
+	protected void doBegin(Object transaction, TransactionDefinition definition) {
+		DataSourceTransactionObject txObject = (DataSourceTransactionObject) transaction;
+		Connection con = null;
+
+		try {
+			if (txObject.getConnectionHolder() == null ||
+					txObject.getConnectionHolder().isSynchronizedWithTransaction()) {
+				Connection newCon = this.dataSource.getConnection();
+				if (logger.isDebugEnabled()) {
+					logger.debug("Acquired Connection [" + newCon + "] for JDBC transaction");
+				}
+				txObject.setConnectionHolder(new ConnectionHolder(newCon), true);
+			}
+
+			txObject.getConnectionHolder().setSynchronizedWithTransaction(true);
+			con = txObject.getConnectionHolder().getConnection();
+
+			Integer previousIsolationLevel = DataSourceUtils.prepareConnectionForTransaction(con, definition);
+			txObject.setPreviousIsolationLevel(previousIsolationLevel);
+
+			// 这里是数据库Connection完成事务处理的重要配置，需要把autoCommit属性关掉
+			if (con.getAutoCommit()) {
+				txObject.setMustRestoreAutoCommit(true);
+				if (logger.isDebugEnabled()) {
+					logger.debug("Switching JDBC Connection [" + con + "] to manual commit");
+				}
+				con.setAutoCommit(false);
+			}
+			txObject.getConnectionHolder().setTransactionActive(true);
+
+			int timeout = determineTimeout(definition);
+			if (timeout != TransactionDefinition.TIMEOUT_DEFAULT) {
+				txObject.getConnectionHolder().setTimeoutInSeconds(timeout);
+			}
+
+			// 把当前的数据库Connection与线程绑定
+			if (txObject.isNewConnectionHolder()) {
+				TransactionSynchronizationManager.bindResource(getDataSource(), txObject.getConnectionHolder());
+			}
+		}
+
+		catch (Throwable ex) {
+			DataSourceUtils.releaseConnection(con, this.dataSource);
+			throw new CannotCreateTransactionException("Could not open JDBC Connection for transaction", ex);
+		}
+	}
+	
+	/**
+	 * 事务提交的具体实现
+	 */
+	@Override
+	protected void doCommit(DefaultTransactionStatus status) {
+		// 取得Connection以后，通过Connection进行提交
+		DataSourceTransactionObject txObject = (DataSourceTransactionObject) status.getTransaction();
+		Connection con = txObject.getConnectionHolder().getConnection();
+		if (status.isDebug()) {
+			logger.debug("Committing JDBC transaction on Connection [" + con + "]");
+		}
+		try {
+			con.commit();
+		}
+		catch (SQLException ex) {
+			throw new TransactionSystemException("Could not commit JDBC transaction", ex);
+		}
+	}
+	
+	/**
+	 * 事务提交的具体实现，通过Connection对象的rollback()方法实现
+	 */
+	@Override
+	protected void doRollback(DefaultTransactionStatus status) {
+		DataSourceTransactionObject txObject = (DataSourceTransactionObject) status.getTransaction();
+		Connection con = txObject.getConnectionHolder().getConnection();
+		if (status.isDebug()) {
+			logger.debug("Rolling back JDBC transaction on Connection [" + con + "]");
+		}
+		try {
+			con.rollback();
+		}
+		catch (SQLException ex) {
+			throw new TransactionSystemException("Could not roll back JDBC transaction", ex);
+		}
+	}
+}
+```
+上面介绍了使用DataSourceTransactionManager实现事务创建、提交和回滚的过程，基本上与单独使用Connection实现事务处理是一样的，也是通过设置autoCommit属性，调用Connection的commit()和rollback()方法来完成的。看到这里，大家一定会觉得非常的熟悉。而
+我们在声明式事务处理中看到的那些事务处理属性，并不在DataSourceTransactionManager中完成，这和我们在前面分析中看到的是一致的。
+
+## 3 小结
+总体来说，从声明式事务的整个实现中我们看到，声明式事务处理完全可以看成是一个具体的Spring AOP应用。从这个角度来看，Spring事 务处理的实现本身就为应用开发者提供了一个非常优秀的AOP应用参考实例。在Spring的声明式事务处理中，采用了IoC容器的Bean配置为事务方法调用提供事务属性设置，从而为应用对事务处理的使用提供方便。
+
+有了声明式的使用方式，可以把对事务处理的实现与应用代码分离出来。从Spring实现的角度来看，声明式事务处理的大致实现过程是这样的：在为事务处理配置好AOP的基础设施(比如，对应的Proxy代理对象和事务处理Interceptor拦截器对象)之后，首先需要完成对这些事务属性配置的读取，这些属性的读取处理是在TransactionInterceptor中实现的，在完成这些事务处理属性的读取之后，Spring为事务处理的具体实现做好了准备。可以看到，Spring声明式事务处理的过程同时也是一个整合事务处理实现到Spring AOP和IoC容器中去的过程。我们在整个过程中可以看到下面一些要点，在这些要点中，体现了对Spring框架的基本特性的灵活使用。
+- 如何封装各种不同事务处理环境下的事务处理，具体来说，作为应用平台的Spring，它没法对应用使用什么样的事务处理环境做出限制，这样，对应用户使用的不同的事务处理器，Spring事务处理平台都需要为用户提供服务。这些事务处理实现包括在应用中常见的DataSource的Connection、Hibermate的Transaction等，Spring事务处理通过一种统一的方式把它们封装起来，从而实现一个通用的事务处理过程，实现这部分事务处理对应用透明，使应用即开即用。
+- 如何读取事务处理属性值，在事务处理属性正确读取的基础上，结合事务处理代码，从而完成在既定的事务处理配置下，事务处理方法的实现。
+- 如何灵活地使用Spring AOP框架，对事务处理进行封装，提供给应用即开即用的声明式事务处理功能。
+
+在这个过程中，有几个Spring事务处理的核心类是我们需要关注的。其中包括TransactionInterceptor，它是使用AOP实现声明式事务处理的拦截器，封装了Spring对声明式事务处理实现的基本过程；还包括TransactionAttributeSource和TransactionAttribute这两个类，它们封装了对声明式事务处理属性的识别，以及信息的读入和配置。我们看到的TransactionAttribute对象，可以视为对事务处理属性的数据抽象，如果在使用声明式事务处理的时候，应用没有配置这些属性，Spring将为用户提供DefaultTransactionAttribute对象，该对象提供了默认的事务处理属性设置。
+
+在事务处理过程中，可以看到TransactionInfo和TransactionStatus这两个对象，它们是存放事务处理信息的主要数据对象，它们通过与线程的绑定来实现事务的隔离性。具体来说，TransactionInfo对象本身就像是一个栈，对应着每一次事务方法的调用，它会保存每一次事务方法调用的事务处理信息。值得注意的是，在TransactionInfo对象中，它持有TransactionStatus对象，这个TransactionStatus是非常重要的。由这个TransactionStatus来掌管事务执行的详细信息，包括具体的事务对象、事务执行状态、事务设置状态等。
+
+在事务的创建、启动、提交和回滚的过程中，都需要与这个TransactionStatus对象中的数据打交道。在准备完这些与事务管理有关的数据之后，具体的事务处理是由事务处理器TransactionManager来完成的。在事务处理器完成事务处理的过程中，与具体事务处理器无关的操作都被封装到AbstractPlatformTransactionManager中实现了。这个抽象的事务处理器为不同的具体事务处理器提供了通用的事务处理模板，它封装了在事务处理过程中，与具体事务处理器无关的公共的事务处理部分。我们在具体的事务处理器(比如DataSourceTransactionManager和HibernateTransactionManager)的实现中可以看到，最为底层的事务创建、挂起、提交、回滚操作。
+
+在Spring中，也可以通过编程式的方法来使用事务处理器，以帮助我们处理事务。在编程式的事务处理使用中, TransactionDefinition是定义事务处理属性的类。对于事务处理属性，Spring还提供了一个默认的事务属性DefaultTransactionDefinition来供用户使用。这种事务处理方式在实现上看起来比声明式事务处理要简单，但编程式实现事务处理却会造成事务处理与业务代码的紧密耦合，因而不经常被使用。在这里，我们之所以举编程式使用事务处理的例子，是因为通过了解编程式事务处理的使用，可以清楚地了解Spring统一实现事务处理的大致过程。
+
+有了这个背景，结合对声明式事务处理实现原理的详细分析，比如在声明式事务处理中，使用AOP对事务处理进行封装，对事务属性配置进行的处理，与线程绑定从而处理事务并发，并结合事务处理器的使用等，能够在很大程度上提高我们对整个Spring事务处理实现的理解。

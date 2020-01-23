@@ -33,7 +33,7 @@
 - [Spring与事务处理](/docs/Spring/SpringTransaction/Spring与事务处理.md)
 - [Spring声明式事务处理](/docs/Spring/SpringTransaction/Spring声明式事务处理.md)
 - [Spring事务处理的设计与实现](/docs/Spring/SpringTransaction/Spring事务处理的设计与实现.md)
-- [Spring事务处理器的设计与实现](/docs/Spring/SpringTransaction/Spring事务处理器的设计与实现.md)
+- [Spring事务处理器的设计与实现](/docs/Spring/SpringTransaction/Spring事务管理器的设计与实现.md)
 
 ### Spring源码故事（瞎编版）
 - [面筋哥 IoC 容器的一天(上)](/docs/Spring/Spring源码故事（瞎编版）/面筋哥IoC容器的一天(上).md)
