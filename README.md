@@ -33,7 +33,7 @@
 - [Spring与事务处理](/docs/Spring/SpringTransaction/Spring与事务处理.md)
 - [Spring声明式事务处理](/docs/Spring/SpringTransaction/Spring声明式事务处理.md)
 - [Spring事务处理的设计与实现](/docs/Spring/SpringTransaction/Spring事务处理的设计与实现.md)
-- [Spring事务处理器的设计与实现](/docs/Spring/SpringTransaction/Spring事务管理器的设计与实现.md)
+- [Spring事务管理器的设计与实现](/docs/Spring/SpringTransaction/Spring事务管理器的设计与实现.md)
 
 ### Spring源码故事（瞎编版）
 - [面筋哥 IoC 容器的一天(上)](/docs/Spring/Spring源码故事（瞎编版）/面筋哥IoC容器的一天(上).md)
@@ -97,10 +97,10 @@
 - [初级开发者应该从 spring 源码中学什么](docs/LearningExperience/PersonalExperience/初级开发者应该从spring源码中学什么.md)
 
 ### 编码规范
-- [由量变到质变写出高质量代码](docs/LearningExperience/EncodingSpecification/由量变到质变写出高质量代码.md)
+- [一个程序员的自我修养](docs/LearningExperience/EncodingSpecification/一个程序员的自我修养.md)
 
 ### 设计模式
-- [从框架源码中学习设计模式](docs/LearningExperience/DesignPattern/从框架源码中学习设计模式.md)
+- [从优秀框架源码中学习设计模式](docs/LearningExperience/DesignPattern/从框架源码中学习设计模式.md)
 
 ## 贡献者
 感谢以下所有朋友对 [GitHub 技术社区 Doocs](https://github.com/doocs) 所做出的贡献，[参与项目维护请戳这儿](https://doocs.github.io/#/?id=how-to-join)。
