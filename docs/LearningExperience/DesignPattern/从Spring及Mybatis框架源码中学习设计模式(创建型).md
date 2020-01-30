@@ -37,17 +37,17 @@ public class Singleton3 {
     
     public static Singleton3 getInstance(){
         if(instance == null){
-        synchronized(Singleton3.class){
-            if(instance == null){
-                instance = new Singleton3();
+            synchronized(Singleton3.class){
+                if(instance == null){
+                    instance = new Singleton3();
+                }
             }
         }
-    }
         return instance;
     }
 }
 ```
-**2. 枚举实现**
+**2. 枚举实现**  
 其它的单例模式实现往往都会面临序列化 和 反射攻击的问题，比如上面的Singleton3如果实现了Serializable接口，那么在每次序列化时都会创建一个新对象，若要保证单例，必须声明所有字段都是transient的，并且提供一个readResolve()方法。反射攻击可以通过setAccessible()方法将私有的构造方法公共化，进而实例化。若要防止这种攻击，就需要在构造方法中添加 防止实例化第二个对象的代码。
 
 枚举实现的单例在面对 复杂的序列化及反射攻击时，依然能够保持自己的单例状态，所以被认为是单例的最佳实践。比如，mybatis在定义SQL命令类型时就使用到了枚举。
