@@ -100,7 +100,9 @@
 - [一个程序员的自我修养](docs/LearningExperience/EncodingSpecification/一个程序员的自我修养.md)
 
 ### 设计模式
-- [从优秀框架源码中学习设计模式](docs/LearningExperience/DesignPattern/从框架源码中学习设计模式.md)
+- [从Spring及Mybatis框架源码中学习设计模式(创建型)](docs/LearningExperience/DesignPattern/从Spring及Mybatis框架源码中学习设计模式(创建型).md)
+- [从Spring及Mybatis框架源码中学习设计模式(行为型)](docs/LearningExperience/DesignPattern/从Spring及Mybatis框架源码中学习设计模式(行为型).md)
+- [从Spring及Mybatis框架源码中学习设计模式(结构型)](docs/LearningExperience/DesignPattern/从Spring及Mybatis框架源码中学习设计模式(结构型).md)
 
 ## 贡献者
 感谢以下所有朋友对 [GitHub 技术社区 Doocs](https://github.com/doocs) 所做出的贡献，[参与项目维护请戳这儿](https://doocs.github.io/#/?id=how-to-join)。
