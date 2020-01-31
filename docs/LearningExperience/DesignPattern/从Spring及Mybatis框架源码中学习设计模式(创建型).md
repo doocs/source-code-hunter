@@ -72,7 +72,7 @@ public enum SqlCommandType {
  * @since   JDK1.0
  */
 public class Runtime {
-	/** 很明显，这里用的是饿汉式 实现单例 */
+    /** 很明显，这里用的是饿汉式 实现单例 */
     private static Runtime currentRuntime = new Runtime();
 
     public static Runtime getRuntime() {
@@ -95,10 +95,10 @@ public class Desktop {
         peer = Toolkit.getDefaultToolkit().createDesktopPeer(this);
     }
 
-	/**
-	 * 由于对象较大，这里使用了懒汉式延迟加载，方式比较简单，直接把锁加在方法上。
-	 * 使用双检锁方式实现的单例 还没怎么碰到过，有经验的小伙伴 欢迎留言补充
-	 */
+    /**
+     * 由于对象较大，这里使用了懒汉式延迟加载，方式比较简单，直接把锁加在方法上。
+     * 使用双检锁方式实现的单例 还没怎么碰到过，有经验的小伙伴 欢迎留言补充
+     */
     public static synchronized Desktop getDesktop(){
         if (GraphicsEnvironment.isHeadless()) throw new HeadlessException();
         if (!Desktop.isDesktopSupported()) {
@@ -350,7 +350,7 @@ public interface DataSource  extends CommonDataSource, Wrapper {
 DataSource最主要的几个实现类内容都比较多，代码就不贴出来咯，感兴趣的同学可以到我的源码分析专题中看到详细解析，地址：  
 https://github.com/doocs/source-code-hunter
 
-**tips：什么时候该用简单工厂模式？什么时候该用工厂方法模式呢？**
+**tips：什么时候该用简单工厂模式？什么时候该用工厂方法模式呢？**  
 个人认为，工厂方法模式符合“开闭原则”，增加新的产品类不用修改代码，应当优先考虑使用这种模式。如果产品类结构简单且数量庞大时，还是使用简单工厂模式更容易维护些，如：上百个按钮类。
 
 ## 抽象工厂模式
@@ -484,20 +484,20 @@ public class SmartTransformerFactoryImpl extends SAXTransformerFactory {
 
 ## 建造者模式
 #### 个人理解
-该模式主要用于将复杂对象的构建过程与它的表示相分离，将一个复杂对象的创建过程分成了一个个简单的步骤，屏蔽掉了复杂对象内部的具体构建细节，其类图结构如下所示。
+该模式主要用于将复杂对象的构建过程分解成一个个简单的步骤，或者分摊到多个类中进行构建，保证构建过程层次清晰，代码不会过分臃肿，屏蔽掉了复杂对象内部的具体构建细节，其类图结构如下所示。
 
 ![avatar](/images/DesignPattern/建造者模式类图.png)
 
 该模式的主要角色如下：
 
-- 建造者接口（Builder）：用于定义建造者构建产品对象的各种行为，主要分为 建造方法 和 获取构建好的产品对象。
-- 具体建造者（ConcreteBuilder）：实现上述接口方法。
-- 导演（Director）：通过调用具体建造者创建需要的产品对象。
+- 建造者接口（Builder）：用于定义建造者构建产品对象的各种公共行为，主要分为 建造方法 和 获取构建好的产品对象；
+- 具体建造者（ConcreteBuilder）：实现上述接口方法；
+- 导演（Director）：通过调用具体建造者创建需要的产品对象；
 - 产品（Product）：被建造的复杂对象。
 
 其中的导演角色不必了解产品类的内部细节，只提供需要的信息给建造者，由具体建造者处理这些信息（这个处理过程可能会比较复杂）并完成产品构造，使产品对象的上层代码与产品对象的创建过程解耦。建造者模式将复杂产品的创建过程分散到不同的构造步骤中，这样可以对产品创建过程实现更加精细的控制，也会使创建过程更加清晰。每个具体建造者都可以创建出完整的产品对象，而且具体建造者之间是相互独立的， 因此系统就可以通过不同的具体建造者，得到不同的产品对象。当有新产品出现时，无须修改原有的代码，只需要添加新的具体建造者即可完成扩展，这符合“开放一封闭” 原则。 
 
-#### 典型的范例 StringBuilder
+#### 典型的范例 StringBuilder和StringBuffer
 相信在拼SQL语句时大家一定经常用到StringBuffer和StringBuilder这两个类，它们就用到了建造者设计模式，源码如下（版本1.8）：
 ```java
 abstract class AbstractStringBuilder implements Appendable, CharSequence {
@@ -585,7 +585,9 @@ public final class StringBuffer extends AbstractStringBuilder
 #### Mybatis中的范例 
 MyBatis 的初始化过程使用了建造者模式，抽象类 BaseBuilder 扮演了“建造者接口”的角色，对一些公用方法进行了实现，并定义了公共属性。XMLConfigBuilder、XMLMapperBuilder、XMLStatementBuilder 等实现类扮演了“具体建造者”的角色，分别用于解析mybatis-config.xml配置文件、映射配置文件 以及 SQL节点。Configuration 和 SqlSessionFactoryBuilder 则分别扮演了“产品” 和 “导演”的角色。
 
-个人理解的构建者模式 其核心就是用来构建复杂对象的，比如 mybatis 对 Configuration 对象的构建。当然，我们也可以把 对这个对象的构建过程 写在一个类中，来满足我们的需求，但这样做的话，这个类就会变得及其臃肿，难以维护。所以把整个构建过程合理地拆分到多个类中，分别构建，整个代码就显得非常规整，且思路清晰，而且 建造者模式符合 开闭原则，后面要对构建功能进行扩展的话也很方便。其源码实现如下。
+BaseBuilder组件的设计与上面标准的建造者模式是有很大不同的，BaseBuilder的建造者模式主要是为了将复杂对象Configuration的构建过程分解的层次更清晰，将整个构建过程分解到多个“具体构造者”类中，需要这些“具体构造者”共同配合才能完成Configuration的构造，单个“具体构造者”不具有单独构造产品的能力，这与StringBuilder及StringBuffer是不同的。
+
+个人理解的构建者模式 其核心就是用来构建复杂对象的，比如 mybatis 对 Configuration 对象的构建。当然，我们也可以把 对这个对象的构建过程 写在一个类中，来满足我们的需求，但这样做的话，这个类就会变得及其臃肿，难以维护。所以把整个构建过程合理地拆分到多个类中，分别构建，整个代码就显得非常规整，且思路清晰，而且 建造者模式符合 开闭原则。其源码实现如下。
 ```java
 public abstract class BaseBuilder {
 
