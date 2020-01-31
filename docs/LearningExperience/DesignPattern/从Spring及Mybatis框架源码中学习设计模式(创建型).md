@@ -7,7 +7,7 @@
 确保某个类只有一个实例，并提供该实例的获取方法。
 
 #### 实现方式
-使用一个私有构造函数、一个私有静态变量，以及一个公共静态方法来实现。懒汉式、饿汉式等简单实现就不多BB咯，这里强调一下双检锁懒汉式实现的坑，以及枚举方式的实现吧，最后再结合spring源码 扩展一下单例bean的实现原理。
+最简单的就是 使用一个私有构造函数、一个私有静态变量，以及一个公共静态方法的方式来实现。懒汉式、饿汉式等简单实现就不多BB咯，这里强调一下双检锁懒汉式实现的坑，以及枚举方式的实现吧，最后再结合spring源码 扩展一下单例bean的实现原理。
 
 **1. 双检锁实现的坑**
 ```java
@@ -26,8 +26,8 @@ public class Singleton3 {
      * 3、将instance指向分配的内存地址。
      * 但JVM具有指令重排的特性，实际的执行顺序可能会是1、3、2，导致多线程情况下出问题，
      * 使用volatile修饰instance变量 可以 避免上述的指令重排
-     * tips：不太理解的是 第一个线程在执行第2步之前就已经释放了锁？导致其它线程进入synchronized代码块
-     * 		执行 instance == null 的判断？
+     * tips：不太理解的是 第一个线程在执行第2步之前就已经释放了锁吗？导致其它线程进入synchronized代码块
+     *      执行 instance == null 的判断？
      */
     private volatile static Singleton3 instance;
     
@@ -124,46 +124,46 @@ Spring实现单例bean是使用map注册表和synchronized同步机制实现的�
 ```java
 public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport implements ConfigurableBeanFactory {
 
-	......
-
-	/**
-	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	 * 真正实现向IOC容器获取Bean的功能，也是触发依赖注入(DI)功能的地方
-	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	 */
-	@SuppressWarnings("unchecked")
-	protected <T> T doGetBean(final String name, final Class<T> requiredType, final Object[] args, 
-			boolean typeCheckOnly) throws BeansException {
-
-		......
-		
-		//创建单例模式bean的实例对象
-		if (mbd.isSingleton()) {
-			//这里使用了一个匿名内部类，创建Bean实例对象，并且注册给所依赖的对象
-			sharedInstance = getSingleton(beanName, new ObjectFactory<Object>() {
-				public Object getObject() throws BeansException {
-					try {
-						/**
-						 * ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
-						 * 创建一个指定的Bean实例对象，如果有父级继承，则合并子类和父类的定义
-						 * 走子类中的实现
-						 * ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
-						 */
-						return createBean(beanName, mbd, args);
-					}
-					catch (BeansException ex) {
-						destroySingleton(beanName);
-						throw ex;
-					}
-				}
-			});
-			//获取给定Bean的实例对象
-			bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
-		}
-		
-		......
-		
-	}
+    ......
+    
+    /**
+     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     * 真正实现向IOC容器获取Bean的功能，也是触发依赖注入(DI)功能的地方
+     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> T doGetBean(final String name, final Class<T> requiredType, final Object[] args, 
+            boolean typeCheckOnly) throws BeansException {
+    
+        ......
+        
+        //创建单例模式bean的实例对象
+        if (mbd.isSingleton()) {
+            //这里使用了一个匿名内部类，创建Bean实例对象，并且注册给所依赖的对象
+            sharedInstance = getSingleton(beanName, new ObjectFactory<Object>() {
+                public Object getObject() throws BeansException {
+                    try {
+                        /**
+                         * ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+                         * 创建一个指定的Bean实例对象，如果有父级继承，则合并子类和父类的定义
+                         * 走子类中的实现
+                         * ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+                         */
+                        return createBean(beanName, mbd, args);
+                    }
+                    catch (BeansException ex) {
+                        destroySingleton(beanName);
+                        throw ex;
+                    }
+                }
+            });
+            //获取给定Bean的实例对象
+            bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
+        }
+        
+        ......
+        
+    }
 }
 
 
@@ -172,56 +172,56 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
  */
 public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements SingletonBeanRegistry {
 
-	/** 单例的bean实例的缓存  */
-	private final Map<String, Object> singletonObjects = new ConcurrentHashMap<String, Object>(64);
-
-	/**
-	 * 返回给定beanName的 已经注册的 单例bean，如果没有注册，则注册并返回
-	 */
-	public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
-		Assert.notNull(beanName, "'beanName' must not be null");
-		
-		// 加锁，保证单例bean在多线程环境下不会创建多个
-		synchronized (this.singletonObjects) {
-			// 先从缓存中取，有就直接返回，没有就创建、注册到singletonObjects、返回
-			Object singletonObject = this.singletonObjects.get(beanName);
-			if (singletonObject == null) {
-				if (this.singletonsCurrentlyInDestruction) {
-					throw new BeanCreationNotAllowedException(beanName,
-							"Singleton bean creation not allowed while the singletons of this factory are in destruction " +
-							"(Do not request a bean from a BeanFactory in a destroy method implementation!)");
-				}
-				if (logger.isDebugEnabled()) {
-					logger.debug("Creating shared instance of singleton bean '" + beanName + "'");
-				}
-				beforeSingletonCreation(beanName);
-				boolean recordSuppressedExceptions = (this.suppressedExceptions == null);
-				if (recordSuppressedExceptions) {
-					this.suppressedExceptions = new LinkedHashSet<Exception>();
-				}
-				try {
-					singletonObject = singletonFactory.getObject();
-				}
-				catch (BeanCreationException ex) {
-					if (recordSuppressedExceptions) {
-						for (Exception suppressedException : this.suppressedExceptions) {
-							ex.addRelatedCause(suppressedException);
-						}
-					}
-					throw ex;
-				}
-				finally {
-					if (recordSuppressedExceptions) {
-						this.suppressedExceptions = null;
-					}
-					afterSingletonCreation(beanName);
-				}
-				// 注册到单例bean的缓存
-				addSingleton(beanName, singletonObject);
-			}
-			return (singletonObject != NULL_OBJECT ? singletonObject : null);
-		}
-	}
+    /** 单例的bean实例的缓存  */
+    private final Map<String, Object> singletonObjects = new ConcurrentHashMap<String, Object>(64);
+    
+    /**
+     * 返回给定beanName的 已经注册的 单例bean，如果没有注册，则注册并返回
+     */
+    public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
+        Assert.notNull(beanName, "'beanName' must not be null");
+        
+        // 加锁，保证单例bean在多线程环境下不会创建多个
+        synchronized (this.singletonObjects) {
+            // 先从缓存中取，有就直接返回，没有就创建、注册到singletonObjects、返回
+            Object singletonObject = this.singletonObjects.get(beanName);
+            if (singletonObject == null) {
+                if (this.singletonsCurrentlyInDestruction) {
+                    throw new BeanCreationNotAllowedException(beanName,
+                            "Singleton bean creation not allowed while the singletons of this factory are in destruction " +
+                            "(Do not request a bean from a BeanFactory in a destroy method implementation!)");
+                }
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Creating shared instance of singleton bean '" + beanName + "'");
+                }
+                beforeSingletonCreation(beanName);
+                boolean recordSuppressedExceptions = (this.suppressedExceptions == null);
+                if (recordSuppressedExceptions) {
+                    this.suppressedExceptions = new LinkedHashSet<Exception>();
+                }
+                try {
+                    singletonObject = singletonFactory.getObject();
+                }
+                catch (BeanCreationException ex) {
+                    if (recordSuppressedExceptions) {
+                        for (Exception suppressedException : this.suppressedExceptions) {
+                            ex.addRelatedCause(suppressedException);
+                        }
+                    }
+                    throw ex;
+                }
+                finally {
+                    if (recordSuppressedExceptions) {
+                        this.suppressedExceptions = null;
+                    }
+                    afterSingletonCreation(beanName);
+                }
+                // 注册到单例bean的缓存
+                addSingleton(beanName, singletonObject);
+            }
+            return (singletonObject != NULL_OBJECT ? singletonObject : null);
+        }
+    }
 }
 ```
 
@@ -231,33 +231,33 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 #### 简单实现
 ```java
 public interface Hero {
-	void speak();
+    void speak();
 }
 
 public class DaJi implements Hero {
-	@Override
-	public void speak() {
-		System.out.println("妲己，陪你玩 ~");
-	}
+    @Override
+    public void speak() {
+        System.out.println("妲己，陪你玩 ~");
+    }
 }
 
 public class LiBai implements Hero{
-	@Override
-	public void speak() {
-		System.out.println("今朝有酒 今朝醉 ~");
-	}
+    @Override
+    public void speak() {
+        System.out.println("今朝有酒 今朝醉 ~");
+    }
 }
 
 /** 对各种英雄进行集中管理 */
 public class HeroFactory {
-	public static Hero getShibing(String name){
-		if("LiBai".equals(name))
-			return new LiBai();
-		else if("DaJi".equals(name))
-			return new DaJi();
-		else
-			return null;
-	}
+    public static Hero getShibing(String name){
+        if("LiBai".equals(name))
+            return new LiBai();
+        else if("DaJi".equals(name))
+            return new DaJi();
+        else
+            return null;
+    }
 }
 ```
 这种设计方式只在我们产品的“FBM资金管理”模块有看到过，其中对100+个按钮类进行了集中管控，不过其设计结构比上面这种要复杂的多。
@@ -361,51 +361,51 @@ https://github.com/doocs/source-code-hunter
 ```java
 public abstract class AbstractFactory {
 
-	abstract protected AbstractProductA createProductA();
-	
-	abstract protected AbstractProductB createProductB();
+    abstract protected AbstractProductA createProductA();
+    
+    abstract protected AbstractProductB createProductB();
 }
 
 
 public class ConcreteFactory1 extends AbstractFactory {
 
-	@Override
-	protected AbstractProductA createProductA() {
-		return new ProductA1();
-	}
-
-	@Override
-	protected AbstractProductB createProductB() {
-		return new ProductB1();
-	}
+    @Override
+    protected AbstractProductA createProductA() {
+        return new ProductA1();
+    }
+    
+    @Override
+    protected AbstractProductB createProductB() {
+        return new ProductB1();
+    }
 }
 
 
 public class ConcreteFactory2 extends AbstractFactory {
 
-	@Override
-	protected AbstractProductA createProductA() {
-		return new ProductA2();
-	}
-
-	@Override
-	protected AbstractProductB createProductB() {
-		return new ProductB2();
-	}
+    @Override
+    protected AbstractProductA createProductA() {
+        return new ProductA2();
+    }
+    
+    @Override
+    protected AbstractProductB createProductB() {
+        return new ProductB2();
+    }
 }
 
 
 public class Client {
 
-	public static void main(String[] args) {
-		AbstractFactory factory = new ConcreteFactory1();
-		AbstractProductA productA = factory.createProductA();
-		AbstractProductB productB = factory.createProductB();
-		
-		...
-		// 结合使用productA和productB进行后续操作
-		...
-	}
+    public static void main(String[] args) {
+        AbstractFactory factory = new ConcreteFactory1();
+        AbstractProductA productA = factory.createProductA();
+        AbstractProductB productB = factory.createProductB();
+        
+        ...
+        // 结合使用productA和productB进行后续操作
+        ...
+    }
 }
 ```
 
