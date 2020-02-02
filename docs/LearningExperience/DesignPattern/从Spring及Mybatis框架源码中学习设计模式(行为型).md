@@ -26,184 +26,184 @@ Spring的 AbstractAutowireCapableBeanFactory 在进行bean实例化时使用了�
  */
 public interface InstantiationStrategy {
 
-	/**
-	 * 返回一个bean实例，使用BeanFactory给定的参数
-	 */
-	Object instantiate(RootBeanDefinition beanDefinition, String beanName, BeanFactory owner)
-			throws BeansException;
-
-	Object instantiate(RootBeanDefinition beanDefinition, String beanName, BeanFactory owner,
-			Constructor<?> ctor, Object[] args) throws BeansException;
-
-	Object instantiate(RootBeanDefinition beanDefinition, String beanName, BeanFactory owner,
-			Object factoryBean, Method factoryMethod, Object[] args) throws BeansException;
+    /**
+     * 返回一个bean实例，使用BeanFactory给定的参数
+     */
+    Object instantiate(RootBeanDefinition beanDefinition, String beanName, BeanFactory owner)
+            throws BeansException;
+    
+    Object instantiate(RootBeanDefinition beanDefinition, String beanName, BeanFactory owner,
+            Constructor<?> ctor, Object[] args) throws BeansException;
+    
+    Object instantiate(RootBeanDefinition beanDefinition, String beanName, BeanFactory owner,
+            Object factoryBean, Method factoryMethod, Object[] args) throws BeansException;
 
 }
 
 
 public class SimpleInstantiationStrategy implements InstantiationStrategy {
 
-	/**
-	 * 具体使用哪个策略进行bean的实例化，是在这个实现类中决定的
-	 */
-	public Object instantiate(RootBeanDefinition beanDefinition, String beanName, BeanFactory owner) {
-		// 如果beanDefinition中没有方法覆盖，则使用Java的反射机制实例化对象，否则使用CGLIB策略
-		if (beanDefinition.getMethodOverrides().isEmpty()) {
-			Constructor<?> constructorToUse;
-			synchronized (beanDefinition.constructorArgumentLock) {
-				// 获取对象的构造方法或生成对象的工厂方法对bean进行实例化
-				constructorToUse = (Constructor<?>) beanDefinition.resolvedConstructorOrFactoryMethod;
-				
-				// 如果前面没有获取到构造方法，则通过反射获取
-				if (constructorToUse == null) {
-					// 使用JDK的反射机制，判断要实例化的Bean是否是接口
-					final Class clazz = beanDefinition.getBeanClass();
-					// 如果clazz是一个接口，直接抛出异常
-					if (clazz.isInterface()) {
-						throw new BeanInstantiationException(clazz, "Specified class is an interface");
-					}
-					try {
-						if (System.getSecurityManager() != null) {
-							// 这里是一个匿名内置类，使用反射机制获取Bean的构造方法
-							constructorToUse = AccessController.doPrivileged(new PrivilegedExceptionAction<Constructor>() {
-								public Constructor run() throws Exception {
-									return clazz.getDeclaredConstructor((Class[]) null);
-								}
-							});
-						}
-						else {
-							constructorToUse =	clazz.getDeclaredConstructor((Class[]) null);
-						}
-						beanDefinition.resolvedConstructorOrFactoryMethod = constructorToUse;
-					}
-					catch (Exception ex) {
-						throw new BeanInstantiationException(clazz, "No default constructor found", ex);
-					}
-				}
-			}
-			// 使用BeanUtils实例化，通过反射机制调用”构造方法.newInstance(arg)”来进行实例化
-			return BeanUtils.instantiateClass(constructorToUse);
-		}
-		else {
-			/**
-			 * ！！！！！！！！！！！！！！
-			 * 使用CGLIB来实例化对象
-			 * 调用了其子类CglibSubclassingInstantiationStrategy中的实现
-			 * ！！！！！！！！！！！！！！
-			 */
-			return instantiateWithMethodInjection(beanDefinition, beanName, owner);
-		}
-	}
+    /**
+     * 具体使用哪个策略进行bean的实例化，是在这个实现类中决定的
+     */
+    public Object instantiate(RootBeanDefinition beanDefinition, String beanName, BeanFactory owner) {
+        // 如果beanDefinition中没有方法覆盖，则使用Java的反射机制实例化对象，否则使用CGLIB策略
+        if (beanDefinition.getMethodOverrides().isEmpty()) {
+            Constructor<?> constructorToUse;
+            synchronized (beanDefinition.constructorArgumentLock) {
+                // 获取对象的构造方法或生成对象的工厂方法对bean进行实例化
+                constructorToUse = (Constructor<?>) beanDefinition.resolvedConstructorOrFactoryMethod;
+                
+                // 如果前面没有获取到构造方法，则通过反射获取
+                if (constructorToUse == null) {
+                    // 使用JDK的反射机制，判断要实例化的Bean是否是接口
+                    final Class clazz = beanDefinition.getBeanClass();
+                    // 如果clazz是一个接口，直接抛出异常
+                    if (clazz.isInterface()) {
+                        throw new BeanInstantiationException(clazz, "Specified class is an interface");
+                    }
+                    try {
+                        if (System.getSecurityManager() != null) {
+                            // 这里是一个匿名内置类，使用反射机制获取Bean的构造方法
+                            constructorToUse = AccessController.doPrivileged(new PrivilegedExceptionAction<Constructor>() {
+                                public Constructor run() throws Exception {
+                                    return clazz.getDeclaredConstructor((Class[]) null);
+                                }
+                            });
+                        }
+                        else {
+                            constructorToUse =	clazz.getDeclaredConstructor((Class[]) null);
+                        }
+                        beanDefinition.resolvedConstructorOrFactoryMethod = constructorToUse;
+                    }
+                    catch (Exception ex) {
+                        throw new BeanInstantiationException(clazz, "No default constructor found", ex);
+                    }
+                }
+            }
+            // 使用BeanUtils实例化，通过反射机制调用”构造方法.newInstance(arg)”来进行实例化
+            return BeanUtils.instantiateClass(constructorToUse);
+        }
+        else {
+            /**
+             * ！！！！！！！！！！！！！！
+             * 使用CGLIB来实例化对象
+             * 调用了其子类CglibSubclassingInstantiationStrategy中的实现
+             * ！！！！！！！！！！！！！！
+             */
+            return instantiateWithMethodInjection(beanDefinition, beanName, owner);
+        }
+    }
 }
 
 
 public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationStrategy {
 
-	/**
-	 * 下面两个方法都通过实例化自己的私有静态内部类CglibSubclassCreator，
-	 * 然后调用该内部类对象的实例化方法instantiate()完成实例化
-	 */
-	protected Object instantiateWithMethodInjection(
-			RootBeanDefinition beanDefinition, String beanName, BeanFactory owner) {
-
-		// 必须生成cglib子类
-		return new CglibSubclassCreator(beanDefinition, owner).instantiate(null, null);
-	}
-
-	@Override
-	protected Object instantiateWithMethodInjection(
-			RootBeanDefinition beanDefinition, String beanName, BeanFactory owner,
-			Constructor ctor, Object[] args) {
-
-		return new CglibSubclassCreator(beanDefinition, owner).instantiate(ctor, args);
-	}
-
-	/**
-	 * 为避免3.2之前的Spring版本中的外部cglib依赖而创建的内部类
-	 */
-	private static class CglibSubclassCreator {
-
-		private final RootBeanDefinition beanDefinition;
-
-		private final BeanFactory owner;
-
-		public CglibSubclassCreator(RootBeanDefinition beanDefinition, BeanFactory owner) {
-			this.beanDefinition = beanDefinition;
-			this.owner = owner;
-		}
-
-		//使用CGLIB进行Bean对象实例化
-		public Object instantiate(Constructor ctor, Object[] args) {
-			//实例化Enhancer对象，并为Enhancer对象设置父类，生成Java对象的参数，比如：基类、回调方法等
-			Enhancer enhancer = new Enhancer();
-			//将Bean本身作为其父类
-			enhancer.setSuperclass(this.beanDefinition.getBeanClass());
-			enhancer.setCallbackFilter(new CallbackFilterImpl());
-			enhancer.setCallbacks(new Callback[] {
-					NoOp.INSTANCE,
-					new LookupOverrideMethodInterceptor(),
-					new ReplaceOverrideMethodInterceptor()
-			});
-
-			//使用CGLIB的create方法生成实例对象
-			return (ctor == null) ? enhancer.create() : enhancer.create(ctor.getParameterTypes(), args);
-		}
-	}
+    /**
+     * 下面两个方法都通过实例化自己的私有静态内部类CglibSubclassCreator，
+     * 然后调用该内部类对象的实例化方法instantiate()完成实例化
+     */
+    protected Object instantiateWithMethodInjection(
+            RootBeanDefinition beanDefinition, String beanName, BeanFactory owner) {
+    
+        // 必须生成cglib子类
+        return new CglibSubclassCreator(beanDefinition, owner).instantiate(null, null);
+    }
+    
+    @Override
+    protected Object instantiateWithMethodInjection(
+            RootBeanDefinition beanDefinition, String beanName, BeanFactory owner,
+            Constructor ctor, Object[] args) {
+    
+        return new CglibSubclassCreator(beanDefinition, owner).instantiate(ctor, args);
+    }
+    
+    /**
+     * 为避免3.2之前的Spring版本中的外部cglib依赖而创建的内部类
+     */
+    private static class CglibSubclassCreator {
+    
+        private final RootBeanDefinition beanDefinition;
+    
+        private final BeanFactory owner;
+    
+        public CglibSubclassCreator(RootBeanDefinition beanDefinition, BeanFactory owner) {
+            this.beanDefinition = beanDefinition;
+            this.owner = owner;
+        }
+    
+        //使用CGLIB进行Bean对象实例化
+        public Object instantiate(Constructor ctor, Object[] args) {
+            //实例化Enhancer对象，并为Enhancer对象设置父类，生成Java对象的参数，比如：基类、回调方法等
+            Enhancer enhancer = new Enhancer();
+            //将Bean本身作为其父类
+            enhancer.setSuperclass(this.beanDefinition.getBeanClass());
+            enhancer.setCallbackFilter(new CallbackFilterImpl());
+            enhancer.setCallbacks(new Callback[] {
+                    NoOp.INSTANCE,
+                    new LookupOverrideMethodInterceptor(),
+                    new ReplaceOverrideMethodInterceptor()
+            });
+    
+            //使用CGLIB的create方法生成实例对象
+            return (ctor == null) ? enhancer.create() : enhancer.create(ctor.getParameterTypes(), args);
+        }
+    }
 }
 
 
 public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory
 		implements AutowireCapableBeanFactory {
 
-	/** 创建bean实例的策略，注意 这里直接实例化的是 CglibSubclassingInstantiationStrategy 对象 */
-	private InstantiationStrategy instantiationStrategy = new CglibSubclassingInstantiationStrategy();
-
-	/**
-	 * 设置用于创建bean实例的实例化策略，默认使用CglibSubclassingInstantiationStrategy
-	 */
-	public void setInstantiationStrategy(InstantiationStrategy instantiationStrategy) {
-		this.instantiationStrategy = instantiationStrategy;
-	}
-
-	protected InstantiationStrategy getInstantiationStrategy() {
-		return this.instantiationStrategy;
-	}
-
-	/**
-	 * 使用默认的无参构造方法实例化Bean对象
-	 */
-	protected BeanWrapper instantiateBean(final String beanName, final RootBeanDefinition mbd) {
-		try {
-			Object beanInstance;
-			final BeanFactory parent = this;
-			// 获取系统的安全管理接口，JDK标准的安全管理API
-			if (System.getSecurityManager() != null) {
-				// 这里是一个匿名内置类，根据实例化策略创建实例对象
-				beanInstance = AccessController.doPrivileged(new PrivilegedAction<Object>() {
-					public Object run() {
-						return getInstantiationStrategy().instantiate(mbd, beanName, parent);
-					}
-				}, getAccessControlContext());
-			}
-			else {
-				
-				/**
-				 * ！！！！！！！！！！！！！！
-				 * 使用初始化策略实例化Bean对象
-				 * ！！！！！！！！！！！！！！
-				 */
-				beanInstance = getInstantiationStrategy().instantiate(mbd, beanName, parent);
-			}
-			BeanWrapper bw = new BeanWrapperImpl(beanInstance);
-			initBeanWrapper(bw);
-			return bw;
-		}
-		catch (Throwable ex) {
-			throw new BeanCreationException(mbd.getResourceDescription(), beanName, "Instantiation of bean failed", ex);
-		}
-	}
-	
-	...
+    /** 创建bean实例的策略，注意 这里直接实例化的是 CglibSubclassingInstantiationStrategy 对象 */
+    private InstantiationStrategy instantiationStrategy = new CglibSubclassingInstantiationStrategy();
+    
+    /**
+     * 设置用于创建bean实例的实例化策略，默认使用CglibSubclassingInstantiationStrategy
+     */
+    public void setInstantiationStrategy(InstantiationStrategy instantiationStrategy) {
+        this.instantiationStrategy = instantiationStrategy;
+    }
+    
+    protected InstantiationStrategy getInstantiationStrategy() {
+        return this.instantiationStrategy;
+    }
+    
+    /**
+     * 使用默认的无参构造方法实例化Bean对象
+     */
+    protected BeanWrapper instantiateBean(final String beanName, final RootBeanDefinition mbd) {
+        try {
+            Object beanInstance;
+            final BeanFactory parent = this;
+            // 获取系统的安全管理接口，JDK标准的安全管理API
+            if (System.getSecurityManager() != null) {
+                // 这里是一个匿名内置类，根据实例化策略创建实例对象
+                beanInstance = AccessController.doPrivileged(new PrivilegedAction<Object>() {
+                    public Object run() {
+                        return getInstantiationStrategy().instantiate(mbd, beanName, parent);
+                    }
+                }, getAccessControlContext());
+            }
+            else {
+                
+                /**
+                 * ！！！！！！！！！！！！！！
+                 * 使用初始化策略实例化Bean对象
+                 * ！！！！！！！！！！！！！！
+                 */
+                beanInstance = getInstantiationStrategy().instantiate(mbd, beanName, parent);
+            }
+            BeanWrapper bw = new BeanWrapperImpl(beanInstance);
+            initBeanWrapper(bw);
+            return bw;
+        }
+        catch (Throwable ex) {
+            throw new BeanCreationException(mbd.getResourceDescription(), beanName, "Instantiation of bean failed", ex);
+        }
+    }
+    
+    ...
 	
 }
 ```
@@ -423,87 +423,87 @@ Spring 中的 AbstractApplicationContext 和其子类 AbstractRefreshableApplica
 public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		implements ConfigurableApplicationContext, DisposableBean {
 
-	/**
-	 * 告诉子类启动refreshBeanFactory()方法，BeanDefinition资源文件的载入
-	 * 从子类的refreshBeanFactory()方法启动开始
-	 */
-	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
-		// 这里使用了模板方法模式，自己定义了流程，个性化的方法实现交由子类完成
-		// 其中，refreshBeanFactory() 和 getBeanFactory()为抽象方法
-		refreshBeanFactory();
-		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
-		if (logger.isDebugEnabled()) {
-			logger.debug("Bean factory for " + getDisplayName() + ": " + beanFactory);
-		}
-		return beanFactory;
-	}
-
-	protected abstract void refreshBeanFactory() throws BeansException, IllegalStateException;
-
-	public abstract ConfigurableListableBeanFactory getBeanFactory() throws IllegalStateException;
+    /**
+     * 告诉子类启动refreshBeanFactory()方法，BeanDefinition资源文件的载入
+     * 从子类的refreshBeanFactory()方法启动开始
+     */
+    protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
+        // 这里使用了模板方法模式，自己定义了流程，个性化的方法实现交由子类完成
+        // 其中，refreshBeanFactory() 和 getBeanFactory()为抽象方法
+        refreshBeanFactory();
+        ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+        if (logger.isDebugEnabled()) {
+            logger.debug("Bean factory for " + getDisplayName() + ": " + beanFactory);
+        }
+        return beanFactory;
+    }
+    
+    protected abstract void refreshBeanFactory() throws BeansException, IllegalStateException;
+    
+    public abstract ConfigurableListableBeanFactory getBeanFactory() throws IllegalStateException;
 	
 }
 
 
 public abstract class AbstractRefreshableApplicationContext extends AbstractApplicationContext {
 
-	/**
-	 * 在这里完成了容器的初始化，并赋值给自己private的beanFactory属性，为下一步调用做准备
-	 * 从父类AbstractApplicationContext继承的抽象方法，自己做了实现
-	 */
-	@Override
-	protected final void refreshBeanFactory() throws BeansException {
-		// 如果已经建立了IoC容器，则销毁并关闭容器
-		if (hasBeanFactory()) {
-			destroyBeans();
-			closeBeanFactory();
-		}
-		try {
-			// 创建IoC容器，DefaultListableBeanFactory类实现了ConfigurableListableBeanFactory接口
-			DefaultListableBeanFactory beanFactory = createBeanFactory();
-			beanFactory.setSerializationId(getId());
-			// 定制化IoC容器，如设置启动参数，开启注解的自动装配等
-			customizeBeanFactory(beanFactory);
-			// 载入BeanDefinition，这里又使用了一个委派模式，在当前类定义此抽象方法，子类容器具体实现
-			loadBeanDefinitions(beanFactory);
-			synchronized (this.beanFactoryMonitor) {
-				// 给自己的属性赋值
-				this.beanFactory = beanFactory;
-			}
-		}
-		catch (IOException ex) {
-			throw new ApplicationContextException("I/O error parsing bean definition source for " + getDisplayName(), ex);
-		}
-	}
-
-	@Override
-	public final ConfigurableListableBeanFactory getBeanFactory() {
-		synchronized (this.beanFactoryMonitor) {
-			if (this.beanFactory == null) {
-				throw new IllegalStateException("BeanFactory not initialized or already closed - " +
-						"call 'refresh' before accessing beans via the ApplicationContext");
-			}
-			return this.beanFactory;
-		}
-	}
+    /**
+     * 在这里完成了容器的初始化，并赋值给自己private的beanFactory属性，为下一步调用做准备
+     * 从父类AbstractApplicationContext继承的抽象方法，自己做了实现
+     */
+    @Override
+    protected final void refreshBeanFactory() throws BeansException {
+        // 如果已经建立了IoC容器，则销毁并关闭容器
+        if (hasBeanFactory()) {
+            destroyBeans();
+            closeBeanFactory();
+        }
+        try {
+            // 创建IoC容器，DefaultListableBeanFactory类实现了ConfigurableListableBeanFactory接口
+            DefaultListableBeanFactory beanFactory = createBeanFactory();
+            beanFactory.setSerializationId(getId());
+            // 定制化IoC容器，如设置启动参数，开启注解的自动装配等
+            customizeBeanFactory(beanFactory);
+            // 载入BeanDefinition，这里又使用了一个委派模式，在当前类定义此抽象方法，子类容器具体实现
+            loadBeanDefinitions(beanFactory);
+            synchronized (this.beanFactoryMonitor) {
+                // 给自己的属性赋值
+                this.beanFactory = beanFactory;
+            }
+        }
+        catch (IOException ex) {
+            throw new ApplicationContextException("I/O error parsing bean definition source for " + getDisplayName(), ex);
+        }
+    }
+    
+    @Override
+    public final ConfigurableListableBeanFactory getBeanFactory() {
+        synchronized (this.beanFactoryMonitor) {
+            if (this.beanFactory == null) {
+                throw new IllegalStateException("BeanFactory not initialized or already closed - " +
+                        "call 'refresh' before accessing beans via the ApplicationContext");
+            }
+            return this.beanFactory;
+        }
+    }
 }
 
 
 public class GenericApplicationContext extends AbstractApplicationContext implements BeanDefinitionRegistry {
 
-	@Override
-	protected final void refreshBeanFactory() throws IllegalStateException {
-		if (this.refreshed) {
-			throw new IllegalStateException(
-					"GenericApplicationContext does not support multiple refresh attempts: just call 'refresh' once");
-		}
-		this.beanFactory.setSerializationId(getId());
-		this.refreshed = true;
-	}
-
-	public final ConfigurableListableBeanFactory getBeanFactory() {
-		return this.beanFactory;
-	}
+    @Override
+    protected final void refreshBeanFactory() throws IllegalStateException {
+        if (this.refreshed) {
+            throw new IllegalStateException(
+                    "GenericApplicationContext does not support multiple refresh attempts: just call 'refresh' once");
+        }
+        this.beanFactory.setSerializationId(getId());
+        this.refreshed = true;
+    }
+    
+    public final ConfigurableListableBeanFactory getBeanFactory() {
+        return this.beanFactory;
+    }
 }
 ```
 
@@ -829,66 +829,66 @@ public class ReuseExecutor extends BaseExecutor {
 - Iterator：主要定义了hasNest() 和 next()方法；
 ```java
 public interface Aggregate {
-	Iterator iterator();
+    Iterator iterator();
 }
 
 
 public class ConcreteAggregate implements Aggregate {
 
-	private Integer[] elements;
-	
-	public ConcreteAggregate() {
-		elements = new Integer[10];
-		for (int i = 0; i < elements.length; i++) {
-			elements[i] = i;
-		}
-	}
-	
-	@Override
-	public Iterator iterator() {
-		return new ConcreteIterator(elements);
-	}
+    private Integer[] elements;
+    
+    public ConcreteAggregate() {
+        elements = new Integer[10];
+        for (int i = 0; i < elements.length; i++) {
+            elements[i] = i;
+        }
+    }
+    
+    @Override
+    public Iterator iterator() {
+        return new ConcreteIterator(elements);
+    }
 }
 
 
 public interface Iterator<Integer> {
 
-	boolean hasNext();
-	
-	Integer next();
+    boolean hasNext();
+    
+    Integer next();
 }
 
 
 public class ConcreteIterator<Integer> implements Iterator {
 
-	private Integer[] elements;
-	private int position = 0;
-	
-	public ConcreteIterator(Integer[] elements) {
-		this.elements = elements;
-	}
-	
-	@Override
-	public boolean hasNext() {
-		return position < elements.length;
-	}
-
-	@Override
-	public Integer next() {
-		return elements[position ++];
-	}
+    private Integer[] elements;
+    private int position = 0;
+    
+    public ConcreteIterator(Integer[] elements) {
+        this.elements = elements;
+    }
+    
+    @Override
+    public boolean hasNext() {
+        return position < elements.length;
+    }
+    
+    @Override
+    public Integer next() {
+        return elements[position ++];
+    }
 }
 
 
 public class Client {
 
-	public static void main(String[] args) {
-		Aggregate aggregate = new ConcreteAggregate();
-		Iterator<Integer> iterator = aggregate.iterator();
-		while (iterator.hasNext()) {
-			System.out.println(iterator.next());
-		}
-	}
+    public static void main(String[] args) {
+        Aggregate aggregate = new ConcreteAggregate();
+        Iterator<Integer> iterator = aggregate.iterator();
+        while (iterator.hasNext()) {
+            System.out.println(iterator.next());
+        }
+    }
 }
 ```
 
