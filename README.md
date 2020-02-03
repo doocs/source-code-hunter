@@ -27,7 +27,7 @@
 - [SpringMVC 的设计与实现](/docs/Spring/SpringMVC/SpringMVC的设计与实现.md)
 - [SpringMVC 跨域解析](/docs/Spring/SpringMVC/SpringMVC-CROS.md)
 ### SpringJDBC
-
+努力编写中...
 
 ### Spring事务
 - [Spring与事务处理](/docs/Spring/SpringTransaction/Spring与事务处理.md)
@@ -87,10 +87,13 @@
 - [把被说烂的BIO、NIO、AIO再从头到尾扯一遍](docs/Netty/IO/把被说烂的BIO、NIO、AIO再从头到尾扯一遍.md)
 
 ### 设计原理
+努力编写中...
 
 ## Redis
+努力编写中...
 
 ## Tomcat
+努力编写中...
 
 ## 学习心得
 ### 个人经验
@@ -103,6 +106,7 @@
 - [从Spring及Mybatis框架源码中学习设计模式(创建型)](docs/LearningExperience/DesignPattern/从Spring及Mybatis框架源码中学习设计模式(创建型).md)
 - [从Spring及Mybatis框架源码中学习设计模式(行为型)](docs/LearningExperience/DesignPattern/从Spring及Mybatis框架源码中学习设计模式(行为型).md)
 - [从Spring及Mybatis框架源码中学习设计模式(结构型)](docs/LearningExperience/DesignPattern/从Spring及Mybatis框架源码中学习设计模式(结构型).md)
+- [从框架源码中学习设计模式的感悟](docs/LearningExperience/DesignPattern/从框架源码中学习设计模式的感悟.md)
 
 ## 贡献者
 感谢以下所有朋友对 [GitHub 技术社区 Doocs](https://github.com/doocs) 所做出的贡献，[参与项目维护请戳这儿](https://doocs.github.io/#/?id=how-to-join)。
