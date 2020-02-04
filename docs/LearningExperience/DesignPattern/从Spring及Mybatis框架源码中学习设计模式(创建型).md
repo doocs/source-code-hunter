@@ -3,10 +3,10 @@
 本篇博文主要看一下创建型的几个设计模式，即，单例模式、各种工厂模式 及 建造者模式。
 
 ## 单例模式
-#### 个人理解
+### 个人理解
 确保某个类只有一个实例，并提供该实例的获取方法。实际应用很多，不管是框架、JDK还是实际的项目开发，但大都会使用“饿汉式”或“枚举”来实现单例。“懒汉式”也有一些应用，但通过“双检锁机制”来保证单例的实现很少见。
 
-#### 实现方式
+### 实现方式
 最简单的就是 使用一个私有构造函数、一个私有静态变量，以及一个公共静态方法的方式来实现。懒汉式、饿汉式等简单实现就不多BB咯，这里强调一下双检锁懒汉式实现的坑，以及枚举方式的实现吧，最后再结合spring源码 扩展一下单例bean的实现原理。
 
 **1. 双检锁实现的坑**
@@ -62,7 +62,7 @@ public enum SqlCommandType {
 }
 ```
 
-#### JDK中的范例
+### JDK中的范例
 **1. java.lang.Runtime**
 ```java
 /**
@@ -119,7 +119,7 @@ public class Desktop {
 }
 ```
 
-#### Spring的单例bean是如何实现的？
+### Spring的单例bean是如何实现的？
 Spring实现单例bean是使用map注册表和synchronized同步机制实现的，通过分析spring的 AbstractBeanFactory 中的 doGetBean 方法和DefaultSingletonBeanRegistry的getSingleton()方法，可以理解其实现原理。
 ```java
 public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport implements ConfigurableBeanFactory {
@@ -226,9 +226,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 ```
 
 ## 简单工厂模式
-#### 个人理解
+### 个人理解
 把同一系列类的实例化交由一个工厂类进行集中管控。与其说它是一种设计模式，倒不如把它看成一种编程习惯，因为它不符合“开闭原则”，增加新的产品类需要修改工厂类的代码。
-#### 简单实现
+### 简单实现
 ```java
 public interface Hero {
     void speak();
@@ -263,10 +263,10 @@ public class HeroFactory {
 这种设计方式只在我们产品的“FBM资金管理”模块有看到过，其中对100+个按钮类进行了集中管控，不过其设计结构比上面这种要复杂的多。
 
 ## 工厂方法模式
-#### 个人理解
+### 个人理解
 在顶级工厂（接口/抽象类）中定义 产品类的获取方法，由具体的子工厂实例化对应的产品，一般是一个子工厂对应一个特定的产品，实现对产品的集中管控，并且符合“开闭原则”。
 
-#### Mybatis中的范例
+### Mybatis中的范例
 mybatis中数据源DataSource的获取使用到了该设计模式。接口DataSourceFactory定义了获取DataSource对象的方法，各实现类 完成了获取对应类型的DataSource对象的实现。(mybatis的源码都是缩进两个空格，难道国外的编码规范有独门派系？)
 ```java
 public interface DataSourceFactory {
@@ -347,17 +347,16 @@ public interface DataSource  extends CommonDataSource, Wrapper {
     throws SQLException;
 }
 ```
-DataSource最主要的几个实现类内容都比较多，代码就不贴出来咯，感兴趣的同学可以到我的源码分析专题中看到详细解析，地址：  
-https://github.com/doocs/source-code-hunter
+DataSource最主要的几个实现类内容都比较多，代码就不贴出来咯，感兴趣的同学可以到我的源码分析专题中看到详细解析。
 
 **tips：什么时候该用简单工厂模式？什么时候该用工厂方法模式呢？**  
 个人认为，工厂方法模式符合“开闭原则”，增加新的产品类不用修改代码，应当优先考虑使用这种模式。如果产品类结构简单且数量庞大时，还是使用简单工厂模式更容易维护些，如：上百个按钮类。
 
 ## 抽象工厂模式
-#### 个人理解
+### 个人理解
 设计结构上与“工厂方法”模式很像，最主要的区别是，工厂方法模式中 一个子工厂只对应**一个**具体的产品，而抽象工厂模式中，一个子工厂对应**一组**具有相关性的产品，即，存在多个获取不同产品的方法。这种设计模式也很少见人用，倒是“工厂方法”模式见的最多。
 
-#### 简单实现
+### 简单实现
 ```java
 public abstract class AbstractFactory {
 
@@ -409,7 +408,7 @@ public class Client {
 }
 ```
 
-#### JDK中的范例
+### JDK中的范例
 JDK的javax.xml.transform.TransformerFactory组件使用了类似“抽象工厂”模式的设计，抽象类TransformerFactory定义了两个抽象方法newTransformer()和newTemplates()分别用于生成Transformer对象 和 Templates对象，其两个子类进行了不同的实现，源码如下（版本1.8）。
 ```java
 public abstract class TransformerFactory {
@@ -483,7 +482,7 @@ public class SmartTransformerFactoryImpl extends SAXTransformerFactory {
 ```
 
 ## 建造者模式
-#### 个人理解
+### 个人理解
 该模式主要用于将复杂对象的构建过程分解成一个个简单的步骤，或者分摊到多个类中进行构建，保证构建过程层次清晰，代码不会过分臃肿，屏蔽掉了复杂对象内部的具体构建细节，其类图结构如下所示。
 
 ![avatar](/images/DesignPattern/建造者模式类图.png)
@@ -497,7 +496,7 @@ public class SmartTransformerFactoryImpl extends SAXTransformerFactory {
 
 其中的导演角色不必了解产品类的内部细节，只提供需要的信息给建造者，由具体建造者处理这些信息（这个处理过程可能会比较复杂）并完成产品构造，使产品对象的上层代码与产品对象的创建过程解耦。建造者模式将复杂产品的创建过程分散到不同的构造步骤中，这样可以对产品创建过程实现更加精细的控制，也会使创建过程更加清晰。每个具体建造者都可以创建出完整的产品对象，而且具体建造者之间是相互独立的， 因此系统就可以通过不同的具体建造者，得到不同的产品对象。当有新产品出现时，无须修改原有的代码，只需要添加新的具体建造者即可完成扩展，这符合“开放一封闭” 原则。 
 
-#### 典型的范例 StringBuilder和StringBuffer
+### 典型的范例 StringBuilder和StringBuffer
 相信在拼SQL语句时大家一定经常用到StringBuffer和StringBuilder这两个类，它们就用到了建造者设计模式，源码如下（版本1.8）：
 ```java
 abstract class AbstractStringBuilder implements Appendable, CharSequence {
@@ -582,7 +581,7 @@ public final class StringBuffer extends AbstractStringBuilder
     }
 }
 ```
-#### Mybatis中的范例 
+### Mybatis中的范例 
 MyBatis 的初始化过程使用了建造者模式，抽象类 BaseBuilder 扮演了“建造者接口”的角色，对一些公用方法进行了实现，并定义了公共属性。XMLConfigBuilder、XMLMapperBuilder、XMLStatementBuilder 等实现类扮演了“具体建造者”的角色，分别用于解析mybatis-config.xml配置文件、映射配置文件 以及 SQL节点。Configuration 和 SqlSessionFactoryBuilder 则分别扮演了“产品” 和 “导演”的角色。
 
 BaseBuilder组件的设计与上面标准的建造者模式是有很大不同的，BaseBuilder的建造者模式主要是为了将复杂对象Configuration的构建过程分解的层次更清晰，将整个构建过程分解到多个“具体构造者”类中，需要这些“具体构造者”共同配合才能完成Configuration的构造，单个“具体构造者”不具有单独构造产品的能力，这与StringBuilder及StringBuffer是不同的。
