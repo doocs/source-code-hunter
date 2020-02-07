@@ -23,11 +23,11 @@
 
 ### SpringMVC
 - [温习一下 servlet](/docs/Spring/SpringMVC/温习一下servlet.md)
-- [IoC 容器在 Web 环境中的启动](/docs/Spring/SpringMVC/IoC容器在Web环境中的启动.md)
+- [IoC容器 在 Web环境 中的启动](/docs/Spring/SpringMVC/IoC容器在Web环境中的启动.md)
 - [SpringMVC 的设计与实现](/docs/Spring/SpringMVC/SpringMVC的设计与实现.md)
 - [SpringMVC 跨域解析](/docs/Spring/SpringMVC/SpringMVC-CROS.md)
 ### SpringJDBC
-努力编写中...
+- 努力编写中...
 
 ### Spring事务
 - [Spring 与事务处理](/docs/Spring/SpringTransaction/Spring与事务处理.md)
@@ -87,13 +87,13 @@
 - [把被说烂的 BIO、NIO、AIO 再从头到尾扯一遍](docs/Netty/IO/把被说烂的BIO、NIO、AIO再从头到尾扯一遍.md)
 
 ### 设计原理
-努力编写中...
+- 努力编写中...
 
 ## Redis
-努力编写中...
+- 努力编写中...
 
 ## Tomcat
-努力编写中...
+- 努力编写中...
 
 ## 学习心得
 ### 个人经验
