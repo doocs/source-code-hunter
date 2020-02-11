@@ -83,11 +83,29 @@
 
 
 ## Netty
-### IO
-- [把被说烂的 BIO、NIO、AIO 再从头到尾扯一遍](docs/Netty/IO/把被说烂的BIO、NIO、AIO再从头到尾扯一遍.md)
+### 网络 IO 技术基础
+- [把被说烂的 BIO、NIO、AIO 再从头到尾扯一遍](docs/Netty/IOTechnologyBase/把被说烂的BIO、NIO、AIO再从头到尾扯一遍.md)
+- [IO模型](docs/Netty/IOTechnologyBase/IO模型.md)
+- [四种IO编程及对比](docs/Netty/IOTechnologyBase/四种IO编程及对比.md)
 
-### 设计原理
-- 努力编写中...
+### Netty NIO开发指南
+- [TCP粘包/拆包问题的解决之道]()
+- [分隔符解码器 和 定长解码器]()
+
+### Netty 编解码开发指南
+- [编解码技术]()
+
+### Netty 多协议开发和应用
+- [WebSocket 协议开发]()
+
+### Netty 源码分析
+- [Channel和Unsafe组件]()
+- [ChannelPipeline和ChannelHandler组件]()
+- [EventLoop和EventLoopGroup组件]()
+
+### Netty高级特性
+- [Java多线程编程在Netty中的应用]()
+- [Netty的高性能之道]()
 
 ## Redis
 - 努力编写中...
