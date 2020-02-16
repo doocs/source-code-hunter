@@ -582,7 +582,7 @@ public final class StringBuffer extends AbstractStringBuilder
 }
 ```
 ### Mybatis中的范例 
-MyBatis 的初始化过程使用了建造者模式，抽象类 BaseBuilder 扮演了“建造者接口”的角色，对一些公用方法进行了实现，并定义了公共属性。XMLConfigBuilder、XMLMapperBuilder、XMLStatementBuilder 等实现类扮演了“具体建造者”的角色，分别用于解析mybatis-config.xml配置文件、映射配置文件 以及 SQL节点。Configuration 和 SqlSessionFactoryBuilder 则分别扮演了“产品” 和 “导演”的角色。
+MyBatis 的初始化过程使用了建造者模式，抽象类 BaseBuilder 扮演了“建造者接口”的角色，对一些公用方法进行了实现，并定义了公共属性。XMLConfigBuilder、XMLMapperBuilder、XMLStatementBuilder 等实现类扮演了“具体建造者”的角色，分别用于解析mybatis-config.xml配置文件、映射配置文件 以及 SQL节点。Configuration 和 SqlSessionFactoryBuilder 则分别扮演了“产品” 和 “导演”的角色。**即，SqlSessionFactoryBuilder 使用了 BaseBuilder建造者组件 对复杂对象 Configuration 进行了构建。**
 
 BaseBuilder组件的设计与上面标准的建造者模式是有很大不同的，BaseBuilder的建造者模式主要是为了将复杂对象Configuration的构建过程分解的层次更清晰，将整个构建过程分解到多个“具体构造者”类中，需要这些“具体构造者”共同配合才能完成Configuration的构造，单个“具体构造者”不具有单独构造产品的能力，这与StringBuilder及StringBuffer是不同的。
 
