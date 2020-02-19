@@ -48,12 +48,12 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
 7. Base64 编解码，Base64Decoder 和 Base64Encoder。  
 创建和添加 ChannelHandler 的代码示例如下。
 ```java
-	.childHandler( new ChannelInitializer<SocketChannel>() {
-			@Override
-			public void initChannel(SocketChannel ch) throws Exception {
-				ch.pipeline().addLast( new EchoServerHandler() );
-			}
-	});
+    .childHandler( new ChannelInitializer<SocketChannel>() {
+            @Override
+            public void initChannel(SocketChannel ch) throws Exception {
+                ch.pipeline().addLast( new EchoServerHandler() );
+            }
+    });
 ```
 
 6、**绑定并启动监听端口**。在绑定监听端口之前系统会做一系列的初始化和检测工作，完成之后，会启动监听端口，并将 ServerSocketChannel 注册到 Selector 上监听客户端连接。
