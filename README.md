@@ -104,7 +104,7 @@
 - [基于Netty的客户端开发](docs/Netty/基于Netty开发服务端及客户端/基于Netty的客户端开发.md)
 
 ### Netty 主要组件的源码分析
-- [ByteBuffer组件]()
+- [ByteBuf组件]()
 - [Channel组件 和 Unsafe组件]()
 - [ChannelPipeline 和 ChannelHandler组件]()
 - [EventLoop 和 EventLoopGroup组件]()
@@ -112,7 +112,6 @@
 
 ### Netty 高级特性
 - [Netty 架构设计](docs/Netty/AdvancedFeaturesOfNetty/Netty架构设计.md)
-- [Java 多线程编程在 Netty中的应用](docs/Netty/AdvancedFeaturesOfNetty/Java多线程编程再Netty中的应用.md)
 - [Netty 高性能之道](docs/Netty/AdvancedFeaturesOfNetty/Netty高性能之道.md)
 - [Netty 高可靠性设计](docs/Netty/AdvancedFeaturesOfNetty/Netty高可靠性设计.md)
 
@@ -134,6 +133,9 @@
 - [从 Spring 及 Mybatis 框架源码中学习设计模式(行为型)](docs/LearningExperience/DesignPattern/从Spring及Mybatis框架源码中学习设计模式(行为型).md)
 - [从 Spring 及 Mybatis 框架源码中学习设计模式(结构型)](docs/LearningExperience/DesignPattern/从Spring及Mybatis框架源码中学习设计模式(结构型).md)
 - [从框架源码中学习设计模式的感悟](docs/LearningExperience/DesignPattern/从框架源码中学习设计模式的感悟.md)
+
+### 多线程
+- [Java多线程编程在各主流框架中的应用]()
 
 ## 贡献者
 感谢以下所有朋友对 [GitHub 技术社区 Doocs](https://github.com/doocs) 所做出的贡献，[参与项目维护请戳这儿](https://doocs.github.io/#/?id=how-to-join)。
