@@ -1,15 +1,15 @@
-在数据持久层，数据源和事务是两个非常重要的组件，对数据持久层的影响很大，在实际开发中，一般会使用mybatis集成第三方数据源组件，如：c3p0、Druid，另外，mybatis也提供了自己的数据库连接池实现，本文会通过mybatis的源码实现来了解数据库连接池的设计。而事务方面，一般使用spring进行事务的管理，这里不做详细分析。下面我们看一下mybatis是如何对这两部分进行封装的。
+在数据持久层，数据源和事务是两个非常重要的组件，对数据持久层的影响很大，在实际开发中，一般会使用 Mybatis 集成第三方数据源组件，如：c3p0、Druid，另外，Mybatis 也提供了自己的数据库连接池实现，本文会通过 Mybatis 的源码实现来了解数据库连接池的设计。而事务方面，一般使用 Spring 进行事务的管理，这里不做详细分析。下面我们看一下 Mybatis 是如何对这两部分进行封装的。
 ## 1 DataSource
-常见的数据源都会实现javax.sql.DataSource接口，mybatis中提供了两个该接口的实现类，分别是：PooledDataSource和UnpooledDataSource，并使用不同的工厂类分别管理这两个类的对象。
+常见的数据源都会实现 javax.sql.DataSource接口，Mybatis 中提供了两个该接口的实现类，分别是：PooledDataSource 和 UnpooledDataSource，并使用不同的工厂类分别管理这两个类的对象。
 ### 1.1 DataSourceFactory
-DataSourceFactory系列类的设计比较简单，DataSourceFactory作为顶级接口，UnpooledDataSourceFactory实现了该接口，PooledDataSourceFactory又继承了UnpooledDataSourceFactory。
+DataSourceFactory系列类 的设计比较简单，DataSourceFactory 作为顶级接口，UnpooledDataSourceFactory 实现了该接口，PooledDataSourceFactory 又继承了 UnpooledDataSourceFactory。
 ```java
 public interface DataSourceFactory {
 
-  // 设置DataSource的属性，一般紧跟在DataSource初始化之后
+  // 设置 DataSource 的属性，一般紧跟在 DataSource 初始化之后
   void setProperties(Properties props);
 
-  // 获取DataSource对象
+  // 获取 DataSource对象
   DataSource getDataSource();
 }
 
@@ -21,7 +21,7 @@ public class UnpooledDataSourceFactory implements DataSourceFactory {
 
   protected DataSource dataSource;
 
-  // 在实例化该工厂时，就完成了DataSource的实例化
+  // 在实例化该工厂时，就完成了 DataSource 的实例化
   public UnpooledDataSourceFactory() {
     this.dataSource = new UnpooledDataSource();
   }
@@ -29,13 +29,13 @@ public class UnpooledDataSourceFactory implements DataSourceFactory {
   @Override
   public void setProperties(Properties properties) {
     Properties driverProperties = new Properties();
-    // 创建dataSource对应的MetaObject
+    // 创建 dataSource 对应的 MetaObject
     MetaObject metaDataSource = SystemMetaObject.forObject(dataSource);
-    // 处理properties中配置的数据源信息
+    // 处理 properties 中配置的数据源信息
     for (Object key : properties.keySet()) {
       String propertyName = (String) key;
       if (propertyName.startsWith(DRIVER_PROPERTY_PREFIX)) {
-        // 以"driver."开头的配置项是对DataSource的配置，将其记录到driverProperties中
+        // 以 "driver." 开头的配置项是对 DataSource 的配置，将其记录到 driverProperties 中
         String value = properties.getProperty(propertyName);
         driverProperties.setProperty(propertyName.substring(DRIVER_PROPERTY_PREFIX_LENGTH), value);
       } else if (metaDataSource.hasSetter(propertyName)) {
@@ -47,8 +47,8 @@ public class UnpooledDataSourceFactory implements DataSourceFactory {
       }
     }
     if (driverProperties.size() > 0) {
-      // 设置数据源UnpooledDataSource的driverProperties属性，
-      // PooledDataSource中持有UnpooledDataSource对象
+      // 设置数据源 UnpooledDataSource 的 driverProperties属性，
+      // PooledDataSource 中持有 UnpooledDataSource对象
       metaDataSource.setValue("driverProperties", driverProperties);
     }
   }
@@ -62,7 +62,7 @@ public class UnpooledDataSourceFactory implements DataSourceFactory {
 
 public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
 
-  // 与UnpooledDataSourceFactory的不同之处是，其初始化的DataSource为PooledDataSource
+  // 与 UnpooledDataSourceFactory 的不同之处是，其初始化的 DataSource 为 PooledDataSource
   public PooledDataSourceFactory() {
     this.dataSource = new PooledDataSource();
   }
@@ -70,17 +70,17 @@ public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
 ```
 
 ### 1.2 UnpooledDataSource
-本实现类实现了DataSource接口中的getConnection()及其重载方法，用于获取数据库连接。其中的主要属性及方法如下：
+本实现类实现了 DataSource接口 中的 getConnection() 及其重载方法，用于获取数据库连接。其中的主要属性及方法如下：
 ```java
 public class UnpooledDataSource implements DataSource {
 
-  // 加载Driver驱动类的 类加载器
+  // 加载 Driver驱动类 的类加载器
   private ClassLoader driverClassLoader;
 
-  // 数据库连接驱动的相关配置，通过UnpooledDataSourceFactory的setProperties()方法设置进来的
+  // 数据库连接驱动的相关配置，通过 UnpooledDataSourceFactory 的 setProperties()方法 设置进来的
   private Properties driverProperties;
 
-  // 缓存所有已注册的数据库连接驱动Driver
+  // 缓存所有已注册的 数据库连接驱动Driver
   private static Map<String, Driver> registeredDrivers = new ConcurrentHashMap<>();
 
   // 数据库连接驱动名称
@@ -100,8 +100,8 @@ public class UnpooledDataSource implements DataSource {
   private Integer defaultNetworkTimeout;
 
   /**
-   * UnpooledDataSource被加载时，会通过该静态代码块将已经在DriverManager
-   * 中注册JDBC Driver复制一份到registeredDrivers
+   * UnpooledDataSource 被加载时，会通过该静态代码块将已经在 DriverManager
+   * 中注册的 JDBC Driver 注册到 registeredDrivers 中
    */
   static {
     Enumeration<Driver> drivers = DriverManager.getDrivers();
@@ -111,11 +111,11 @@ public class UnpooledDataSource implements DataSource {
     }
   }
 
-  // getConnection()及其重载方法、doGetConnection(String username, String password)方法
+  // getConnection() 及其重载方法、doGetConnection(String username, String password)方法
   // 最终都会调用本方法
   private Connection doGetConnection(Properties properties) throws SQLException {
-    // 初始化数据库驱动，该方法会创建配置中指定的Driver对象，
-    // 并将其注册到DriverManager和registeredDrivers中
+    // 初始化数据库驱动，该方法会创建配置中指定的 Driver对象，
+    // 并将其注册到 DriverManager 和 registeredDrivers 中
     initializeDriver();
     Connection connection = DriverManager.getConnection(url, properties);
     // 配置数据库连接属性，如：连接超时时间、是否自动提交事务、事务隔离级别
@@ -134,12 +134,12 @@ public class UnpooledDataSource implements DataSource {
         } else {
           driverType = Resources.classForName(driver);
         }
-        // 通过反射 获取Driver实例对象
+        // 通过反射获取 Driver实例对象
         Driver driverInstance = (Driver)driverType.newInstance();
-        // 注册驱动到DriverManager，DriverProxy是UnpooledDataSource的内部类
-        // 也是Driver的静态代理类
+        // 注册驱动到 DriverManager，DriverProxy 是 UnpooledDataSource 的内部类
+        // 也是 Driver 的静态代理类
         DriverManager.registerDriver(new DriverProxy(driverInstance));
-        // 将driver缓存到registeredDrivers
+        // 将 driver 缓存到 registeredDrivers
         registeredDrivers.put(driver, driverInstance);
       } catch (Exception e) {
         throw new SQLException("Error setting driver on UnpooledDataSource. Cause: " + e);
@@ -171,14 +171,14 @@ public class UnpooledDataSource implements DataSource {
 3. 连接池会控制总连接上限及空闲连接上线，如果连接池中的连接总数已达上限，且都被占用，后续的连接请求会进入阻塞队列等待，直到有连接可用；
 4. 如果连接池中空闲连接较多，已达到空闲连接上限，则返回的连接会被关闭掉，以降低系统开销。
 
-PooledDataSource实现了简易的数据库连接池功能，其创建数据库连接的功能依赖了上面的UnpooledDataSource。
+PooledDataSource 实现了简易的数据库连接池功能，其创建数据库连接的功能依赖了上面的 UnpooledDataSource。
 #### 1.3.1 PooledConnection
-PooledDataSource通过管理PooledConnection来实现对java.sql.Connection的管理。PooledConnection封装了java.sql.Connection数据库连接对象及其代理对象（JDK动态代理生成的）。PooledConnection继承了JDK动态代理的InvocationHandler接口。
+PooledDataSource 通过管理 PooledConnection 来实现对 java.sql.Connection 的管理。PooledConnection 封装了 java.sql.Connection数据库连接对象 及其代理对象（JDK动态代理生成的）。PooledConnection 继承了 JDK动态代理 的 InvocationHandler接口。
 ```java
 class PooledConnection implements InvocationHandler {
 
-  // 记录当前PooledConnection对象所属的PooledDataSource对象
-  // 当调用close()方法时会将PooledConnection放回该PooledDataSource
+  // 记录当前 PooledConnection对象 所属的 PooledDataSource对象
+  // 当调用 close()方法 时会将 PooledConnection 放回该 PooledDataSource
   private final PooledDataSource dataSource;
   // 真正的数据库连接对象
   private final Connection realConnection;
@@ -190,30 +190,30 @@ class PooledConnection implements InvocationHandler {
   private long createdTimestamp;
   // 最后一次使用的 时间戳
   private long lastUsedTimestamp;
-  // 由 数据库URL、用户名、密码 计算出来的hash值，可用于标识该连接所在的连接池
+  // 由 数据库URL、用户名、密码 计算出来的 hash值，可用于标识该连接所在的连接池
   private int connectionTypeCode;
-  // 检测当前PooledConnection连接池连接对象是否有效，主要用于 防止程序通过close()方法将
+  // 检测当前 PooledConnection连接池连接对象 是否有效，主要用于 防止程序通过 close()方法 将
   // 连接还给连接池之后，依然通过该连接操作数据库
   private boolean valid;
 
   /**
-   * invoke()方法是本类的重点实现，也是proxyConnection代理连接对象的代理逻辑实现
-   * 它会对close()方法的调用进行处理，并在调用realConnection的方法之前进行校验
+   * invoke()方法 是本类的重点实现，也是 proxyConnection代理连接对象 的代理逻辑实现
+   * 它会对 close()方法 的调用进行处理，并在调用 realConnection对象 的方法之前进行校验
    */
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     String methodName = method.getName();
-    // 如果调用的是close()方法，则将其放进连接池，而不是真的关闭连接
+    // 如果调用的是 close()方法，则将其放进连接池，而不是真的关闭连接
     if (CLOSE.hashCode() == methodName.hashCode() && CLOSE.equals(methodName)) {
       dataSource.pushConnection(this);
       return null;
     }
     try {
       if (!Object.class.equals(method.getDeclaringClass())) {
-        // 通过上面的valid字段 校验连接是否有效
+        // 通过上面的 valid字段 校验连接是否有效
         checkConnection();
       }
-      // 调用realConnection的对应方法
+      // 调用 realConnection对象 的对应方法
       return method.invoke(realConnection, args);
     } catch (Throwable t) {
       throw ExceptionUtil.unwrapThrowable(t);
@@ -229,7 +229,7 @@ class PooledConnection implements InvocationHandler {
 }
 ```
 #### 1.3.2 PoolState
-PoolState主要用于管理PooledConnection对象状态，其通过持有两个List&lt;PooledConnection&gt;集合分别管理空闲状态的连接 和 活跃状态的连接。另外，PoolState还定义了一系列用于统计的字段。
+PoolState 主要用于管理 PooledConnection 对象状态，其通过持有两个 List&lt;PooledConnection&gt;集合 分别管理空闲状态的连接 和 活跃状态的连接。另外，PoolState 还定义了一系列用于统计的字段。
 ```java
 public class PoolState {
 
@@ -336,8 +336,8 @@ public class PoolState {
 }
 ```
 #### 1.3.3 PooledDataSource
-PooledDataSource管理的数据库连接对象 是由其持有的UnpooledDataSource对象创建的，并由PoolState管理所有连接的状态。
-PooledDataSource的getConnection()方法会首先调用popConnection()方法获取PooledConnection对象，然后通过PooledConnection的getProxyConnection()方法获取数据库连接的代理对象。popConnection()方法是PooledDataSource的核心逻辑之一，其整体的逻辑关系如下图：
+PooledDataSource 管理的数据库连接对象 是由其持有的 UnpooledDataSource对象 创建的，并由 PoolState 管理所有连接的状态。
+PooledDataSource 的 getConnection()方法 会首先调用 popConnection()方法 获取 PooledConnection对象，然后通过 PooledConnection 的 getProxyConnection()方法 获取数据库连接的代理对象。popConnection()方法 是 PooledDataSource 的核心逻辑之一，其整体的逻辑关系如下图：
 
 ![avatar](/images/mybatis/数据库连接池流程图.png)
 
@@ -375,8 +375,8 @@ public class PooledDataSource implements DataSource {
   private int expectedConnectionTypeCode;
 
   /**
-   * 下面的两个getConnection()方法都会调用popConnection()
-   * 获取PooledConnection对象，然后调用该对象的getProxyConnection()方法
+   * 下面的两个 getConnection()方法 都会调用 popConnection()
+   * 获取 PooledConnection对象，然后调用该对象的 getProxyConnection()方法
    * 获取数据库连接的代理对象
    */
   @Override
@@ -390,7 +390,7 @@ public class PooledDataSource implements DataSource {
   }
 
   /**
-   * 本方法实现了连接池获取连接对象的具体逻辑，是PooledDataSource的核心逻辑之一
+   * 本方法实现了连接池获取连接对象的具体逻辑，是 PooledDataSource 的核心逻辑之一
    */
   private PooledConnection popConnection(String username, String password) throws SQLException {
     boolean countedWait = false;
@@ -421,7 +421,7 @@ public class PooledDataSource implements DataSource {
             PooledConnection oldestActiveConnection = state.activeConnections.get(0);
             long longestCheckoutTime = oldestActiveConnection.getCheckoutTime();
             if (longestCheckoutTime > poolMaximumCheckoutTime) {
-              // 如果最老的连接超时了，就在PoolState中记录一下相关信息，然后将该连接对象释放掉
+              // 如果最老的连接超时了，就在 PoolState 中记录一下相关信息，然后将该连接对象释放掉
               state.claimedOverdueConnectionCount++;
               state.accumulatedCheckoutTimeOfOverdueConnections += longestCheckoutTime;
               state.accumulatedCheckoutTime += longestCheckoutTime;
@@ -442,7 +442,7 @@ public class PooledDataSource implements DataSource {
                   log.debug("Bad connection. Could not roll back");
                 }
               }
-              // 从最老连接中取出真正的 数据库连接对象及相关信息，用来构建新的PooledConnection对象
+              // 从最老连接中取出真正的 数据库连接对象及相关信息，用来构建新的 PooledConnection对象
               conn = new PooledConnection(oldestActiveConnection.getRealConnection(), this);
               conn.setCreatedTimestamp(oldestActiveConnection.getCreatedTimestamp());
               conn.setLastUsedTimestamp(oldestActiveConnection.getLastUsedTimestamp());
@@ -453,7 +453,7 @@ public class PooledDataSource implements DataSource {
               }
             } else {
               // 如果最老的连接对象也没超时，则进入阻塞等待，
-              // 等待时间poolTimeToWait可自行设置
+              // 等待时间 poolTimeToWait 可自行设置
               try {
                 if (!countedWait) {
                   // 等待次数加一
@@ -464,7 +464,7 @@ public class PooledDataSource implements DataSource {
                   log.debug("Waiting as long as " + poolTimeToWait + " milliseconds for connection.");
                 }
                 long wt = System.currentTimeMillis();
-                // native方法，使执行到这里的线程阻塞等待poolTimeToWait毫秒
+                // native方法，使执行到这里的线程阻塞等待 poolTimeToWait毫秒
                 state.wait(poolTimeToWait);
                 // 统计累计等待的时间
                 state.accumulatedWaitTime += System.currentTimeMillis() - wt;
@@ -529,9 +529,9 @@ public class PooledDataSource implements DataSource {
   }
 
   /**
-   * 看一下之前讲过的PooledConnection中的动态代理方法invoke()，可以发现
-   * 当调用数据库连接代理对象的close()方法时，并未关闭真正的数据库连接，
-   * 而是调用了本方法，将连接对象归还给连接池，方便后续使用，本方法也是PooledDataSource的核心逻辑之一
+   * 看一下之前讲过的 PooledConnection 中的 动态代理方法invoke()，可以发现
+   * 当调用数据库连接代理对象的 close()方法 时，并未关闭真正的数据库连接，
+   * 而是调用了本方法，将连接对象归还给连接池，方便后续使用，本方法也是 PooledDataSource 的核心逻辑之一
    */
   protected void pushConnection(PooledConnection conn) throws SQLException {
     // 国际惯例，操作公共资源先上个锁
@@ -540,7 +540,8 @@ public class PooledDataSource implements DataSource {
       state.activeConnections.remove(conn);
       // 如果该连接有效
       if (conn.isValid()) {
-        // 如果连接池中的空闲连接数未达到阈值 且 该连接确实属于本连接池（通过之前获取的expectedConnectionTypeCode进行校验）
+        // 如果连接池中的空闲连接数未达到阈值 且 该连接确实属于
+        // 本连接池（通过之前获取的 expectedConnectionTypeCode 进行校验）
         if (state.idleConnections.size() < poolMaximumIdleConnections && conn.getConnectionTypeCode() == expectedConnectionTypeCode) {
           // CheckoutTime = 应用从连接池取出连接到归还连接的时长
           // accumulatedCheckoutTime = 所有连接累计的CheckoutTime
@@ -549,14 +550,14 @@ public class PooledDataSource implements DataSource {
           if (!conn.getRealConnection().getAutoCommit()) {
             conn.getRealConnection().rollback();
           }
-          // 从conn中取出真正的 数据库连接对象，重新封装成PooledConnection
+          // 从 conn 中取出真正的 数据库连接对象，重新封装成 PooledConnection
           PooledConnection newConn = new PooledConnection(conn.getRealConnection(), this);
-          // 将newConn放进空闲连接对象列表
+          // 将 newConn 放进空闲连接对象列表
           state.idleConnections.add(newConn);
-          // 设置newConn的相关属性
+          // 设置 newConn 的相关属性
           newConn.setCreatedTimestamp(conn.getCreatedTimestamp());
           newConn.setLastUsedTimestamp(conn.getLastUsedTimestamp());
-          // 将原本的conn作废
+          // 将原本的 conn 作废
           conn.invalidate();
           if (log.isDebugEnabled()) {
             log.debug("Returned connection " + newConn.getRealHashCode() + " to pool.");
@@ -565,7 +566,7 @@ public class PooledDataSource implements DataSource {
           state.notifyAll();
         } else {
           // 如果空闲连接已达阈值 或 该连接对象不属于本连接池，则做好统计数据
-          // 回滚连接的事务，关闭真正的连接，最后作废该conn
+          // 回滚连接的事务，关闭真正的连接，最后作废 该conn
           state.accumulatedCheckoutTime += conn.getCheckoutTime();
           if (!conn.getRealConnection().getAutoCommit()) {
             conn.getRealConnection().rollback();
@@ -632,11 +633,11 @@ public class PooledDataSource implements DataSource {
   }
 }
 ```
-最后，我们来看一下popConnection()和pushConnection()都调用了的isValid()方法，该方法除了检测PooledConnection中的valid字段外 还还会调用PooledDataSource中的pingConnection()方法，让数据库连接对象 执行指定的sql语句，检测连接是否正常。
+最后，我们来看一下 popConnection() 和 pushConnection() 都调用了的 isValid()方法，该方法除了检测 PooledConnection 中的 valid字段 外 还还会调用 PooledDataSource 中的 pingConnection()方法，让数据库连接对象 执行指定的 sql语句，检测连接是否正常。
 ```java
 class PooledConnection implements InvocationHandler {
   /**
-   * 检测PooledConnection对象的有效性
+   * 检测 PooledConnection对象 的有效性
    */
   public boolean isValid() {
     return valid && realConnection != null && dataSource.pingConnection(this);
@@ -646,7 +647,7 @@ class PooledConnection implements InvocationHandler {
 
 public class PooledDataSource implements DataSource {
   /**
-   * ping一下数据库，检测数据库连接是否正常
+   * ping 一下数据库，检测数据库连接是否正常
    */
   protected boolean pingConnection(PooledConnection conn) {
     boolean result = true;
@@ -661,10 +662,10 @@ public class PooledDataSource implements DataSource {
     }
 
     if (result) {
-      // 是否允许发送检测语句，检测数据库连接是否正常，poolPingEnabled可自行配置
+      // 是否允许发送检测语句，检测数据库连接是否正常，poolPingEnabled 可自行配置
       // 该检测会牺牲一定的系统资源，以提高安全性
       if (poolPingEnabled) {
-        // 超过poolPingConnectionsNotUsedFor毫秒未使用的连接 才会检测其连接状态
+        // 超过 poolPingConnectionsNotUsedFor毫秒 未使用的连接 才会检测其连接状态
         if (poolPingConnectionsNotUsedFor >= 0 && conn.getTimeElapsedSinceLastUse() > poolPingConnectionsNotUsedFor) {
           try {
             if (log.isDebugEnabled()) {
@@ -703,8 +704,8 @@ public class PooledDataSource implements DataSource {
 }
 ```
 ## 2 Transaction
-遵循接口-实现类的设计原则，mybatis也是先使用Transaction接口对数据库事务做了抽象，而实现类则只提供了两个，即：JdbcTransaction和ManagedTransaction。这两种对象的获取，使用了两个对应的工厂类JdbcTransactionFactory和ManagedTransactionFactory。
-不过一般我们并不会使用mybatis管理事务，而是将mybatis集成到spring，由spring进行事务的管理。细节部分会在后面的文章中详细讲解。
+遵循 “接口-实现类” 的设计原则，Mybatis 也是先使用 Transaction接口 对数据库事务做了抽象，而实现类则只提供了两个，即：JdbcTransaction 和 ManagedTransaction。这两种对象的获取，使用了两个对应的工厂类 JdbcTransactionFactory 和 ManagedTransactionFactory。
+不过一般我们并不会使用 Mybatis 管理事务，而是将 Mybatis 集成到 Spring，由 Spring 进行事务的管理。细节部分会在后面的文章中详细讲解。
 ```java
 public interface Transaction {
 
@@ -765,7 +766,7 @@ public class JdbcTransaction implements Transaction {
     return connection;
   }
 
-  // 提交、回滚、关闭等操作的代码都比较简单，只对原生的JDBC操作做了简单封装
+  // 提交、回滚、关闭等操作的代码都比较简单，只对原生的 JDBC操作 做了简单封装
   @Override
   public void commit() throws SQLException {
     if (connection != null && !connection.getAutoCommit()) {
@@ -863,10 +864,10 @@ public class ManagedTransaction implements Transaction {
   private TransactionIsolationLevel level;
   // 对应的数据库连接
   private Connection connection;
-  // 控制是否关闭持有的连接，在close()方法中用其判断是否真的关闭连接
+  // 控制是否关闭持有的连接，在 close()方法 中用其判断是否真的关闭连接
   private final boolean closeConnection;
 
-  // 本类的实现也很简单，commit、rollback方法都是空实现
+  // 本类的实现也很简单，commit()、rollback()方法 都是空实现
   public ManagedTransaction(Connection connection, boolean closeConnection) {
     this.connection = connection;
     this.closeConnection = closeConnection;
@@ -926,7 +927,7 @@ public class ManagedTransaction implements Transaction {
 public interface TransactionFactory {
 
   /**
-   * 配置TransactionFactory对象，一般会在完成TransactionFactory对象
+   * 配置 TransactionFactory对象，一般会在完成 TransactionFactory对象
    * 初始化之后 就进行自定义属性配置
    */
   default void setProperties(Properties props) {
@@ -934,12 +935,12 @@ public interface TransactionFactory {
   }
 
   /**
-   * 在指定的数据库连接上创建Transaction事务对象
+   * 在指定的数据库连接上创建 Transaction事务对象
    */
   Transaction newTransaction(Connection conn);
 
   /**
-   * 从指定数据源获取数据库连接，并在此连接上创建Transaction对象
+   * 从指定数据源获取数据库连接，并在此连接上创建 Transaction对象
    */
   Transaction newTransaction(DataSource dataSource, TransactionIsolationLevel level, boolean autoCommit);
 }
