@@ -51,6 +51,8 @@
 ### Spring5 新特性
 - [Spring5-spring.components解析](/docs/Spring/Spring5新特性/Spring-spring-components.md)
 
+### Spring RMI
+- [Spring RMI](/docs/Spring/RMI/Spring-RMI.md)
 
 ## MyBatis
 ### 基础支持层
