@@ -1,6 +1,7 @@
 设计模式是解决问题的方案，从大神的代码中学习对设计模式的使用，可以有效提升个人编码及设计代码的能力。本系列博文用于总结阅读过的框架源码（Spring系列、Mybatis）及JDK源码中 所使用过的设计模式，并结合个人工作经验，重新理解设计模式。
 
-本篇博文主要看一下行为型的几个设计模式，即，策略模式、模板方法模式、迭代器模式 及 观察者模式。
+本篇博文主要看一下行为型的几个设计模式，即，策略模式、模板方法模式、迭代器模式、观察者模式 及 责任链模式。
+
 
 ## 策略模式
 #### 个人理解
@@ -1071,5 +1072,142 @@ public class Observable {
     public synchronized int countObservers() {
         return obs.size();
     }
+}
+```
+
+## 责任链模式
+一般用在消息请求的处理上，如 Netty 的 ChannelHandler组件，Tomcat 对 HTTP 请求的处理。我们当然可以将 请求的处理逻辑都写在一个类中，但这个类会非常雕肿且不易于维护，不符合开发封闭原则。
+
+在责任链模式中，将上述臃肿的请求处理逻辑 拆分到多个 功能逻辑单一的 Handler 处理类中，这样我们就可以根据业务需求，将多个 Handler 对象组合成一条责任链，实现请求的处理。在一条责任链中，每个 Handler对象 都包含对下一个 Handler对象 的引用，一个 Handler对象 处理完请求消息（或不能处理该请求）时， 会把请求传给下一个 Handler对象 继续处理，依此类推，直至整条责任链结束。简单看一下责任链模式的类图。
+
+![avatar](/images/DesignPattern/责任链模式.png)
+
+#### Netty 中的应用
+在 Netty 中，将 Channel 的数据管道抽象为 ChannelPipeline，消息在 ChannelPipeline 中流动和传递。ChannelPipeline 是 ChannelHandler 的容器，持有 I/O事件拦截器 ChannelHandler 的链表，负责对 ChannelHandler 的管理和调度。由 ChannelHandler 对 I/O事件 进行拦截和处理，并可以通过接口方便地新增和删除 ChannelHandler 来实现不同业务逻辑的处理。下图是 ChannelPipeline源码中描绘的责任链事件处理过程。
+![avatar](/images/Netty/ChannelPipeline责任链事件处理过程.png)
+其具体过程处理如下：
+
+1. 底层SocketChannel 的 read方法 读取 ByteBuf，触发 ChannelRead事件，由 I/O线程 NioEventLoop 调用 ChannelPipeline 的 fireChannelRead()方法，将消息传输到 ChannelPipeline中。
+
+2. 消息依次被 InboundHandler 1、InboundHandler 2 … InboundHandler N 拦截处理，在这个过程中，任何 ChannelHandler 都可以中断当前的流程，结束消息的传递。
+
+3. 当调用 ChannelHandlerContext 的 write()方法 发送消息，消息从 OutbountHandler 1 开始 一直到 OutboundHandler N，最终被添加到消息发送缓冲区中等待刷新和发送。
+
+在 Netty 中将事件根据源头的不同分为 InBound事件 和 OutBound事件。InBound事件 通常由 I/O线程 触发，例如 TCP链路 建立和关闭、读事件等等，分别会触发相应的事件方法。而 OutBound事件 则一般由用户主动发起的 网络I/O操作，例如用户发起的连接操作，绑定操作和消息发送操作等，也会分别触发相应的事件方法。由于 netty 中提供了一个抽象类 ChannelHandlerAdapter，它默认不处理拦截的事件。所以，在实际编程过程中，我们只需要继承 ChannelHandlerAdapter，在我们的 自定义Handler 中覆盖业务关心的事件方法即可。其源码如下。
+```java
+/**
+ * 它扮演了 责任链模式中的 Client角色，持有 构造 并使用 ChannelHandler责任链
+ */
+public interface ChannelPipeline
+        extends ChannelInboundInvoker, ChannelOutboundInvoker, Iterable<Entry<String, ChannelHandler>> {
+
+    ChannelPipeline addFirst(EventExecutorGroup group, String name, ChannelHandler handler);
+
+    ChannelPipeline addLast(String name, ChannelHandler handler);
+
+    ChannelPipeline addLast(EventExecutorGroup group, String name, ChannelHandler handler);
+
+    ChannelPipeline addFirst(ChannelHandler... handlers);
+
+    ChannelPipeline addFirst(EventExecutorGroup group, ChannelHandler... handlers);
+
+    ChannelPipeline addLast(ChannelHandler... handlers);
+
+    ChannelPipeline addLast(EventExecutorGroup group, ChannelHandler... handlers);
+
+    ChannelPipeline remove(ChannelHandler handler);
+
+    ChannelPipeline replace(ChannelHandler oldHandler, String newName, ChannelHandler newHandler);
+
+    ChannelHandler get(String name);
+
+    @Override
+    ChannelPipeline fireChannelRegistered();
+
+    @Override
+    ChannelPipeline fireChannelUnregistered();
+
+    @Override
+    ChannelPipeline fireChannelActive();
+
+    @Override
+    ChannelPipeline fireChannelInactive();
+
+    @Override
+    ChannelPipeline fireExceptionCaught(Throwable cause);
+
+    @Override
+    ChannelPipeline fireUserEventTriggered(Object event);
+
+    @Override
+    ChannelPipeline fireChannelRead(Object msg);
+
+    @Override
+    ChannelPipeline fireChannelReadComplete();
+
+    @Override
+    ChannelPipeline fireChannelWritabilityChanged();
+}
+
+
+/**
+ * ChannelHandler本身并不是链式结构的，链式结构是交由 ChannelHandlerContext
+ * 进行维护的
+ */
+public interface ChannelHandler {
+
+    void handlerAdded(ChannelHandlerContext ctx) throws Exception;
+
+    void handlerRemoved(ChannelHandlerContext ctx) throws Exception;
+
+    void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception;x
+}
+
+
+/**
+ * DefaultChannelHandlerContext 持有一个 final 的 ChannelHandler对象，
+ * 其父类 AbstractChannelHandlerContext 是一个双向链表的结构设计，这样就保证了
+ * ChannelHandler 的 责任链式处理
+ */
+final class DefaultChannelHandlerContext extends AbstractChannelHandlerContext {
+
+    private final ChannelHandler handler;
+
+    DefaultChannelHandlerContext(
+            DefaultChannelPipeline pipeline, EventExecutor executor, String name, ChannelHandler handler) {
+        super(pipeline, executor, name, isInbound(handler), isOutbound(handler));
+        if (handler == null) {
+            throw new NullPointerException("handler");
+        }
+        this.handler = handler;
+    }
+
+    @Override
+    public ChannelHandler handler() {
+        return handler;
+    }
+
+    private static boolean isInbound(ChannelHandler handler) {
+        return handler instanceof ChannelInboundHandler;
+    }
+
+    private static boolean isOutbound(ChannelHandler handler) {
+        return handler instanceof ChannelOutboundHandler;
+    }
+}
+
+
+/**
+ * 很容易看出来，这是一个双向链表的结构设计
+ */
+abstract class AbstractChannelHandlerContext extends DefaultAttributeMap
+        implements ChannelHandlerContext, ResourceLeakHint {
+
+    private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractChannelHandlerContext.class);
+    volatile AbstractChannelHandlerContext next;
+    volatile AbstractChannelHandlerContext prev;
+
+	......
+	
 }
 ```

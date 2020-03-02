@@ -123,6 +123,11 @@
 ## Tomcat
 - 努力编写中...
 
+## 番外篇（JDK 1.8）
+- [HashMap 源码赏析]()
+- [ConcurrentHashMap 源码赏析]()
+- [String 源码赏析]()
+
 ## 学习心得
 ### 个人经验
 - [初级开发者应该从 Spring 源码中学什么](docs/LearningExperience/PersonalExperience/初级开发者应该从spring源码中学什么.md)
