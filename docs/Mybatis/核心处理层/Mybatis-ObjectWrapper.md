@@ -1,6 +1,6 @@
 # Mybatis ObjectWrapper
 - Author: [HuiFer](https://github.com/huifer)
-- 源码阅读工程: [huifer-mybatis](https://github.com/huifer/javaBook-src/tree/old/mybatis-3)
+- 源码阅读工程: [SourceHot-Mybatis](https://github.com/SourceHot/mybatis-read.git)
 - 源码位于: `org.apache.ibatis.reflection.wrapper.ObjectWrapper`‘
 
 类图：

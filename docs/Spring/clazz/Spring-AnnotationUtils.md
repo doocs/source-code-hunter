@@ -1,6 +1,6 @@
 # Spring AnnotationUtils
 - Author: [HuiFer](https://github.com/huifer)
-- 源码阅读仓库: [huifer-spring](https://github.com/huifer/spring-framework-read)
+- 源码阅读仓库: [SourceHot-Spring](https://github.com/SourceHot/spring-framework-read)
 - `org.springframework.core.annotation.AnnotationUtils`提供了注解相关的方法
     1. getAnnotation: 获取注解
     1. findAnnotation: 寻找注解

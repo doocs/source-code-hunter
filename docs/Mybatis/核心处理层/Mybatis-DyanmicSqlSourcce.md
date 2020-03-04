@@ -1,6 +1,6 @@
 # Mybatis DyanmicSqlSourcce
 - Author: [HuiFer](https://github.com/huifer)
-- 源码阅读工程: [huifer-mybatis](https://github.com/huifer/javaBook-src/tree/old/mybatis-3)
+- 源码阅读工程: [SourceHot-Mybatis](https://github.com/SourceHot/mybatis-read.git)
 
 - `org.apache.ibatis.scripting.xmltags.DynamicSqlSource`
 - `org.apache.ibatis.scripting.xmltags.DynamicContext.DynamicContext`

@@ -1,6 +1,6 @@
 # Spring AOP 如何生效
 - Author: [HuiFer](https://github.com/huifer)
-- 源码阅读仓库: [huifer-spring](https://github.com/huifer/spring-framework-read)
+- 源码阅读仓库: [SourceHot-Spring](https://github.com/SourceHot/spring-framework-read)
 
 ## 解析
 - 在使用 Spring AOP 技术的时候会有下面这段代码在xml配置文件中出现,来达到 Spring 支持 AOP
