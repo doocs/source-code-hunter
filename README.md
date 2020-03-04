@@ -54,6 +54,9 @@
 ### Spring RMI
 - [Spring RMI](/docs/Spring/RMI/Spring-RMI.md)
 
+### Spring Message
+- [Spring EnableJMS](/docs/Spring/message/Spring-EnableJms.md)
+
 ## MyBatis
 ### 基础支持层
 - [反射工具箱和 TypeHandler 系列](docs/Mybatis/基础支持层/1、反射工具箱和TypeHandler系列.md)
