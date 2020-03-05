@@ -79,7 +79,8 @@
 - [Mybatis-Cursor](/docs/Mybatis/核心处理层/Mybatis-Cursor.md)
 - [Mybatis-DataSource](/docs/Mybatis/核心处理层/Mybatis-DataSource.md)
 - [Mybatis-DyanmicSqlSourcce](/docs/Mybatis/核心处理层/Mybatis-DyanmicSqlSourcce.md)
-- [Mybatis-MapperMethod](/docs/Mybatis/核心处理层/Mybatis-MapperMethod.md)
+- [Mybatis-MapperMethod](/docs/Mybatis/核心处理
+层/Mybatis-MapperMethod.md)
 - [Mybatis-MetaObject](/docs/Mybatis/核心处理层/Mybatis-MetaObject.md)
 - [Mybatis-MethodSignature](/docs/Mybatis/核心处理层/Mybatis-MethodSignature.md)
 - [Mybatis-ObjectWrapper](/docs/Mybatis/核心处理层/Mybatis-ObjectWrapper.md)
