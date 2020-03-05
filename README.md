@@ -56,7 +56,8 @@
 
 ### Spring Message
 - [Spring EnableJMS](/docs/Spring/message/Spring-EnableJms.md)
-
+- [Spring JmsTemplate](/docs/Spring/message/Spring-JmsTemplate.md)
+- [Spring MessageConverter](/docs/Spring/message/Spring-MessageConverter.md)
 ## MyBatis
 ### 基础支持层
 - [反射工具箱和 TypeHandler 系列](docs/Mybatis/基础支持层/1、反射工具箱和TypeHandler系列.md)
