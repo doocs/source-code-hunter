@@ -1390,7 +1390,7 @@ public class BeanWrapperImpl extends AbstractPropertyAccessor implements BeanWra
 
 ## lazy-init 属性触发的依赖注入
 最后看一下 lazy-init 触发的预实例化和依赖注入，发生在 IoC 容器完成对 BeanDefinition 的定位、载入、解析和注册之后。通过牺牲 IoC 容器初始化的性能，来有效提升应用第一次获取该 bean 的效率。
-	lazy-init 实现的入口方法在我们前面解读过的 AbstractApplicationContext 的 refresh() 中，它是 IoC 容器正式启动的标志。
+lazy-init 实现的入口方法在我们前面解读过的 AbstractApplicationContext 的 refresh() 中，它是 IoC 容器正式启动的标志。
 ```java
 public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		implements ConfigurableApplicationContext, DisposableBean {
@@ -1443,7 +1443,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
     
                 /**
                  * ！！！！！！！！！！！！！！！！！！！！！
-                 * 对配置了 lazy-init属性为true的bean 进行预实例化
+                 * 对配置了 lazy-init属性 为 false 的 bean 进行预实例化
                  * ！！！！！！！！！！！！！！！！！！！！！
                  */
                 finishBeanFactoryInitialization(beanFactory);
@@ -1465,7 +1465,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
     }
     
     /**
-     * 对配置了 lazy-init属性为true的bean 进行预实例化
+     * 对配置了 lazy-init属性 为 false 的 bean 进行预实例化
      */
     protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
         // 这是 Spring3 以后新加的代码，为容器指定一个转换服务 (ConversionService)  
@@ -1492,7 +1492,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
         // 缓存容器中所有注册的 BeanDefinition 元数据，以防被修改
         beanFactory.freezeConfiguration();
     
-        // 对配置了 lazy-init属性 的 单例bean 进行预实例化处理
+        // 对配置了 lazy-init属性 为 false 的 单例bean 进行预实例化处理
         beanFactory.preInstantiateSingletons();
     }
 }

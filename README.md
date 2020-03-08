@@ -9,8 +9,8 @@
 
 有被“读过哪些知名的开源项目源码？”这种问题所困扰过吗？加入我们，一起通读互联网公司主流框架及中间件源码，成为强大的“源码猎人”，目前开放的有 Spring 系列框架、Mybatis 框架、Netty 框架，及 Redis、Tomcat 中间件等，让我们一起开拓新的领地，揭开这些源码的神秘面纱。本项目主要用于记录框架及中间件源码的阅读经验、个人理解及解析，希望能够使阅读源码变成一件更简单有趣，且有价值的事情，抽空更新中...(如果本项目对您有帮助，请watch、star、fork 素质三连一波，鼓励一下作者，谢谢）
 
-## Spring系列
-### IoC容器
+## Spring 系列
+### IoC 容器
 - [BeanDefinition 的资源定位过程](/docs/Spring/IoC/1、BeanDefinition的资源定位过程.md)
 - [将 bean 解析封装成 BeanDefinition](/docs/Spring/IoC/2、将bean解析封装成BeanDefinition.md)
 - [将 BeanDefinition 注册进 IoC 容器](/docs/Spring/IoC/3、将BeanDefinition注册进IoC容器.md)
@@ -30,13 +30,13 @@
 ### SpringJDBC
 - 努力编写中...
 
-### Spring事务
+### Spring 事务
 - [Spring 与事务处理](/docs/Spring/SpringTransaction/Spring与事务处理.md)
 - [Spring 声明式事务处理](/docs/Spring/SpringTransaction/Spring声明式事务处理.md)
 - [Spring 事务处理的设计与实现](/docs/Spring/SpringTransaction/Spring事务处理的设计与实现.md)
 - [Spring 事务管理器的设计与实现](/docs/Spring/SpringTransaction/Spring事务管理器的设计与实现.md)
 
-### Spring源码故事（瞎编版）
+### Spring 源码故事（瞎编版）
 - [面筋哥 IoC 容器的一天(上)](/docs/Spring/Spring源码故事（瞎编版）/面筋哥IoC容器的一天(上).md)
 
 ### Spring 类解析
@@ -105,7 +105,7 @@
 - [基于WebSocket协议的Netty开发](docs/Netty/Netty多协议开发/基于WebSocket协议的Netty开发.md)
 - [基于自定义协议的Netty开发](docs/Netty/Netty多协议开发/基于自定义协议的Netty开发.md)
 
-### 基于Netty开发服务端及客户端
+### 基于 Netty 开发服务端及客户端
 - [基于Netty的服务端开发](docs/Netty/基于Netty开发服务端及客户端/基于Netty的服务端开发.md)
 - [基于Netty的客户端开发](docs/Netty/基于Netty开发服务端及客户端/基于Netty的客户端开发.md)
 
