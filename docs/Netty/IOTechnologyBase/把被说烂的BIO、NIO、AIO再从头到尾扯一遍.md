@@ -50,7 +50,7 @@ serverSocketChannel.configureBlocking(false);
 Windows：selector
 Linux：epoll
 Mac：kqueue
-其中epoll，kqueue比selector更为高效，这是因为他们监听方式的不同。selector的监听是通过轮询FD_SETSIZE来问每一个socket：“你改变了吗？”，假若监听到时间，那么selector就会调用相应的时间处理器进行处理。但是epoll与kqueue不同，他们把socket与事件绑定在一起，当监听到socket变化时，立即可以调用相应的处理。
+其中epoll，kqueue比selector更为高效，这是因为他们监听方式的不同。selector的监听是通过轮询FD_SETSIZE来问每一个socket：“你改变了吗？”，假若监听到时间，那么selector就会调用相应的事件处理器进行处理。但是epoll与kqueue不同，他们把socket与事件绑定在一起，当监听到socket变化时，立即可以调用相应的处理。
 **selector，epoll，kqueue都属于Reactor IO设计。**
 ##### 2.4 信号驱动（Signal driven IO）
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20191121195059827.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4MDM4Mzk2,size_16,color_FFFFFF,t_70)
