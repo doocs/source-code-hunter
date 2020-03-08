@@ -14,7 +14,9 @@ Java中将输入输出抽象称为流，就好像水管，将两个容器连接�
 所以，如果要想提高IO效率，需要降低等待的时间。
 ##### 2.1 阻塞IO（Blocking I/O）
 在内核将数据准备好之前，系统调用会一直等待所有的套接字（Socket），默认的是阻塞方式。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20191121192630209.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4MDM4Mzk2,size_16,color_FFFFFF,t_70)
+
+![avatar](/images/Netty/阻塞IO模型.png)
+
 Java中的socket.read()会调用native read()，而Java中的native方法会调用操作系统底层的dll，而dll是C/C++编写的，图中的recvfrom其实是C语言socket编程中的一个方法。所以其实我们在Java中调用socket.read()最后也会调用到图中的recvfrom方法。
 
 应用程序(也就是我们的代码)想要读取数据就会调用recvfrom，而recvfrom会通知OS来执行，OS就会判断数据报是否准备好(比如判断是否收到了一个完整的UDP报文，如果收到UDP报文不完整，那么就继续等待)。当数据包准备好了之后，OS就会将数据从内核空间拷贝到用户空间(因为我们的用户程序只能获取用户空间的内存，无法直接获取内核空间的内存)。拷贝完成之后socket.read()就会解除阻塞，并得到read的结果。
@@ -25,7 +27,9 @@ BIO中的阻塞，就是阻塞在2个地方：
 
 在这2个时候，我们的BIO程序就是占着茅坑不拉屎，啥事情都不干。
 ##### 2.2 非阻塞IO（Noblocking I/O）
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20191121193031873.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4MDM4Mzk2,size_16,color_FFFFFF,t_70)
+
+![avatar](/images/Netty/非阻塞IO模型.png)
+
 每次应用进程询问内核是否有数据报准备好，当有数据报准备好时，就进行拷贝数据报的操作，从内核拷贝到用户空间，和拷贝完成返回的这段时间，应用进程是阻塞的。但在没有数据报准备好时，并不会阻塞程序，内核直接返回未准备就绪的信号，等待应用进程的下一个轮寻。但是，轮寻对于CPU来说是较大的浪费，一般只有在特定的场景下才使用。
 
 Java的NIO就是采用这种方式，当我们new了一个socket后我们可以设置它是非阻塞的。比如：
@@ -43,20 +47,26 @@ serverSocketChannel.configureBlocking(false);
 
 **BIO 不会在recvfrom（询问数据是否准备好）时阻塞，但还是会在将数据从内核空间拷贝到用户空间时阻塞。一定要注意这个地方，Non-Blocking还是会阻塞的。**
 ##### 2.3 IO多路复用（I/O Multiplexing）
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20191121194503981.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4MDM4Mzk2,size_16,color_FFFFFF,t_70)
+
+![avatar](/images/Netty/IO复用模型.png)
+
 传统情况下client与server通信需要一个3个socket(客户端的socket，服务端的serversocket，服务端中用来和客户端通信的socket)，而在IO多路复用中，客户端与服务端通信需要的不是socket，而是3个channel，通过channel可以完成与socket同样的操作，channel的底层还是使用的socket进行通信，但是多个channel只对应一个socket(可能不只是一个，但是socket的数量一定少于channel数量)，这样仅仅通过少量的socket就可以完成更多的连接，提高了client容量。
 
 其中，不同的操作系统，对此有不同的实现：
 Windows：selector
 Linux：epoll
 Mac：kqueue
-其中epoll，kqueue比selector更为高效，这是因为他们监听方式的不同。selector的监听是通过轮询FD_SETSIZE来问每一个socket：“你改变了吗？”，假若监听到时间，那么selector就会调用相应的时间处理器进行处理。但是epoll与kqueue不同，他们把socket与事件绑定在一起，当监听到socket变化时，立即可以调用相应的处理。
+其中epoll，kqueue比selector更为高效，这是因为他们监听方式的不同。selector的监听是通过轮询FD_SETSIZE来问每一个socket：“你改变了吗？”，假若监听到事件，那么selector就会调用相应的事件处理器进行处理。但是epoll与kqueue不同，他们把socket与事件绑定在一起，当监听到socket变化时，立即可以调用相应的处理。
 **selector，epoll，kqueue都属于Reactor IO设计。**
 ##### 2.4 信号驱动（Signal driven IO）
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20191121195059827.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4MDM4Mzk2,size_16,color_FFFFFF,t_70)
+
+![avatar](/images/Netty/信号驱动IO模型.png)
+
 信号驱动IO模型，应用进程告诉内核：当数据报准备好的时候，给我发送一个信号，对SIGIO信号进行捕捉，并且调用我的信号处理函数来获取数据报。
 ##### 2.5 异步IO（Asynchronous I/O）
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20191121195315354.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4MDM4Mzk2,size_16,color_FFFFFF,t_70)
+
+![avatar](/images/Netty/异步IO模型.png)
+
 Asynchronous IO调用中是真正的无阻塞，其他IO model中多少会有点阻塞。程序发起read操作之后，立刻就可以开始去做其它的事。而在内核角度，当它受到一个asynchronous read之后，首先它会立刻返回，所以不会对用户进程产生任何block。然后，kernel会等待数据准备完成，然后将数据拷贝到用户内存，当这一切都完成之后，kernel会给用户进程发送一个signal，告诉它read操作完成了。
 
 可以看出，阻塞程度：阻塞IO>非阻塞IO>多路转接IO>信号驱动IO>异步IO，效率是由低到高的。
@@ -75,10 +85,14 @@ acceptable
 readable
 writable
 我们为每一种事件都编写一个处理器，然后设置每个socket要监听哪种情况，随后就可以调用对应的处理器。
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20191121200143647.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4MDM4Mzk2,size_16,color_FFFFFF,t_70)
+
 图中的input就可以当作socket，中间的Service Hanlder&event dispatch的作用就是监听每一个socket(需要实现把socket注册进来，并指定要监听哪种情况)，然后给socket派发不同的事件。
 ##### 3.2 Proactor
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/2019112120035031.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4MDM4Mzk2,size_16,color_FFFFFF,t_70)
+
 Proactor与Reactor较为类似，以读取数据为例：
 **Reactor模式**
 
@@ -210,9 +224,13 @@ Selector（选择器）用于监听多个通道的事件（比如：连接打开
 但是，现代的操作系统和CPU在多任务方面表现的越来越好，所以多线程的开销随着时间的推移，变得越来越小了。实际上，如果一个CPU有多个内核，不使用多任务可能是在浪费CPU能力。
 
 传统的IO处理方式，一个线程处理一个网络连接
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/2019112120352588.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4MDM4Mzk2,size_16,color_FFFFFF,t_70)
+
 NIO处理方式，一个线程可以管理过个网络连接
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20191121203602279.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4MDM4Mzk2,size_16,color_FFFFFF,t_70)
+
 #### 2、NIO服务器端如何实现非阻塞？
 服务器上所有Channel需要向Selector注册，而Selector则负责监视这些Socket的IO状态(观察者)，当其中任意一个或者多个Channel具有可用的IO操作时，该Selector的select()方法将会返回大于0的整数，该整数值就表示该Selector上有多少个Channel具有可用的IO操作，并提供了selectedKeys（）方法来返回这些Channel对应的SelectionKey集合(一个SelectionKey对应一个就绪的通道)。正是通过Selector，使得服务器端只需要不断地调用Selector实例的select()方法即可知道当前所有Channel是否有需要处理的IO操作。注：java NIO就是多路复用IO，jdk7之后底层是epoll模型。
 #### 3、Java NIO的简单实现
