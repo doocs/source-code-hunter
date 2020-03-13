@@ -1,6 +1,6 @@
 # Spring MessageSource
 - Author: [HuiFer](https://github.com/huifer)
-- 源码阅读仓库: [huifer-spring](https://github.com/huifer/spring-framework-read)
+- 源码阅读仓库: [SourceHot-Spring](https://github.com/SourceHot/spring-framework-read)
 
 ## 初始化入口
 - `org.springframework.context.support.AbstractApplicationContext.refresh`方法有`initMessageSource()`方法进行了`MessageSource`初始化

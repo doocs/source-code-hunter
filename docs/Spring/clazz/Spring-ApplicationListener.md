@@ -1,6 +1,6 @@
 # Spring initApplicationEventMulticaster
 - Author: [HuiFer](https://github.com/huifer)
-- 源码阅读仓库: [huifer-spring](https://github.com/huifer/spring-framework-read)
+- 源码阅读仓库: [SourceHot-Spring](https://github.com/SourceHot/spring-framework-read)
 
 
 
