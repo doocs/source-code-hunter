@@ -49,6 +49,7 @@
 - [Spring 自定义属性解析器](/docs/Spring/clazz/Spring-Custom-attribute-resolver.md)
 - [Spring 排序工具](/docs/Spring/clazz/Spring-OrderUtils.md)
 - [Spring-import注解](/docs/Spring/clazz/Spring-Import.md)
+- [Spring-定时任务](/docs/Spring/clazz/Spring-Scheduling.md)
 ### Spring5 新特性
 - [Spring5-spring.components解析](/docs/Spring/Spring5新特性/Spring-spring-components.md)
 
