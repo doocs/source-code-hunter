@@ -50,12 +50,18 @@
 - [Spring 自定义属性解析器](/docs/Spring/clazz/Spring-Custom-attribute-resolver.md)
 - [Spring 排序工具](/docs/Spring/clazz/Spring-OrderUtils.md)
 
+- [Spring-import注解](/docs/Spring/clazz/Spring-Import.md)
+- [Spring-定时任务](/docs/Spring/clazz/Spring-Scheduling.md)
 ### Spring5 新特性
 - [Spring5-spring.components解析](/docs/Spring/Spring5新特性/Spring-spring-components.md)
 
 ### Spring RMI
 - [Spring RMI](/docs/Spring/RMI/Spring-RMI.md)
 
+### Spring Message
+- [Spring EnableJMS](/docs/Spring/message/Spring-EnableJms.md)
+- [Spring JmsTemplate](/docs/Spring/message/Spring-JmsTemplate.md)
+- [Spring MessageConverter](/docs/Spring/message/Spring-MessageConverter.md)
 ## MyBatis
 ### 基础支持层
 - [反射工具箱和 TypeHandler 系列](docs/Mybatis/基础支持层/1、反射工具箱和TypeHandler系列.md)

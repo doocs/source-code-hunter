@@ -1,7 +1,7 @@
 # mybatis 反射
 - Author: [HuiFer](https://github.com/huifer)
 - Description: 该文介绍 mybatis 反射相关类的源码
-- 源码阅读工程: [huifer-mybatis](https://github.com/huifer/javaBook-src/tree/old/mybatis-3)
+- 源码阅读工程: [SourceHot-Mybatis](https://github.com/SourceHot/mybatis-read.git)
 
 ## addDefaultConstructor
 
