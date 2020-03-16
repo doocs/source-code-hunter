@@ -135,9 +135,10 @@
 
 ## 番外篇（JDK 1.8）
 - [Executor 线程池组件](docs/JDK/Executor线程池组件.md)
-- [HashMap 源码赏析]()
-- [ConcurrentHashMap 源码赏析]()
-- [String 源码赏析]()
+- [Lock 锁组件](docs/JDK/Lock锁组件.md)
+- [HashMap 源码赏析](docs/JDK/HashMap.md)
+- [ConcurrentHashMap 源码赏析](docs/JDK/ConcurrentHashMap.md)
+- [String 源码赏析](docs/JDK/String.md)
 
 ## 学习心得
 ### 个人经验
