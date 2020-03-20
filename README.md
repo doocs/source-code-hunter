@@ -69,7 +69,7 @@
 
 ### SpringBoot
 - [SpringBoot run方法解析](/docs/SpringBoot/Spring-Boot-Run.md)
-
+- [SpringBoot 配置加载解析](/docs/SpringBoot/SpringBoot-application-load.md)
 
 ## MyBatis
 ### 基础支持层
