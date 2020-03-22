@@ -20,11 +20,6 @@ public class ParamNameResolver {
      * the parameter index is used. Note that this index could be different from the actual index
      * when the method has special parameters (i.e. {@link RowBounds} or {@link ResultHandler}).
      * </p>
-     * <ul>
-     * <li>aMethod(@Param("M") int a, @Param("N") int b) -&gt; {{0, "M"}, {1, "N"}}</li>
-     * <li>aMethod(int a, int b) -&gt; {{0, "0"}, {1, "1"}}</li>
-     * <li>aMethod(int a, RowBounds rb, int b) -&gt; {{0, "0"}, {2, "1"}}</li>
-     * </ul>
      *
      * {@link ParamNameResolver#ParamNameResolver(org.apache.ibatis.session.Configuration, java.lang.reflect.Method)} 中的map 变量值转换而得
      * {参数索引: 参数名称(arg0,Param注解的value)}
