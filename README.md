@@ -148,7 +148,7 @@
 - [Executor 线程池组件 源码赏析](docs/JDK/Executor线程池组件.md)
 - [Lock 锁组件 源码赏析](docs/JDK/Lock锁组件.md)
 - [Thread类 源码赏析](docs/JDK/Thread.md)
-- [ThreadLocal组件 源码赏析](docs/JDK/ThreadLocal.md)
+- [ThreadLocal类 源码赏析](docs/JDK/ThreadLocal.md)
 - [HashMap类 源码赏析](docs/JDK/HashMap.md)
 - [ConcurrentHashMap类 源码赏析](docs/JDK/ConcurrentHashMap.md)
 - [String类 源码赏析](docs/JDK/String.md)
