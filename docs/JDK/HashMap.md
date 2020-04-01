@@ -42,7 +42,7 @@ public class HashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>,
     static final int TREEIFY_THRESHOLD = 8;
     
     /**
-     * 第一个构造函数 也是大佬们比较推荐的，用好了可以显著减少 resize，提升效率
+     * 系列构造方法，推荐在初始化时根据实际情况设置好初始容量，用好了可以显著减少 resize，提升效率
      */
     public HashMap(int initialCapacity, float loadFactor) {
         if (initialCapacity < 0)
