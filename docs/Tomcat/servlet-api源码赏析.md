@@ -1,9 +1,9 @@
 ﻿## Servlet 基础
 ### Servlet 简介
-Servlet（Server Applet），是用 Java 编写的服务器端程序。其主要功能在于交互式地（Request 和 Response）浏览和修改数据，生成动态 Web内容。Servlet 运行于支持 Java的应用服务器中，如 Tomcat。从实现上讲，Servlet 可以响应任何类型的请求，但绝大多数情况下 Servlet 只用来扩展基于 HTTP协议 的 Web服务器。servlet 的工作模式如下：
-- 客户端发送请求至服务器；
-- 服务器启动并调用相应的 servlet，servlet 根据客户端请求生成响应内容并将其传给服务器；
-- 服务器将响应返回客户端；
+Servlet（Server Applet）是J2EE的内容之一，由 Java 编写的服务器端小程序。它是web请求的入口，主要功能在于交互式地（Request 和 Response）浏览和修改数据，生成动态 Web内容。Servlet 运行于支持 Java的应用服务器中，如 Tomcat。从实现上讲，Servlet 可以响应任何类型的请求，但绝大多数情况下 Servlet 只用来扩展基于 HTTP协议 的 Web服务器。servlet 的工作模式如下：
+- 客户端发送请求至 WEB服务器；
+- 服务器根据请求的URL调用相应的 servlet对象进行处理，获取到 servlet对象的处理结果；
+- 服务器将 响应内容 返回给客户端；
 
 另外，由于各种MVC框架的兴起，现在几乎没人会直接使用 servlet 来处理请求咯，往往都是把 SpringMVC 在 Tomcat 中一配，各种请求都交由 DispatcherServlet 来分发。
 
@@ -11,9 +11,9 @@ Servlet（Server Applet），是用 Java 编写的服务器端程序。其主要
 - 加载 : 客户端第一次访问该 Servlet 时，Tomcat 会创建该 Servlet 的实例，一般只创建1次，所以 servlet对象 在 Tomcat 是单例的；
 - 初始化 : Tomcat 调用 该 Servlet 的 init()方法 进行初始化；
 - 服务 : 每当客户端访问 该Servlet 时，Tomcat 就会调用一次该 Servlet 的 service()方法 处理请求；
-- 销毁 : Tomcat关闭 或 检测到 该Servlet 要从 Tomcat 删除时，会自动调用 该servlet 的 destroy()方法，让该实例释放掉所占的资源。一个Servlet如果长时间不被使用的话，也会被Tomcat自动销毁；
+- 销毁 : Tomcat关闭时，会调用 这些servlet 的 destroy()方法，让该实例释放掉所占的资源。
 
-简单总结一下就是，只要访问 Servlet，service()方法 就会被调用。init()方法 只有第一次访问 Servlet 的时候才会被调用。destroy()方法 会在 Tomcat 关闭的时候被调用。
+简单总结一下就是：只要访问 Servlet，service()方法 就会被调用，init()方法 只有第一次访问 Servlet 的时候才会被调用，destroy()方法 会在 Tomcat 关闭的时候被调用。
 
 ### &lt;load-on-startup&gt;
 在 web.xml 中配置 Servlet 时有个属性 &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;。翻译过来就是 “在启动时加载”，其作用如下：  
@@ -23,17 +23,17 @@ Servlet（Server Applet），是用 Java 编写的服务器端程序。其主要
 4. 如果该元素的值为负数或者没有设置，则容器会在 Servlet 被请求时才加载。
 
 ### Servlet的多线程并发问题
-servlet对象 在 Tomcat服务器 是 单实例多线程的，比如 DispatcherServlet对象 只会被创建一次，但多个请求同时过来时，Tomcat线程池 的多个工作线程就会并发地访问该 DispatcherServlet对象。所以，若一个servlet对象中存在被并发修改的共享数据（成员变量 等），又没有加锁控制并发安全，就很可能会出现线程安全问题。
+servlet对象 在 Tomcat服务器中 是 单实例-多线程并发访问的，比如 DispatcherServlet对象 只会被创建一次，但多个请求同时过来时，Tomcat线程池 的多个工作线程就会并发地访问该 DispatcherServlet对象。所以，若一个servlet对象中存在被并发修改的共享数据（成员变量 等），又没有加锁控制并发安全，就很可能会出现线程安全问题。
 
 解决方案：  
-1. 把使用到共享数据的代码块进行同步（使用synchronized 或 Lock对象）；
+1. 把可能会并发修改的共享数据的代码块进行同步（使用synchronized 或 Lock对象）；
 2. 建议在 Servlet类 中尽量不要使用成员变量。若使用成员变量，则必须同步，并尽量缩小同步代码块的范围，以避免因为同步而导致并发效率降低。
 
 ### Servlet 实现请求和响应
-对于每次客户端请求，Web容器 都会创建一个新的 HttpServletRequest请求对象 和 一个新的HttpServletResponse响应对象，然后将这两个对象作为参数传递给相应的 Servlet对象 的 service()方法，service()方法 再根据请求方式分别调用 doXXX()方法。经过一系列业务层处理，最后将结果封装到 response对象中，交由 Socket对象传输响应给客户端。
+对于每次客户端请求，Web容器 都会创建一个新的 HttpServletRequest请求对象 和 一个新的HttpServletResponse响应对象，然后将这两个对象作为参数传递给相应的 Servlet对象 的 service()方法，service()方法 再根据请求方式分别调用 doGet()/doPost()/doXXX()方法。经过一系列业务层处理，最后将结果封装到 response对象中，交由 Socket对象传输响应给客户端。
 
 ## Servlet 源码解析
-javax.servlet 包主要对 Servlet 的一些主要行为和接口进行了定义和简单实现，它是 Servlet规范 的体现，具体的实现交由下游厂商或开发者，就像体现了JDBC规范的 java.sql包 一样，主要负责定义标准和规范。其源码和注释如下。
+javax.servlet 包对 Servlet规范 的一些主要行为和接口进行了定义和简单实现，它是 Servlet规范 的体现，具体的实现交由下游厂商或开发者(如：Tomcat / Jetty)，就像体现了JDBC规范的 java.sql包 一样，主要负责定义标准和规范。其源码和注释如下。
 ```java
 public interface Servlet {
     /**
