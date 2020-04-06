@@ -1,4 +1,4 @@
-﻿本来想看 ThreadLocal 的源码的，但发现其中最重要的 get/set 方法都是操纵的 Thread类 中的 threadLocals变量 (java.lang.ThreadLocal.ThreadLocalMap)，索性先来看一下 Thread 的源码吧，可以留意一下其中与 ThreadLocal 相关的属性，这样下次阅读 ThreadLocal 的核心API时，就能够轻易理解其原理咯。不多BB，直接上硬菜。
+本来想看 ThreadLocal 的源码的，但发现其中最重要的 get/set 方法都是操纵的 Thread类 中的 threadLocals变量 (java.lang.ThreadLocal.ThreadLocalMap)，索性先来看一下 Thread 的源码吧，可以留意一下其中与 ThreadLocal 相关的属性，这样下次阅读 ThreadLocal 的核心API时，就能够轻易理解其原理咯。不多BB，直接上硬菜。
 
 实现多线程从本质上都是由 Thread类 来完成的，其源码量很多，本次只看一些常见且重要的部分，源码和解析如下。
 ```java
