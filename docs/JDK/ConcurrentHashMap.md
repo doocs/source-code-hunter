@@ -1,4 +1,4 @@
-﻿HashMap 源码中主要了解其核心源码及实现逻辑。ConcurrentHashMap 就不再重复那些数据结构相关的内容咯，这里重点看一下它的并发安全实现。源码如下。
+HashMap 源码中主要了解其核心源码及实现逻辑。ConcurrentHashMap 就不再重复那些数据结构相关的内容咯，这里重点看一下它的并发安全实现。源码如下。
 
 ```java
 public class ConcurrentHashMap<K,V> extends AbstractMap<K,V> implements ConcurrentMap<K,V>, 
