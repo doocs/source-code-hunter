@@ -1,4 +1,4 @@
-﻿## 前言
+## 前言
 接着上一篇的 BeanDefinition 资源定位开始讲。Spring IoC 容器 BeanDefinition 解析过程就是把用户在配置文件中配置的 bean，解析并封装成 IoC 容器可以装载的 BeanDefinition 对象，BeanDefinition 是 Spring 定义的基本数据结构，其中的属性与配置文件中 bean 的属性相对应。
  
 （PS：可以结合我 GitHub 上对 Spring 框架源码的阅读及个人理解一起看，会更有助于各位开发大佬理解。地址如下。  

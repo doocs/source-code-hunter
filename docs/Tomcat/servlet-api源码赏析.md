@@ -1,4 +1,4 @@
-﻿## Servlet 基础
+## Servlet 基础
 ### Servlet 简介
 Servlet（Server Applet）是J2EE的内容之一，由 Java 编写的服务器端小程序。它是web请求的入口，主要功能在于交互式地（Request 和 Response）浏览和修改数据，生成动态 Web内容。Servlet 运行于支持 Java的应用服务器中，如 Tomcat。从实现上讲，Servlet 可以响应任何类型的请求，但绝大多数情况下 Servlet 只用来扩展基于 HTTP协议 的 Web服务器。servlet 的工作模式如下：
 - 客户端发送请求至 WEB服务器；

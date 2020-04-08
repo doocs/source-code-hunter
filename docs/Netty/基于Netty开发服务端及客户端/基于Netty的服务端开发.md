@@ -1,4 +1,4 @@
-﻿## Netty 服务端创建源码分析
+## Netty 服务端创建源码分析
 当我们直接使用 JDK 的 NIO类库 开发基于 NIO 的异步服务端时，需要用到 多路复用器Selector、ServerSocketChannel、SocketChannel、ByteBuffer、SelectionKey 等，相比于传统的 BIO开发，NIO 的开发要复杂很多，开发出稳定、高性能的异步通信框架，一直是个难题。Netty 为了向使用者屏蔽 NIO通信 的底层细节，在和用户交互的边界做了封装，目的就是为了减少用户开发工作量，降低开发难度。ServerBootstrap 是 Socket服务端 的启动辅助类，用户通过 ServerBootstrap 可以方便地创建 Netty 的服务端。
 
 ### Netty 服务端创建时序图
