@@ -142,15 +142,21 @@
 
 ## Dubbo
 ### 架构设计
+- [Dubbo整体架构](docs/Dubbo/architectureDesign/Dubbo整体架构.md)
 
-### SPI
+### SPI机制
 - [Dubbo与Java的SPI机制](docs/Dubbo/SPI/Dubbo与Java的SPI机制.md)
+
+### 注册中心
+- [Dubbo注册中心](docs/Dubbo/registry/Dubbo注册中心.md)
+- [注册中心的Zookeeper实现](docs/Dubbo/registry/注册中心的Zookeeper实现.md)
+
+### 远程通信
 
 ### RPC
 
-### Registry
+### 集群
 
-### Cluster
 
 ## Tomcat
 - [servlet-api 源码赏析](docs/Tomcat/servlet-api源码赏析.md)
