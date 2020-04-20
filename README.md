@@ -6,7 +6,9 @@
 [![issues](https://badgen.net/github/open-issues/doocs/source-code-hunter)](https://github.com/doocs/source-code-hunter/issues)
 [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](http://makeapullrequest.com)
 
-有被“读过哪些知名的开源项目源码？”这种问题所困扰过吗？加入我们，一起通读互联网公司主流框架及中间件源码，成为强大的“源码猎人”，目前开放的有 Spring 系列框架、Mybatis 框架、Netty 框架、Dubbo 框架，及 Redis、Tomcat 中间件等，让我们一起开拓新的领地，揭开这些源码的神秘面纱。本项目主要用于记录框架及中间件源码的阅读经验、个人理解及解析，希望能够使阅读源码变成一件更简单有趣，且有价值的事情，抽空更新中...(如果本项目对您有帮助，请watch、star、fork 素质三连一波，鼓励一下作者，谢谢）
+“技术深度”与“技术广度”是对开发者来说最为重要的两个维度，本项目致力于从源码层面，剖析和挖掘互联网行业主流技术的底层实现原理，**为广大开发者“提升技术深度”提供便利**。
+
+加入我们，一起通读互联网行业主流框架及中间件源码，成为强大的“源码猎人”，目前开放的有 Spring 系列框架、Mybatis 框架、Netty 框架、Dubbo 框架，及 Redis、Tomcat 中间件等，让我们一起开拓新的领地，揭开这些源码的神秘面纱。本项目主要用于记录框架及中间件源码的阅读经验、个人理解及解析，希望能够使阅读源码变成一件简单有趣，且有价值的事情，抽空更新中...(如果本项目对您有帮助，请watch、star、fork 素质三连一波，鼓励一下作者，谢谢）
 
 ## Spring 系列
 ### IoC 容器
@@ -148,7 +150,7 @@
 - [Dubbo与Java的SPI机制](docs/Dubbo/SPI/Dubbo与Java的SPI机制.md)
 
 ### 注册中心
-- [Dubbo注册中心](docs/Dubbo/registry/Dubbo注册中心.md)
+- [Dubbo注册中心模块简析](docs/Dubbo/registry/Dubbo注册中心模块简析.md)
 - [注册中心的Zookeeper实现](docs/Dubbo/registry/注册中心的Zookeeper实现.md)
 
 ### 远程通信
@@ -156,7 +158,10 @@
 ### RPC
 
 ### 集群
-
+- [Dubbo集群模块简析](docs/Dubbo/cluster/Dubbo集群模块简析.md)
+- [负载均衡](docs/Dubbo/cluster/负载均衡.md)
+- [集群容错](docs/Dubbo/cluster/集群容错.md)
+- [mock与服务降级](docs/Dubbo/cluster/mock与服务降级.md)
 
 ## Tomcat
 - [servlet-api 源码赏析](docs/Tomcat/servlet-api源码赏析.md)
