@@ -256,7 +256,7 @@ public class ThreadLocal<T> {
 ```
 简单画个图总结一下 ThreadLocal 的原理，如下。
 
-![avatar](/images/JDK1.8/ThreadLocal原理.png)
+![avatar](../../images/JDK1.8/ThreadLocal原理.png)
 
 最后强调一下 ThreadLocal的使用注意事项：
 

@@ -103,7 +103,7 @@ example.scannable.sub.BarComponent=org.springframework.stereotype.Component
 
 
 
-![image-20200115105941265](/images/spring/image-20200115105941265.png)
+![image-20200115105941265](../../../images/spring/image-20200115105941265.png)
 - 该类给`org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider.findCandidateComponents`提供了帮助
 
 ```java

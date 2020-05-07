@@ -8,13 +8,13 @@
 
 为了解这个过程，可以从 DispatcherServlet 的父类 FrameworkServlet 的代码入手，去探寻 DispatcherServlet 的启动过程，它同时也是 SpringMVC 的启动过程。ApplicationContext 的创建过程和 ContextLoader 创建根上下文的过程有许多类似的地方。下面来看一下这个 DispatcherServlet类 的继承关系。
 
-![avatar](/images/springMVC/DispatcherServlet的继承关系.png)
+![avatar](../../../images/springMVC/DispatcherServlet的继承关系.png)
 
 DispatcherServlet 通过继承 FrameworkServlet 和 HttpServletBean 而继承了 HttpServlet，通过使用Servlet API 来对 HTTP请求 进行响应，成为 SpringMVC 的前端处理器，同时成为 MVC模块 与 Web容器 集成的处理前端。
 
 DispatcherServlet 的工作大致可以分为两个部分：一个是初始化部分，由 initServletBean()方法 启动，通过 initWebApplicationContext()方法 最终调用 DispatcherServlet 的 initStrategies()方法，在这个方法里，DispatcherServlet 对 MVC模块 的其他部分进行了初始化，比如 handlerMapping、ViewResolver 等；另一个是对 HTTP请求 进行响应，作为一个 Servlet，Web容器 会调用 Servlet 的doGet() 和 doPost()方法，在经过 FrameworkServlet 的 processRequest() 简单处理后，会调用 DispatcherServlet 的 doService()方法，在这个方法调用中封装了 doDispatch()，这个 doDispatch() 是 Dispatcher 实现 MVC模式 的主要部分，下图为 DispatcherServlet 的处理过程时序图。
 
-![avatar](/images/springMVC/DispatcherServlet的处理过程.png)
+![avatar](../../../images/springMVC/DispatcherServlet的处理过程.png)
 
 ## 3 DispatcherServlet的启动和初始化
 前面大致描述了 SpringMVC 的工作流程，下面看一下 DispatcherServlet 的启动和初始化的代码设计及实现。
@@ -376,7 +376,7 @@ HandlerMappings 完成对 MVC 中 Controller 的定义和配置，只不过在 W
 
 在初始化完成时，在上下文环境中已定义的所有 HandlerMapping 都已经被加载了，这些加载的 handlerMappings 被放在一个 List 中并被排序，存储着 HTTP请求 对应的映射数据。这个 List 中的每一个元素都对应着一个具体 handlerMapping 的配置，一般每一个 handlerMapping 可以持有一系列从 URL请求 到 Controller 的映射，而 SpringMVC 提供了一系列的 HandlerMapping 实现。
 
-![avatar](/images/springMVC/HandlerMapping组件.png)
+![avatar](../../../images/springMVC/HandlerMapping组件.png)
 
 以 SimpleUrlHandlerMapping 为例来分析 HandlerMapping 的设计与实现。在 SimpleUrlHandlerMapping 中，定义了一个 Map 来持有一系列的映射关系。通过这些在 HandlerMapping 中定义的映射关系，即这些 URL请求 和控制器的对应关系，使 SpringMVC
 应用 可以根据 HTTP请求 确定一个对应的 Controller。具体来说，这些映射关系是通过 HandlerMapping接口 来封装的，在 HandlerMapping接口 中定义了一个 getHandler()方法，通过这个方法，可以获得与 HTTP请求 对应的 HandlerExecutionChain，在这个 HandlerExecutionChain 中，封装了具体的 Controller对象。
@@ -496,7 +496,7 @@ public class HandlerExecutionChain {
 ```
 HandlerExecutionChain 中定义的 Handler 和 HandlerInterceptor[]属性 需要在定义 HandlerMapping 时配置好，例如对具体的 SimpleURLHandlerMapping，要做的就是根据 URL映射 的方式，注册 Handler 和 HandlerInterceptor[]，从而维护一个反映这种映射关系的  handlerMap。当需要匹配 HTTP请求 时，需要查询这个 handlerMap 中的信息来得到对应的 HandlerExecutionChain。这些信息是什么时候配置好的呢?这里有一个注册过程，这个注册过程在容器对 Bean 进行依赖注入时发生，它实际上是通过一个 Bean 的 postProcessor() 来完成的。以 SimpleHandlerMapping 为例，需要注意的是，这里用到了对容器的回调，只有 SimpleHandlerMapping 是 ApplicationContextAware 的子类才能启动这个注册过程。这个注册过程完成的是反映 URL 和 Controller 之间映射关系的 handlerMap 的建立。
 
-![avatar](/images/springMVC/SimpleUrlHandlerMapping的继承关系.png)
+![avatar](../../../images/springMVC/SimpleUrlHandlerMapping的继承关系.png)
 
 ```java
 public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {

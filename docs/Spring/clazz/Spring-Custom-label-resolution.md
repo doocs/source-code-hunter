@@ -185,7 +185,7 @@ public class XSDDemo {
 
 ```
 
-![image-20200109084131415](/images/spring/image-20200109084131415.png)
+![image-20200109084131415](../../../images/spring/image-20200109084131415.png)
 
 - `http://www.huifer.com/schema/user`和我们定义的xsd文件中的url相同，如何找到对应的NamespaceHandler,在`META-INF/spring.handlers`中有定义,
 
@@ -269,7 +269,7 @@ public class XSDDemo {
 
 
 
-![image-20200109085606240](/images/spring/image-20200109085606240.png)
+![image-20200109085606240](../../../images/spring/image-20200109085606240.png)
 
 - 这里直接存在数据了,他是从什么时候加载的?
 
@@ -345,7 +345,7 @@ public class XSDDemo {
 
   断点
 
-  ![image-20200109090456547](/images/spring/image-20200109090456547.png)
+  ![image-20200109090456547](../../../images/spring/image-20200109090456547.png)
 
   ```JAVA
       public DefaultNamespaceHandlerResolver(@Nullable ClassLoader classLoader) {
@@ -355,13 +355,13 @@ public class XSDDemo {
 
   `public static final String DEFAULT_HANDLER_MAPPINGS_LOCATION = "META-INF/spring.handlers";`
 
-  ![image-20200109090655157](/images/spring/image-20200109090655157.png)
+  ![image-20200109090655157](../../../images/spring/image-20200109090655157.png)
 
   此时还是空
 
   走完
 
-  ![image-20200109091216505](/images/spring/image-20200109091216505.png)
+  ![image-20200109091216505](../../../images/spring/image-20200109091216505.png)
 
   ```java
       @Override
@@ -413,7 +413,7 @@ public class XSDDemo {
 
 ```
 
-![image-20200109094032421](/images/spring/image-20200109094032421.png)
+![image-20200109094032421](../../../images/spring/image-20200109094032421.png)
 
 
 
@@ -531,7 +531,7 @@ public class UserNamespaceHandler extends NamespaceHandlerSupport {
 
   
 
-![image-20200109092801572](/images/spring/image-20200109092801572.png)
+![image-20200109092801572](../../../images/spring/image-20200109092801572.png)
 
 
 
@@ -571,7 +571,7 @@ public class UserNamespaceHandler extends NamespaceHandlerSupport {
 
 ```
 
-![image-20200109093242494](/images/spring/image-20200109093242494.png)
+![image-20200109093242494](../../../images/spring/image-20200109093242494.png)
 
 ### org.springframework.beans.factory.xml.BeanDefinitionParser#parse
 
@@ -629,7 +629,7 @@ public class UserNamespaceHandler extends NamespaceHandlerSupport {
     }
 ```
 
-![image-20200109094654409](/images/spring/image-20200109094654409.png)
+![image-20200109094654409](../../../images/spring/image-20200109094654409.png)
 
 
 

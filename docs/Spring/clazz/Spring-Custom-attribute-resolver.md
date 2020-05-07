@@ -71,7 +71,7 @@ public class DatePropertyEditor extends PropertyEditorSupport {
 ## PropertyEditorRegistrar解析
 - 直接在`DatePropertyRegister`打上断点进行查看注册流程
 
-  ![image-20200117104710142](/images/spring/image-20200117104710142.png)
+  ![image-20200117104710142](../../../images/spring/image-20200117104710142.png)
 
   直接看调用堆栈获取调用层次
 
@@ -111,7 +111,7 @@ public class DatePropertyEditor extends PropertyEditorSupport {
 
 - `PropertyEditorRegistrySupport`
 
-  ![image-20200117111131406](/images/spring/image-20200117111131406.png)
+  ![image-20200117111131406](../../../images/spring/image-20200117111131406.png)
 
   此处对象是通过`DatePropertyRegister`传递的
 
@@ -166,7 +166,7 @@ public class DatePropertyEditor extends PropertyEditorSupport {
 
 - 在`AbstractBeanFactory`中查看变量
 
-![image-20200117110115741](/images/spring/image-20200117110115741.png)
+![image-20200117110115741](../../../images/spring/image-20200117110115741.png)
 
 
 
@@ -192,7 +192,7 @@ public class DatePropertyEditor extends PropertyEditorSupport {
         }
     ```
 
-    ![image-20200117110846256](/images/spring/image-20200117110846256.png)
+    ![image-20200117110846256](../../../images/spring/image-20200117110846256.png)
 
 
 
@@ -318,17 +318,17 @@ public class DatePropertyEditor extends PropertyEditorSupport {
 
   
 
-  ![image-20200117133325461](/images/spring/image-20200117133325461.png)
+  ![image-20200117133325461](../../../images/spring/image-20200117133325461.png)
 
   
 
 
 
-![image-20200117141309038](/images/spring/image-20200117141309038.png)
+![image-20200117141309038](../../../images/spring/image-20200117141309038.png)
 
 
 
-![image-20200117141519123](/images/spring/image-20200117141519123.png)
+![image-20200117141519123](../../../images/spring/image-20200117141519123.png)
 
 
 
@@ -336,7 +336,7 @@ public class DatePropertyEditor extends PropertyEditorSupport {
 
 - 属性值解析
 
-  ![image-20200117142800671](/images/spring/image-20200117142800671.png)
+  ![image-20200117142800671](../../../images/spring/image-20200117142800671.png)
 
   ```JAVA
       @Nullable
@@ -397,7 +397,7 @@ public class DatePropertyEditor extends PropertyEditorSupport {
 
   
 
-![image-20200117143022827](/images/spring/image-20200117143022827.png)
+![image-20200117143022827](../../../images/spring/image-20200117143022827.png)
 
 该值也是这个方法的返回`org.springframework.beans.TypeConverterDelegate#convertIfNecessary(java.lang.String, java.lang.Object, java.lang.Object, java.lang.Class<T>, org.springframework.core.convert.TypeDescriptor)`
 

@@ -1,7 +1,7 @@
 ## 项目结构
 首先从GitHub 上 down下来Dubbo项目，我们根据里面的目录名 也能大概猜出来各个模块的作用。
 
-![avatar](/images/Dubbo/dubbo项目结构.png)
+![avatar](../../../images/Dubbo/dubbo项目结构.png)
 
 ### dubbo-­common
 公共逻辑模块，定义了各模块中 通用的 组件 和 工具类，如：IO、日志、配置处理等。
@@ -34,7 +34,7 @@ dubbo配置模块，该模块通过 配置信息，将dubbo组件的各个模块
 
 其运行原理如下图所示。
 
-![avatar](/Dubbo工作原理图.png)
+![avatar](../../../images/Dubbo/Dubbo工作原理图.png)
 
 ### 工作原理
 最后总结下其工作原理。

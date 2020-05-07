@@ -453,7 +453,7 @@ public void setDataSource(@Nullable DataSource dataSource) {
 
 ```
 
-![image-20200109150841916](/images/spring/image-20200109150841916.png)
+![image-20200109150841916](../../../images/spring/image-20200109150841916.png)
 
 这样就可以获取到了
 

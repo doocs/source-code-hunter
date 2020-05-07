@@ -143,13 +143,13 @@ class HfReflectorTest {
 
 - 准备工作完成了开始进行 debug , 在`org.apache.ibatis.reflection.Reflector#addDefaultConstructor`这个方法上打上断点
 
-  ![1575890354400](/images/mybatis/1575890354400.png)
+  ![1575890354400](../../../images/mybatis/1575890354400.png)
 
   观察`constructors`属性存在两个方法,这两个方法就是我在`People`类中的构造方法.
 
   根据语法内容我们应该对`parameterTypes`属性进行查看
 
-  ![1575890475839](/images/mybatis/1575890475839.png)
+  ![1575890475839](../../../images/mybatis/1575890475839.png)
 
 可以发现空参构造的`parameterTypes`长度是0.因此可以确认`org.apache.ibatis.reflection.Reflector#addDefaultConstructor`方法获取了空参构造
 
@@ -287,17 +287,17 @@ class HfReflectorTest {
 
 - 照旧我们进行 debug 当前方法为`toString`方法
 
-  ![1575891988804](/images/mybatis//1575891988804.png)
+  ![1575891988804](../../../images/mybatis//1575891988804.png)
 
   从返回结果可以看到`sb.toString`返回的是： `返回值类型#方法名`
 
-  ![1575892046692](/images/mybatis//1575892046692.png)
+  ![1575892046692](../../../images/mybatis//1575892046692.png)
 
   上图返回结果为`void#setName:java.lang.String` 命名规则：`返回值类型#方法名称:参数列表`
 
   回过头看看`uniqueMethods`里面是什么
 
-  ![1575892167982](/images/mybatis//1575892167982.png)
+  ![1575892167982](../../../images/mybatis//1575892167982.png)
 
   方法签名:方法
 
@@ -325,11 +325,11 @@ class HfReflectorTest {
 
   目标明确了就直接在
 
-  ![1575892414120](/images/mybatis//1575892414120.png)
+  ![1575892414120](../../../images/mybatis//1575892414120.png)
 
   这里打断点了
 
-  ![1575892511471](/images/mybatis//1575892511471.png)
+  ![1575892511471](../../../images/mybatis//1575892511471.png)
 
   在进入循环之前回率先加载本类的所有可见方法
 
@@ -342,15 +342,15 @@ class HfReflectorTest {
 
   接下来断点继续往下走
 
-  ![1575892645405](/images/mybatis//1575892645405.png)
+  ![1575892645405](../../../images/mybatis//1575892645405.png)
 
   走到这一步我们来看看`currentClass.getSuperclass()`是不是上一级的类
 
-  ![1575892687076](/images/mybatis//1575892687076.png)
+  ![1575892687076](../../../images/mybatis//1575892687076.png)
 
   通过断点可见这个`currentClass`现在是`People`类,根据之前所说的最终`uniqueMethods`应该存在父类的方法
 
-  ![1575892763661](/images/mybatis//1575892763661.png)
+  ![1575892763661](../../../images/mybatis//1575892763661.png)
 
   可以看到父类的方法也都存在了
 
@@ -431,4 +431,4 @@ class HfReflectorTest {
 
 - 下图为一个类的解析结果
 
-![1575894218362](/images/mybatis/1575894218362.png)
+![1575894218362](../../../images/mybatis/1575894218362.png)

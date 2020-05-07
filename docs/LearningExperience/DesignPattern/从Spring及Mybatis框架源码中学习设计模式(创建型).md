@@ -28,6 +28,7 @@ public class Singleton3 {
      * 使用volatile修饰instance变量 可以 避免上述的指令重排
      * tips：不太理解的是 第一个线程在执行第2步之前就已经释放了锁吗？导致其它线程进入synchronized代码块
      *      执行 instance == null 的判断？
+     *  回答：第一个线程在执行第2步之前就已经释放了锁吗？（没有）。如果不使用volatile修饰instance变量，那么其他线程进来的时候，看到的instance就有可能不是null的，因为已经执行了第3步，那么此时这个线程（执行 return instance;）使用的instance是一个没有初始化的instance，就会有问题。
      */
     private volatile static Singleton3 instance;
     
@@ -485,7 +486,7 @@ public class SmartTransformerFactoryImpl extends SAXTransformerFactory {
 ### 个人理解
 该模式主要用于将复杂对象的构建过程分解成一个个简单的步骤，或者分摊到多个类中进行构建，保证构建过程层次清晰，代码不会过分臃肿，屏蔽掉了复杂对象内部的具体构建细节，其类图结构如下所示。
 
-![avatar](/images/DesignPattern/建造者模式类图.png)
+![avatar](../../../images/DesignPattern/建造者模式类图.png)
 
 该模式的主要角色如下：
 

@@ -1,21 +1,21 @@
 ## 注册中心在Dubbo中的作用
 服务治理框架可以大致分为 服务通信 和 服务管理 两部分，服务管理可以分为服务注册、服务订阅以及服务发现，服务提供者Provider 会往注册中心注册服务，而消费者Consumer 会从注册中心中订阅自己关注的服务，并在关注的服务发生变更时 得到注册中心的通知。Provider、Consumer以及Registry之间的依赖关系 如下图所示。
 
-![avatar](/images/Dubbo/Dubbo工作原理图.png)
+![avatar](../../../images/Dubbo/Dubbo工作原理图.png)
 
 ## dubbo-registry 模块 结构分析
 dubbo的注册中心有多种实现方案，如：zookeeper、redis、multicast等，本章先看一下 dubbo-registry 模块的核心部分 dubbo-registry-api，具体实现部分放到下章来讲。dubbo-registry模块 的结构如下图所示。
 
-![avatar](/images/Dubbo/dubbo-registry模块结构图.png)
+![avatar](../../../images/Dubbo/dubbo-registry模块结构图.png)
 
 ### Registry 核心组件类图
 典型的 接口 -> 抽象类 -> 实现类 的结构设计，如下图所示。
 
-![avatar](/images/Dubbo/Registry组件类图.png)
+![avatar](../../../images/Dubbo/Registry组件类图.png)
 
 既然有Registry组件，那么按照很多框架的套路，肯定也有一个用于获取 Registry实例的RegistryFactory，其中用到了工厂方法模式，不同的工厂类用于获取不同类型的实例。其类图结构如下。
 
-![avatar](/images/Dubbo/RegistryFactory组件类图.png)
+![avatar](../../../images/Dubbo/RegistryFactory组件类图.png)
 
 ## 源码详解
 根据上面的类图，我们开始从上往下 详解dubbo中对于注册中心的设计以及实现。

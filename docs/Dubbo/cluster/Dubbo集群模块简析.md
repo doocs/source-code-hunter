@@ -13,12 +13,12 @@
 
 下面我们来看一下 集群模块的项目结构图，结合上文的描述，可以对其有更加深刻的理解。
 
-![avatar](/images/Dubbo/dubbo-cluster模块工程结构.png)
+![avatar](../../../images/Dubbo/dubbo-cluster模块工程结构.png)
 
 ### 集群模块核心API 源码解析
 从上图应该也能看出其核心API在哪个包里。
 
-![avatar](/images/Dubbo/com.alibaba.dubbo.rpc.cluster包目录.png)
+![avatar](../../../images/Dubbo/com.alibaba.dubbo.rpc.cluster包目录.png)
 
 各核心接口的源码如下。
 ```java

@@ -187,7 +187,7 @@
     HsSell[] list(@Param("ID") Integer id);
 ```
 
-![image-20191219092442456](/images/mybatis/image-20191219092442456.png)
+![image-20191219092442456](../../../images/mybatis/image-20191219092442456.png)
 
 - 修改mapper,对`org.apache.ibatis.binding.MapperMethod#convertToDeclaredCollection`进行测试
 
@@ -197,7 +197,7 @@
 
   
 
-![image-20191219093043035](/images/mybatis/image-20191219093043035.png)
+![image-20191219093043035](../../../images/mybatis/image-20191219093043035.png)
 
 
 

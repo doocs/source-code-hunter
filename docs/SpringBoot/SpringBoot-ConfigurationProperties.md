@@ -36,7 +36,7 @@ public @interface ConfigurationPropertiesScan {}
 
 ## ConfigurationPropertiesScanRegistrar
 
-![image-20200323094446756](/images/SpringBoot/image-20200323094446756.png)
+![image-20200323094446756](../../../images/SpringBoot/image-20200323094446756.png)
 
 - debug没有抓到后续补充
 
@@ -156,13 +156,13 @@ public @interface EnableConfigurationProperties {
 
 - 先看输入参数 **metadata**
 
-![image-20200323134135926](/images/SpringBoot/image-20200323134135926.png)
+![image-20200323134135926](../../../images/SpringBoot/image-20200323134135926.png)
 
 
 
 - getTypes结果
 
-![image-20200323134325955](/images/SpringBoot/image-20200323134325955.png)
+![image-20200323134325955](../../../images/SpringBoot/image-20200323134325955.png)
 
 
 
@@ -231,7 +231,7 @@ public @interface EnableConfigurationProperties {
 
 ## ConfigurationPropertiesBindingPostProcessor
 
-![image-20200323095626953](/images/SpringBoot/image-20200323095626953.png)
+![image-20200323095626953](../../../images/SpringBoot/image-20200323095626953.png)
 
 
 
@@ -356,15 +356,15 @@ public @interface EnableConfigurationProperties {
 
 - `annotation`
 
-![image-20200323104711545](/images/SpringBoot/image-20200323104711545.png)
+![image-20200323104711545](../../../images/SpringBoot/image-20200323104711545.png)
 
 - `bindType`
 
-![image-20200323104815305](/images/SpringBoot/image-20200323104815305.png)
+![image-20200323104815305](../../../images/SpringBoot/image-20200323104815305.png)
 
 - 返回对象
 
-![image-20200323105053757](/images/SpringBoot/image-20200323105053757.png)
+![image-20200323105053757](../../../images/SpringBoot/image-20200323105053757.png)
 
 - 此时数据还没有进去
 
@@ -378,7 +378,7 @@ public @interface EnableConfigurationProperties {
 
 直接看结果
 
-![image-20200323105155998](/images/SpringBoot/image-20200323105155998.png)
+![image-20200323105155998](../../../images/SpringBoot/image-20200323105155998.png)
 
 - 上述配置和我在配置文件中写的配置一致
 
@@ -425,7 +425,7 @@ BindResult<?> bind(ConfigurationPropertiesBean propertiesBean) {
 	}
 ```
 
-![image-20200323105830138](/images/SpringBoot/image-20200323105830138.png)
+![image-20200323105830138](../../../images/SpringBoot/image-20200323105830138.png)
 
 
 
@@ -501,15 +501,15 @@ BindResult<?> bind(ConfigurationPropertiesBean propertiesBean) {
 
 
 
-![image-20200323115408877](/images/SpringBoot/image-20200323115408877.png)
+![image-20200323115408877](../../../images/SpringBoot/image-20200323115408877.png)
 
 
 
-![image-20200323115701118](/images/SpringBoot/image-20200323115701118.png)
+![image-20200323115701118](../../../images/SpringBoot/image-20200323115701118.png)
 
 
 
-![image-20200323115711826](/images/SpringBoot/image-20200323115711826.png)
+![image-20200323115711826](../../../images/SpringBoot/image-20200323115711826.png)
 
 
 
@@ -546,7 +546,7 @@ private <T> BindHandler getBindHandler(Bindable<T> target, ConfigurationProperti
 
 - 最终获取得到的处理器
 
-![image-20200323110603959](/images/SpringBoot/image-20200323110603959.png)
+![image-20200323110603959](../../../images/SpringBoot/image-20200323110603959.png)
 
 
 
@@ -586,7 +586,7 @@ private <T> BindHandler getBindHandler(Bindable<T> target, ConfigurationProperti
 
 
 
-![image-20200323112945449](/images/SpringBoot/image-20200323112945449.png)
+![image-20200323112945449](../../../images/SpringBoot/image-20200323112945449.png)
 
 
 

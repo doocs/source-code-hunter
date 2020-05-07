@@ -251,9 +251,9 @@ public class BeanFactoryPostProcessorSourceCode {
 
   
 
-![image-20200119085346675](/images/spring/image-20200119085346675.png)
+![image-20200119085346675](../../../images/spring/image-20200119085346675.png)
 
-![image-20200119085655734](/images/spring/image-20200119085655734.png)
+![image-20200119085655734](../../../images/spring/image-20200119085655734.png)
 
 
 
@@ -374,15 +374,15 @@ public class DemoInstantiationAwareBeanPostProcessor implements InstantiationAwa
 
 - 按照笔者的注释,可以知道`DemoInstantiationAwareBeanPostProcessor` 这个类是一个无序Bean
 
-  ![image-20200119101026726](/images/spring/image-20200119101026726.png)
+  ![image-20200119101026726](../../../images/spring/image-20200119101026726.png)
 
   
 
-![image-20200119101017989](/images/spring/image-20200119101017989.png)
+![image-20200119101017989](../../../images/spring/image-20200119101017989.png)
 
 - 注册方法信息截图
 
-![image-20200119101107820](/images/spring/image-20200119101107820.png)
+![image-20200119101107820](../../../images/spring/image-20200119101107820.png)
 
 
 
@@ -444,4 +444,4 @@ public class DemoInstantiationAwareBeanPostProcessor implements InstantiationAwa
 
 这个地方已经可以看到`InstantiationAwareBeanPostProcessor`出现了,并且调用了方法`postProcessBeforeInstantiation`，此处就可以调用我们的自定义方法了
 
-![image-20200119101516591](/images/spring/image-20200119101516591.png)
+![image-20200119101516591](../../../images/spring/image-20200119101516591.png)

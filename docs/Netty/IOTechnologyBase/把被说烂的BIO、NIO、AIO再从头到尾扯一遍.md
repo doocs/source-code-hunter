@@ -15,7 +15,7 @@ Java中将输入输出抽象称为流，就好像水管，将两个容器连接�
 ##### 2.1 阻塞IO（Blocking I/O）
 在内核将数据准备好之前，系统调用会一直等待所有的套接字（Socket），默认的是阻塞方式。
 
-![avatar](/images/Netty/阻塞IO模型.png)
+![avatar](../../../images/Netty/阻塞IO模型.png)
 
 Java中的socket.read()会调用native read()，而Java中的native方法会调用操作系统底层的dll，而dll是C/C++编写的，图中的recvfrom其实是C语言socket编程中的一个方法。所以其实我们在Java中调用socket.read()最后也会调用到图中的recvfrom方法。
 
@@ -28,7 +28,7 @@ BIO中的阻塞，就是阻塞在2个地方：
 在这2个时候，我们的BIO程序就是占着茅坑不拉屎，啥事情都不干。
 ##### 2.2 非阻塞IO（Noblocking I/O）
 
-![avatar](/images/Netty/非阻塞IO模型.png)
+![avatar](../../../images/Netty/非阻塞IO模型.png)
 
 每次应用进程询问内核是否有数据报准备好，当有数据报准备好时，就进行拷贝数据报的操作，从内核拷贝到用户空间，和拷贝完成返回的这段时间，应用进程是阻塞的。但在没有数据报准备好时，并不会阻塞程序，内核直接返回未准备就绪的信号，等待应用进程的下一个轮寻。但是，轮寻对于CPU来说是较大的浪费，一般只有在特定的场景下才使用。
 
@@ -48,7 +48,7 @@ serverSocketChannel.configureBlocking(false);
 **BIO 不会在recvfrom（询问数据是否准备好）时阻塞，但还是会在将数据从内核空间拷贝到用户空间时阻塞。一定要注意这个地方，Non-Blocking还是会阻塞的。**
 ##### 2.3 IO多路复用（I/O Multiplexing）
 
-![avatar](/images/Netty/IO复用模型.png)
+![avatar](../../../images/Netty/IO复用模型.png)
 
 传统情况下client与server通信需要一个3个socket(客户端的socket，服务端的serversocket，服务端中用来和客户端通信的socket)，而在IO多路复用中，客户端与服务端通信需要的不是socket，而是3个channel，通过channel可以完成与socket同样的操作，channel的底层还是使用的socket进行通信，但是多个channel只对应一个socket(可能不只是一个，但是socket的数量一定少于channel数量)，这样仅仅通过少量的socket就可以完成更多的连接，提高了client容量。
 
@@ -60,12 +60,12 @@ Mac：kqueue
 **selector，epoll，kqueue都属于Reactor IO设计。**
 ##### 2.4 信号驱动（Signal driven IO）
 
-![avatar](/images/Netty/信号驱动IO模型.png)
+![avatar](../../../images/Netty/信号驱动IO模型.png)
 
 信号驱动IO模型，应用进程告诉内核：当数据报准备好的时候，给我发送一个信号，对SIGIO信号进行捕捉，并且调用我的信号处理函数来获取数据报。
 ##### 2.5 异步IO（Asynchronous I/O）
 
-![avatar](/images/Netty/异步IO模型.png)
+![avatar](../../../images/Netty/异步IO模型.png)
 
 Asynchronous IO调用中是真正的无阻塞，其他IO model中多少会有点阻塞。程序发起read操作之后，立刻就可以开始去做其它的事。而在内核角度，当它受到一个asynchronous read之后，首先它会立刻返回，所以不会对用户进程产生任何block。然后，kernel会等待数据准备完成，然后将数据拷贝到用户内存，当这一切都完成之后，kernel会给用户进程发送一个signal，告诉它read操作完成了。
 

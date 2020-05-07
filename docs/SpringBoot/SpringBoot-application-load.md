@@ -12,11 +12,11 @@
 
 2. 全局搜索yml
 
-   ![image-20200319083048849](/images/SpringBoot/image-20200319083048849.png)
+   ![image-20200319083048849](../../../images/SpringBoot/image-20200319083048849.png)
 
 3. 换成`properties`搜索
 
-   ![image-20200319083140225](/images/SpringBoot/image-20200319083140225.png)
+   ![image-20200319083140225](../../../images/SpringBoot/image-20200319083140225.png)
 
 4. 我们以`yml`为例打上断点开始源码追踪
 
@@ -26,7 +26,7 @@
 
 看到调用堆栈
 
-![image-20200319083345067](/images/SpringBoot/image-20200319083345067.png)
+![image-20200319083345067](../../../images/SpringBoot/image-20200319083345067.png)
 
 
 
@@ -40,9 +40,9 @@
 
 ### 调用过程
 
-![image-20200319082131146](/images/SpringBoot/image-20200319082131146.png)
+![image-20200319082131146](../../../images/SpringBoot/image-20200319082131146.png)
 
-![image-20200319082544653](/images/SpringBoot/image-20200319082544653.png)
+![image-20200319082544653](../../../images/SpringBoot/image-20200319082544653.png)
 
 
 
@@ -91,15 +91,15 @@ protected void addPropertySources(ConfigurableEnvironment environment, ResourceL
 
   - 搜索目标: `org.springframework.boot.env.PropertySourceLoader`
 
-    ![image-20200319084141748](/images/SpringBoot/image-20200319084141748.png)
+    ![image-20200319084141748](../../../images/SpringBoot/image-20200319084141748.png)
 
 
 
-![image-20200319084151997](/images/SpringBoot/image-20200319084151997.png)
+![image-20200319084151997](../../../images/SpringBoot/image-20200319084151997.png)
 
 观察发现里面有一个`YamlPropertySourceLoader`和我们之前找yml字符串的时候找到的类是一样的。说明搜索方式没有什么问题。
 
-![image-20200319084357652](/images/SpringBoot/image-20200319084357652.png)
+![image-20200319084357652](../../../images/SpringBoot/image-20200319084357652.png)
 
 初始化完成，后续进行解析了
 
@@ -139,7 +139,7 @@ protected void addPropertySources(ConfigurableEnvironment environment, ResourceL
 ### initializeProfiles
 
 - 初始化`private Deque<Profile> profiles;` 属性
-- ![image-20200319084902957](/images/SpringBoot/image-20200319084902957.png)
+- ![image-20200319084902957](../../../images/SpringBoot/image-20200319084902957.png)
 
 
 
@@ -170,7 +170,7 @@ private void load(Profile profile, DocumentFilterFactory filterFactory, Document
 
 - 资源路径可能性
 
-![image-20200319085446640](/images/SpringBoot/image-20200319085446640.png)
+![image-20200319085446640](../../../images/SpringBoot/image-20200319085446640.png)
 
 
 
@@ -237,7 +237,7 @@ private void load(Profile profile, DocumentFilterFactory filterFactory, Document
 
 
 
-![image-20200319090446231](/images/SpringBoot/image-20200319090446231.png)
+![image-20200319090446231](../../../images/SpringBoot/image-20200319090446231.png)
 
 
 
