@@ -11,7 +11,7 @@ dubbo自己实现了一套SPI机制，并对 JDK的SPI进行了改进。
 
 下面我们看一下Dubbo 的 SPI扩展机制实现的结构目录。
 
-![avatar](/images/Dubbo/SPI组件目录结构.png)
+![avatar](../../../images/Dubbo/SPI组件目录结构.png)
 
 ### SPI 注解
 首先看一下 SPI注解。在某个接口上加上 @SPI 注解后，表明该接口为可扩展接口。比如，协议扩展接口Protocol，如果使用者在 &lt;dubbo:protocol />、&lt;dubbo:service />、&lt;dubbo:reference /> 都没有指定 protocol属性 的话，那么就默认使用 DubboProtocol 作为接口Protocol的实现，因为在 Protocol 上有 @SPI("dubbo")注解。而这个 protocol属性值 或者默认值会被当作该接口的实现类中的一个key，dubbo 会去 META-INF.dubbo.internal下的com.alibaba.dubbo.rpc.Protocol文件中找该key对应的value，源码如下。

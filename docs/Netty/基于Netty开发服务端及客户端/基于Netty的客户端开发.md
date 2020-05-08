@@ -5,7 +5,7 @@ Netty 为了向使用者屏蔽 NIO通信 的底层细节，在和用户交互的
 
 ### 基于 Netty 创建客户端 时序图
 
-![avatar](/images/Netty/基于Netty创建客户端时序图.png)
+![avatar](../../../images/Netty/基于Netty创建客户端时序图.png)
 
 ### Netty 创建客户端 流程分析
 1. 用户线程创建 Bootstrap实例，通过 API 设置客户端相关的参数，异步发起客户端连接；

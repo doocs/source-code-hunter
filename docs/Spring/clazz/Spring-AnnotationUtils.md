@@ -50,11 +50,11 @@
 ```
 -  method
 
-  ![image-20200116085344737](/images/spring/image-20200116085344737.png)
+  ![image-20200116085344737](../../../images/spring/image-20200116085344737.png)
 
 - annotationType
 
-  ![image-20200116085423073](/images/spring/image-20200116085423073.png)
+  ![image-20200116085423073](../../../images/spring/image-20200116085423073.png)
 
 ```java
     @Nullable
@@ -229,9 +229,9 @@
 
 处理结果
 
-![image-20200116085726577](/images/spring/image-20200116085726577.png)
+![image-20200116085726577](../../../images/spring/image-20200116085726577.png)
 
-![image-20200116085737632](/images/spring/image-20200116085737632.png)
+![image-20200116085737632](../../../images/spring/image-20200116085737632.png)
 
 处理结果和Order定义相同
 
@@ -257,7 +257,7 @@ public @interface Order {
 
 最终返回
 
-![image-20200116085927359](/images/spring/image-20200116085927359.png)
+![image-20200116085927359](../../../images/spring/image-20200116085927359.png)
 
 
 
@@ -412,7 +412,7 @@ public @interface Order {
 
   
 
-![image-20200116092259944](/images/spring/image-20200116092259944.png)
+![image-20200116092259944](../../../images/spring/image-20200116092259944.png)
 
 - `synthesizeAnnotation`方法就不再重复一遍了可以看上文
 

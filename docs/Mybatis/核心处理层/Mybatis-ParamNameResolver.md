@@ -176,9 +176,9 @@ public class ParamNameResolver {
 
 - 写`@Param`返回
 
-![image-20191219083344439](/images/mybatis/image-20191219083344439.png)
+![image-20191219083344439](../../../images/mybatis/image-20191219083344439.png)
 
-![image-20191219083354873](/images/mybatis/image-20191219083354873.png)
+![image-20191219083354873](../../../images/mybatis/image-20191219083354873.png)
 
 
 
@@ -188,7 +188,7 @@ public class ParamNameResolver {
       List<HsSell> list( Integer id);
   ```
 
-![image-20191219084455292](/images/mybatis/image-20191219084455292.png)
+![image-20191219084455292](../../../images/mybatis/image-20191219084455292.png)
 
   
 
@@ -199,6 +199,6 @@ public class ParamNameResolver {
 
 ​	写上`@Param`
 
-![image-20191219084943102](/images/mybatis/image-20191219084943102.png)
+![image-20191219084943102](../../../images/mybatis/image-20191219084943102.png)
 
-![image-20191219085131167](/images/mybatis/image-20191219085131167.png)
+![image-20191219085131167](../../../images/mybatis/image-20191219085131167.png)

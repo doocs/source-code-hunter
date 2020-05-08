@@ -79,9 +79,9 @@
 
 ```
 
-![image-20200108081404857](/images/spring//image-20200108081404857.png)
+![image-20200108081404857](../../../images/spring//image-20200108081404857.png)
 
-![image-20200108081623427](/images/spring//image-20200108081623427.png)
+![image-20200108081623427](../../../images/spring//image-20200108081623427.png)
 
 得到本地路径，后续直接返回读取资源
 
@@ -146,7 +146,7 @@
 
 - systemId `https://www.springframework.org/dtd/spring-beans-2.0.dtd`
 
-![image-20200108082335031](/images/spring//image-20200108082335031.png)
+![image-20200108082335031](../../../images/spring//image-20200108082335031.png)
 
 
 ## 总结

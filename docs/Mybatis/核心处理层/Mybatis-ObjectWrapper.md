@@ -5,7 +5,7 @@
 
 类图：
 
-![image-20191223100956713](/images/mybatis/image-20191223100956713.png)
+![image-20191223100956713](../../../images/mybatis/image-20191223100956713.png)
 ```java
 public interface ObjectWrapper {
 

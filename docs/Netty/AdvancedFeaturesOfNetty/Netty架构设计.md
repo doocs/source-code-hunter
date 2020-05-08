@@ -4,7 +4,7 @@
 ## Netty的三层架构设计
 Netty 采用了典型的三层网络架构进行设计和开发，其逻辑架构图如下所示。
 
-![avatar](/images/Netty/Netty逻辑架构图.png)
+![avatar](../../../images/Netty/Netty逻辑架构图.png)
 
 ### 通信调度层 Reactor
 它由一系列辅助类完成，包括 Reactor线程 NioEventLoop 及其父类，NioSocketChannel / NioServerSocketChannel 及其父类，Buffer组件，Unsafe组件 等。该层的主要职责就是**监听网络的读写和连接操作**，负责**将网络层的数据读取到内存缓冲区**，然后触发各种网络事件，例如连接创建、连接激活、读事件、写事件等，将这些事件触发到 PipeLine 中，由 PipeLine 管理的责任链来进行后续的处理。

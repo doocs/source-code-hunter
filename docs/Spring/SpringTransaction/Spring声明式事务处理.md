@@ -71,7 +71,7 @@ public class TransactionProxyFactoryBean extends AbstractSingletonProxyFactoryBe
 ```
 以上代码完成了 AOP配置，对于用户来说，一个值得关心的问题是，Spring 的 TransactionInterceptor配置 是在什么时候被启动并成为 Advisor通知器 的一部分的呢？从对 createMainInterceptor()方法 的调用分析中可以看到，这个 createMainInterceptor()方法 在 IoC容器 完成 Bean的依赖注入时，通过 initializeBean()方法 被调用，具体的调用过程如下图所示。
 
-![avatar](/images/springTransaction/createMainInterceptor()方法的调用链.png)
+![avatar](../../../images/springTransaction/createMainInterceptor()方法的调用链.png)
 
 在 TransactionProxyFactoryBean 的父类 AbstractSingletonProxyFactoryBean 中的 afterPropertiesSet()方法，是 Spring事务处理 完成 AOP配置 的地方，在建立 TransactionProxyFactoryBean 的事务处理拦截器的时候，首先需要对 ProxyFactoryBean 的 目标Bean 设置进行检查，如果这个 目标Bean 的设置是正确的，就会创建一个 ProxyFactory对象，从而实现 AOP 的使用。在 afterPropertiesSet() 的方法实现中，可以看到为 ProxyFactory 生成代理对象、配置通知器、设置代理接口方法等。
 ```java

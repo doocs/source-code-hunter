@@ -5,7 +5,7 @@
 - 官方提供的测试类: `org.springframework.beans.factory.support.DefaultSingletonBeanRegistryTests`
 
 类图
-![image-20200110093044672](/images/spring/image-20200110093044672.png)
+![image-20200110093044672](../../../images/spring/image-20200110093044672.png)
 ## 注册方法解析
 - 从名字可以看出这是一个单例对象的注册类
 - `org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.registerSingleton`

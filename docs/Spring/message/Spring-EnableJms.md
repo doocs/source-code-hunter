@@ -48,7 +48,7 @@ public class JmsBootstrapConfiguration {
 
 类图
 
-![image-20200304085303580](/images/springmessage/image-20200304085303580.png)
+![image-20200304085303580](../../../images/springmessage/image-20200304085303580.png)
 
 
 
@@ -329,7 +329,7 @@ public class JmsBootstrapConfiguration {
   }
   ```
 
-  ![image-20200304092154712](/images/springmessage/image-20200304092154712.png)
+  ![image-20200304092154712](../../../images/springmessage/image-20200304092154712.png)
 
 
 

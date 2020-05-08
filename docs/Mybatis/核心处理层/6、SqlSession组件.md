@@ -81,7 +81,7 @@ public interface SqlSession extends Closeable {
 ### 1.1 DefaultSqlSession
 DefaultSqlSession是单独使用MyBatis进行开发时，最常用的SqISession接口实现。其实现了SqISession接口中定义的方法，及各方法的重载。select()系列方法、selectOne()系列方法、selectList()系列方法、selectMap()系列方法之间的调用关系如下图，殊途同归，它们最终都会调用Executor的query()方法。
 
-![avatar](/images/mybatis/DefaultSqlSession方法调用栈.png)
+![avatar](../../../images/mybatis/DefaultSqlSession方法调用栈.png)
 
 上述重载方法最终都是通过调用Executor的query(MappedStatement, Object, RowBounds,ResultHandler)方法实现数据库查询操作的，但各自对结果对象进行了相应的调整，例如：selectOne()方法是从结果对象集合中获取了第一个元素返回；selectMap()方法会将List类型的结果集 转换成Map类型集合返回；select()方法是将结果集交由用户指定的ResultHandler对象处理，且没有返回值；selectList()方法则是直接返回结果对象集合。
 DefaultSqlSession的insert()方法、update()方法、delete()方法也有多个重载，它们最后都是通过调用DefaultSqlSession的update(String, Object)方法实现的，该重载首先会将dirty字段置为true，然后再通过Executor的update()方法完成数据库修改操作。

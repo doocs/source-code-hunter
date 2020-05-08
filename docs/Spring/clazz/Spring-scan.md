@@ -46,7 +46,7 @@ public class ContextNamespaceHandler extends NamespaceHandlerSupport {
 
 ### org.springframework.context.annotation.ComponentScanBeanDefinitionParser
 
-![image-20200115093602651](/images/spring/image-20200115093602651.png)
+![image-20200115093602651](../../../images/spring/image-20200115093602651.png)
 
 - 实现`BeanDefinitionParser`直接看`parse`方法
 ```java
@@ -299,7 +299,7 @@ public int scan(String... basePackages) {
 
 ```
 
-![image-20200115141708702](/images/spring/image-20200115141708702.png)
+![image-20200115141708702](../../../images/spring/image-20200115141708702.png)
 
 #### org.springframework.beans.factory.support.BeanNameGenerator#generateBeanName
 
@@ -364,7 +364,7 @@ public class DemoService {
 
 
 
-![image-20200115143315633](/images/spring/image-20200115143315633.png)
+![image-20200115143315633](../../../images/spring/image-20200115143315633.png)
 
 
 
@@ -398,7 +398,7 @@ public class BeanConfig {
 
 ```
 
-![image-20200115143456554](/images/spring/image-20200115143456554.png)
+![image-20200115143456554](../../../images/spring/image-20200115143456554.png)
 
 
 
