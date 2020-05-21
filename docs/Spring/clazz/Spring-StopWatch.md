@@ -1,18 +1,18 @@
 # Spring StopWatch
 - Author: [HuiFer](https://github.com/huifer)
-- Ô´ÂëÔÄ¶Á²Ö¿â: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
+- æºç é˜…è¯»ä»“åº“: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 
-- È«Â·¾¶: `org.springframework.util.StopWatch`
-## ÊôĞÔ
-- taskList: ÈÎÎñĞÅÏ¢ÁĞ±í
-- keepTaskList: ÊÇ·ñ±£ÁôÈÎÎñĞÅÏ¢ÁĞ±í
-- startTimeMillis: ÈÎÎñ¿ªÊ¼µÄÊ±¼ä
-- currentTaskName: ÈÎÎñÃû³Æ
-- lastTaskInfo: ÈÎÎñĞÅÏ¢
-- taskCount: ÈÎÎñÊıÁ¿
-- totalTimeMillis: ×Ü¹²»¨·ÑµÄÊ±¼ä
+- å…¨è·¯å¾„: `org.springframework.util.StopWatch`
+## å±æ€§
+- taskList: ä»»åŠ¡ä¿¡æ¯åˆ—è¡¨
+- keepTaskList: æ˜¯å¦ä¿ç•™ä»»åŠ¡ä¿¡æ¯åˆ—è¡¨
+- startTimeMillis: ä»»åŠ¡å¼€å§‹çš„æ—¶é—´
+- currentTaskName: ä»»åŠ¡åç§°
+- lastTaskInfo: ä»»åŠ¡ä¿¡æ¯
+- taskCount: ä»»åŠ¡æ•°é‡
+- totalTimeMillis: æ€»å…±èŠ±è´¹çš„æ—¶é—´
 
-## ·½·¨
+## æ–¹æ³•
 - `org.springframework.util.StopWatch.start(java.lang.String)`
 ```java
     public void start(String taskName) throws IllegalStateException {
@@ -29,10 +29,10 @@
         if (this.currentTaskName == null) {
             throw new IllegalStateException("Can't stop StopWatch: it's not running");
         }
-        // Ïû·ÑµÄÊ±¼ä
+        // æ¶ˆè´¹çš„æ—¶é—´
         long lastTime = System.currentTimeMillis() - this.startTimeMillis;
         this.totalTimeMillis += lastTime;
-        // ÈÎÎñĞÅÏ¢³õÊ¼»¯
+        // ä»»åŠ¡ä¿¡æ¯åˆå§‹åŒ–
         this.lastTaskInfo = new TaskInfo(this.currentTaskName, lastTime);
         if (this.keepTaskList) {
             this.taskList.add(this.lastTaskInfo);
