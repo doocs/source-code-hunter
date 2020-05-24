@@ -164,9 +164,9 @@
 
 ### RPC
 - [RPC模块简析](docs/Dubbo/RPC/RPC模块简析.md)
-- [RPC模块简析](docs/Dubbo/RPC/Protocol组件.md)
-- [RPC模块简析](docs/Dubbo/RPC/Proxy组件.md)
-- [RPC模块简析](docs/Dubbo/RPC/多协议支持.md)
+- [Protocol组件](docs/Dubbo/RPC/Protocol组件.md)
+- [Proxy组件](docs/Dubbo/RPC/Proxy组件.md)
+- [多协议支持](docs/Dubbo/RPC/多协议支持.md)
 
 ### 集群
 - [Dubbo集群模块简析](docs/Dubbo/cluster/Dubbo集群模块简析.md)
