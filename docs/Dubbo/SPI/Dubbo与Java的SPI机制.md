@@ -1,7 +1,7 @@
 ## JDK的SPI思想
-SPI，即Service Provider Interface。在面向对象的设计里面，模块之间推荐基于接口编程，而不是对实现类进行硬编码，这样做也是为了模块设计的可拔插原则。
+SPI，即 Service Provider Interface。在面向对象的设计里面，模块之间推荐基于接口编程，而不是对实现类进行硬编码，这样做也是为了模块设计的可插拔原则。
 
-比较典型的应用，如 JDBC，Java 定义了一套 JDBC 的接口，但是 Java 本身并不提供对 JDBC 的实现类，而是开发者根据项目实际使用的数据库来选择驱动程序jar包，比如 mysql，你就将 mysql-jdbc-connector.jar 引入进来；oracle，你就将 oracle-jdbc-connector.jar 引入进来。在系统跑的时候，碰到你使用 jdbc 的接口，他会在底层使用你引入的那个 jar 中提供的实现类。
+比较典型的应用，如 JDBC，Java 定义了一套 JDBC 的接口，但是 Java 本身并不提供对 JDBC 的实现类，而是开发者根据项目实际使用的数据库来选择驱动程序 jar包，比如 mysql，你就将 mysql-jdbc-connector.jar 引入进来；oracle，你就将 oracle-jdbc-connector.jar 引入进来。在系统跑的时候，碰到你使用 jdbc 的接口，他会在底层使用你引入的那个 jar 中提供的实现类。
 
 ## Dubbo的SPI扩展机制原理
 dubbo自己实现了一套SPI机制，并对 JDK的SPI进行了改进。  
@@ -25,13 +25,11 @@ public interface Protocol {
 
     /**
      * Get default port when user doesn't config the port.
-     *
-     * @return default port
      */
     int getDefaultPort();
 
     /**
-     * 暴露远程服务：<br>
+     * 暴露远程服务：
      * 1. 协议在接收请求时，应记录请求来源方地址信息：RpcContext.getContext().setRemoteAddress();<br>
      * 2. export() 必须是幂等的，也就是暴露同一个 URL 的 Invoker 两次，和暴露一次没有区别。<br>
      * 3. export() 传入的 Invoker 由框架实现并传入，协议不需要关心。<br>
