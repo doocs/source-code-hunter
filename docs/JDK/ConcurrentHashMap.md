@@ -161,4 +161,5 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V> implements Concurre
     }
 }
 ```
-**与JDK1.7在同步机制上的区别** 总结如下。JDK1.7 使用的是分段锁机制，其内部类Segment 继承了 ReentrantLock，将 容器内的数组划分成多段区域，每个区域对应一把锁，相比于HashTable确实提升了不少并发能力，但在数据量庞大的情况下，性能依然不容乐观，只能通过不断的增加锁来维持并发性能。而JDK1.8则使用了 CAS乐观锁 + synchronized局部锁 处理并发问题，锁粒度更细，即使数据量很大也能保证良好的并发性。
+**与JDK1.7在同步机制上的区别** 总结如下：  
+JDK1.7 使用的是分段锁机制，其内部类Segment 继承了 ReentrantLock，将 容器内的数组划分成多段区域，每个区域对应一把锁，相比于HashTable确实提升了不少并发能力，但在数据量庞大的情况下，性能依然不容乐观，只能通过不断的增加锁来维持并发性能。而JDK1.8则使用了 CAS乐观锁 + synchronized局部锁 处理并发问题，锁粒度更细，即使数据量很大也能保证良好的并发性。

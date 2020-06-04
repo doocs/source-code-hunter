@@ -95,6 +95,7 @@ public class HashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>,
 	            // 对链表进行遍历，并统计链表长度
 	            for (int binCount = 0; ; ++binCount) {
 	                // 链表中不包含要插入的键值对节点时，则将该节点接在链表的最后
+	                // ！！！ JDK1.7中 新增的Node节点采用头插入，而JDK1.8中改成了尾插入 ！！！
 	                if ((e = p.next) == null) {
 	                    p.next = newNode(hash, key, value, null);
 	                    // 如果链表长度达到阈值，则进化成红黑树
