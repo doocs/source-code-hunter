@@ -1,6 +1,8 @@
 前面我们分析了 Thread类的源码，有了前面的铺垫，通过源码 理解ThreadLocal的秘密就容易多了。
 
 ThreadLocal类 提供了 get/set线程局部变量的实现，ThreadLocal成员变量与正常的成员变量不同，每个线程都可以通过 ThreadLocal成员变量 get/set自己的专属值。ThreadLocal实例 通常是类中的私有静态变量，常用于将状态与线程关联，例如：用户ID或事务ID。
+
+tips：在类中定义ThreadLocal变量时，一般在定义时就进行实例化！
 ```java
 public class ThreadLocal<T> {
 
