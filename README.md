@@ -130,7 +130,7 @@
 
 * [把被说烂的 BIO、NIO、AIO 再从头到尾扯一遍](docs/Netty/IOTechnologyBase/把被说烂的BIO、NIO、AIO再从头到尾扯一遍.md)
 * [IO模型](docs/Netty/IOTechnologyBase/IO模型.md)
-* [详解selector、poll和epoll]()
+* [详解selector、poll和epoll](docs/Netty/IOTechnologyBase/详解selector、poll和epoll.md)
 * [四种IO编程及对比](docs/Netty/IOTechnologyBase/四种IO编程及对比.md)
 
 ### Netty 粘拆包解决方案
