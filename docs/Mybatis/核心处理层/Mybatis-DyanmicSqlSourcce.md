@@ -22,9 +22,9 @@
 
 
 
-![image-20191219151247240](/image/mybatis/image-20191219151247240.png)
+![image-20191219151247240](../../../images/mybatis/image-20191219151247240.png)
 
-![image-20191219151408597](/image/mybatis/image-20191219151408597.png)
+![image-20191219151408597](../../../images/mybatis/image-20191219151408597.png)
 
 ```java
 public class MixedSqlNode implements SqlNode {
@@ -53,7 +53,7 @@ public class MixedSqlNode implements SqlNode {
 
   `org.apache.ibatis.scripting.xmltags.IfSqlNode#apply`
 
-![image-20191219152254274](/image/mybatis/image-20191219152254274.png)
+![image-20191219152254274](../../../images/mybatis/image-20191219152254274.png)
 
 ```java
 /**
@@ -90,7 +90,7 @@ public class StaticTextSqlNode implements SqlNode {
 
 - 解析`trim`标签 
 
-![image-20191219152502960](/image/mybatis/image-20191219152502960.png)
+![image-20191219152502960](../../../images/mybatis/image-20191219152502960.png)
 
 - 在解析`trim`的时候会往下解析下级标签
 
@@ -107,7 +107,7 @@ public class StaticTextSqlNode implements SqlNode {
 
   
 
-![image-20191219152655746](/image/mybatis/image-20191219152655746.png)
+![image-20191219152655746](../../../images/mybatis/image-20191219152655746.png)
 
 ```JAVA
     @Override
@@ -161,17 +161,17 @@ public class StaticTextSqlNode implements SqlNode {
 
 ```
 
-![image-20191219153341466](/image/mybatis/image-20191219153341466.png)
+![image-20191219153341466](../../../images/mybatis/image-20191219153341466.png)
 
 存在返回`true`
 
 执行完成就得到了一个sql
 
-![image-20191219153553127](/image/mybatis/image-20191219153553127.png)
+![image-20191219153553127](../../../images/mybatis/image-20191219153553127.png)
 
 继续执行`org.apache.ibatis.scripting.xmltags.DynamicSqlSource#getBoundSql`方法
 
-![image-20191219155129772](/image/mybatis/image-20191219155129772.png)
+![image-20191219155129772](../../../images/mybatis/image-20191219155129772.png)
 
 - 发送sql`org.apache.ibatis.executor.SimpleExecutor#doQuery`
 
@@ -259,7 +259,7 @@ public class StaticTextSqlNode implements SqlNode {
       - `org.apache.ibatis.executor.BaseExecutor#doQuery`
       - `org.apache.ibatis.executor.SimpleExecutor#doQuery`
 
-![image-20191219160832704](/image/mybatis/image-20191219160832704.png)
+![image-20191219160832704](../../../images/mybatis/image-20191219160832704.png)
 
 ```java
     private Statement prepareStatement(StatementHandler handler, Log statementLog) throws SQLException {
@@ -276,7 +276,7 @@ public class StaticTextSqlNode implements SqlNode {
 
 ```
 
-![image-20191219160908212](/image/mybatis/image-20191219160908212.png)
+![image-20191219160908212](../../../images/mybatis/image-20191219160908212.png)
 
 - `org.apache.ibatis.executor.statement.BaseStatementHandler#prepare`
   - `org.apache.ibatis.executor.statement.PreparedStatementHandler#instantiateStatement`
@@ -330,7 +330,7 @@ public class StaticTextSqlNode implements SqlNode {
 
 - 接下来需要考虑的问题是如何将`?`换成我们的参数`2`
 
-  ![image-20191219161555793](/image/mybatis/image-20191219161555793.png)
+  ![image-20191219161555793](../../../images/mybatis/image-20191219161555793.png)
 
 - `org.apache.ibatis.executor.statement.StatementHandler#parameterize`
   - `org.apache.ibatis.executor.statement.RoutingStatementHandler#parameterize`
@@ -343,11 +343,11 @@ public class StaticTextSqlNode implements SqlNode {
 
 
 
-![image-20191219162258040](/image/mybatis/image-20191219162258040.png)
+![image-20191219162258040](../../../images/mybatis/image-20191219162258040.png)
 
 这样就拿到了`value`的值
 
-![image-20191219162506920](/image/mybatis/image-20191219162506920.png)
+![image-20191219162506920](../../../images/mybatis/image-20191219162506920.png)
 
 准备工作就绪了发送就可以了
 
@@ -376,11 +376,11 @@ public class StaticTextSqlNode implements SqlNode {
 
 
 
-![image-20191219163628214](/image/mybatis/image-20191219163628214.png)
+![image-20191219163628214](../../../images/mybatis/image-20191219163628214.png)
 
-![image-20191219163640968](/image/mybatis/image-20191219163640968.png)
+![image-20191219163640968](../../../images/mybatis/image-20191219163640968.png)
 
-![image-20191219163957488](/image/mybatis/image-20191219163957488.png)
+![image-20191219163957488](../../../images/mybatis/image-20191219163957488.png)
 
 处理后结果如上
 
