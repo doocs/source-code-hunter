@@ -276,7 +276,7 @@ public class ProxyTransactionManagementConfiguration extends AbstractTransaction
 
 ### TransactionInterceptor
 
-![image-20200729144622440](images/image-20200729144622440.png)
+![image-20200729144622440](/images/spring/image-20200729144622440.png)
 
 
 
@@ -333,13 +333,13 @@ public class DeclarativeTransactionTest {
 
 
 
-![image-20200729145518089](images/image-20200729145518089.png)
+![image-20200729145518089](/images/spring/image-20200729145518089.png)
 
 断点开始进行查阅. 再断点后执行一步会直接进入cglib代理对象
 
 `org.springframework.aop.framework.CglibAopProxy.DynamicAdvisedInterceptor#intercept` 具体不展开，继续往下执行
 
-![image-20200729145637688](images/image-20200729145637688.png)
+![image-20200729145637688](/images/spring/image-20200729145637688.png)
 
 走到`invoke`方法了
 
@@ -351,7 +351,7 @@ public class DeclarativeTransactionTest {
 
 入参对象查看
 
-![image-20200729145835608](images/image-20200729145835608.png)
+![image-20200729145835608](/images/spring/image-20200729145835608.png)
 
 
 
@@ -410,7 +410,7 @@ public class DeclarativeTransactionTest {
 
 
 
-![image-20200729162023837](images/image-20200729162023837.png)
+![image-20200729162023837](/images/spring/image-20200729162023837.png)
 
 - 此处方法已经获取到了这个方法就是后面的一个切面
 
@@ -464,7 +464,7 @@ public class DeclarativeTransactionTest {
 
 
 
-![image-20200729160650401](images/image-20200729160650401.png)
+![image-20200729160650401](/images/spring/image-20200729160650401.png)
 
 
 
@@ -509,7 +509,7 @@ public class DeclarativeTransactionTest {
 
   
 
-![image-20200729161647214](images/image-20200729161647214.png)
+![image-20200729161647214](/images/spring/image-20200729161647214.png)
 
 
 
@@ -554,7 +554,7 @@ public class DeclarativeTransactionTest {
 
 
 
-![image-20200729163303000](images/image-20200729163303000.png)
+![image-20200729163303000](/images/spring/image-20200729163303000.png)
 
 
 
@@ -975,7 +975,7 @@ void rollback(TransactionStatus status) throws TransactionException;
 
 
 
-![image-20200728105926218](images/image-20200728105926218.png)
+![image-20200728105926218](/images/spring/image-20200728105926218.png)
 
 - AbstractPlatformTransactionManager 定义了一些基础属性 以及一些需要子类实现的方法
 
@@ -1042,7 +1042,7 @@ doCleanupAfterCompletion
 
   - bean 的属性注入就不具体描述了
 
-![image-20200728133037075](images/image-20200728133037075.png)
+![image-20200728133037075](/images/spring/image-20200728133037075.png)
 
 - `InitializingBean`
 
@@ -1750,7 +1750,7 @@ public static void bindResource(Object key, Object value) throws IllegalStateExc
 
 - debug 使用的是druid的数据源
 
-![image-20200729090322058](images/image-20200729090322058.png)
+![image-20200729090322058](/images/spring/image-20200729090322058.png)
 
 - `unwrapResourceIfNecessary` 方法
 
@@ -1897,7 +1897,7 @@ map 对象的remove操作
 
 - 事务操作模板类图
 
-  ![image-20200728094658684](images/image-20200728094658684.png)
+  ![image-20200728094658684](/images/spring/image-20200728094658684.png)
 
   
 
