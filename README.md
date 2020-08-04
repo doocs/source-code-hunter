@@ -32,7 +32,6 @@
 
 ### SpringMVC
 
-* [温习一下 servlet](/docs/Spring/SpringMVC/温习一下servlet.md)
 * [IoC容器 在 Web环境 中的启动](/docs/Spring/SpringMVC/IoC容器在Web环境中的启动.md)
 * [SpringMVC 的设计与实现](/docs/Spring/SpringMVC/SpringMVC的设计与实现.md)
 * [SpringMVC 跨域解析](/docs/Spring/SpringMVC/SpringMVC-CROS.md)
@@ -131,10 +130,9 @@
 
 * [把被说烂的 BIO、NIO、AIO 再从头到尾扯一遍](docs/Netty/IOTechnologyBase/把被说烂的BIO、NIO、AIO再从头到尾扯一遍.md)
 * [IO模型](docs/Netty/IOTechnologyBase/IO模型.md)
-* [详解selector、poll和epoll](docs/Netty/IOTechnologyBase/详解selector、poll和epoll.md)
 * [四种IO编程及对比](docs/Netty/IOTechnologyBase/四种IO编程及对比.md)
 
-### Netty 粘拆包解决方案
+### Netty 粘拆包及解决方案
 
 * [TCP粘拆包问题及Netty中的解决方案](docs/Netty/TCP粘拆包/TCP粘拆包问题及Netty中的解决方案.md)
 
@@ -165,7 +163,6 @@
 
 * [Netty 架构设计](docs/Netty/AdvancedFeaturesOfNetty/Netty架构设计.md)
 * [Netty 高性能之道](docs/Netty/AdvancedFeaturesOfNetty/Netty高性能之道.md)
-* [Netty 高可靠性设计](docs/Netty/AdvancedFeaturesOfNetty/Netty高可靠性设计.md)
 
 ## Dubbo
 
@@ -210,8 +207,8 @@
 ### Servlet 与 Servlet容器
 
 * [servlet-api 源码赏析](docs/Tomcat/servlet-api源码赏析.md)
-* [一个简单的servlet容器](docs/Tomcat/一个简单的servlet容器代码设计.md)
-* [servlet容器详解](docs/Tomcat/servlet容器详解.md)
+* [一个简单的Servlet容器](docs/Tomcat/一个简单的servlet容器代码设计.md)
+* [Servlet容器详解](docs/Tomcat/servlet容器详解.md)
 
 ### Web 容器
 
@@ -256,7 +253,6 @@
 * [从 Spring 及 Mybatis 框架源码中学习设计模式(创建型)](docs/LearningExperience/DesignPattern/从Spring及Mybatis框架源码中学习设计模式(创建型).md)
 * [从 Spring 及 Mybatis 框架源码中学习设计模式(行为型)](docs/LearningExperience/DesignPattern/从Spring及Mybatis框架源码中学习设计模式(行为型).md)
 * [从 Spring 及 Mybatis 框架源码中学习设计模式(结构型)](docs/LearningExperience/DesignPattern/从Spring及Mybatis框架源码中学习设计模式(结构型).md)
-* [从框架源码中学习设计模式的感悟](docs/LearningExperience/DesignPattern/从框架源码中学习设计模式的感悟.md)
 
 ### 多线程
 
