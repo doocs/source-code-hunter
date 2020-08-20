@@ -216,7 +216,7 @@
 
 ## Redis
 
-* 努力编写中...
+* [深挖 Redis 6.0 源码——SDS](docs/Redis/redis-sds.md)
 
 ## 番外篇（JDK 1.8）
 ### 基础类库
