@@ -219,6 +219,12 @@
 
 * [深挖 Redis 6.0 源码——SDS](docs/Redis/redis-sds.md)
 
+
+## Nacos
+
+* [nacos 服务注册](docs/nacos/nacos-discovery.md)
+
+
 ## 番外篇（JDK 1.8）
 ### 基础类库
 * [String类 源码赏析](docs/JDK/basic/String.md)
