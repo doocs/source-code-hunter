@@ -67,6 +67,8 @@
 * [Spring-import注解](/docs/Spring/clazz/Spring-Import.md)
 * [Spring-定时任务](/docs/Spring/clazz/Spring-Scheduling.md)
 * [Spring StopWatch](/docs/Spring/clazz/Spring-StopWatch.md)
+* [Spring 元数据](/docs/Spring/clazz/Spring-Metadata.md)
+
 
 ### Spring5 新特性
 
