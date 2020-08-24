@@ -46,6 +46,7 @@
 * [Spring 声明式事务处理](/docs/Spring/SpringTransaction/Spring声明式事务处理.md)
 * [Spring 事务处理的设计与实现](/docs/Spring/SpringTransaction/Spring事务处理的设计与实现.md)
 * [Spring 事务管理器的设计与实现](/docs/Spring/SpringTransaction/Spring事务管理器的设计与实现.md)
+* [Spring 事务解析](/docs/Spring/TX/Spring-transaction.md)
 
 ### Spring 源码故事（瞎编版）
 
@@ -212,7 +213,7 @@
 
 ## Redis
 
-* 努力编写中...
+* [深挖 Redis 6.0 源码——SDS](docs/Redis/redis-sds.md)
 
 ## 番外篇（JDK 1.8）
 ### 基础类库
