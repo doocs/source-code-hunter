@@ -68,6 +68,7 @@
 * [Spring-定时任务](/docs/Spring/clazz/Spring-Scheduling.md)
 * [Spring StopWatch](/docs/Spring/clazz/Spring-StopWatch.md)
 * [Spring 元数据](/docs/Spring/clazz/Spring-Metadata.md)
+* [Spring 条件接口](/docs/Spring/clazz/Spring-Conditional.md)
 
 
 ### Spring5 新特性
