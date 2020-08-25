@@ -132,7 +132,6 @@ public interface AnnotatedTypeMetadata {
 
 
 
-## 
 
 ## AnnotationMetadata
 

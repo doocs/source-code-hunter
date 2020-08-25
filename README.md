@@ -92,6 +92,7 @@
 * [SpringBoot 自动装配](/docs/SpringBoot/SpringBoot-自动装配.md)
 * [SpringBoot ConfigurationProperties](/docs/SpringBoot/SpringBoot-ConfigurationProperties.md)
 * [SpringBoot 日志系统](/docs/SpringBoot/SpringBoot-LogSystem.md)
+* [SpringBoot ConditionalOnBean](/docs/SpringBoot/SpringBoot-ConditionalOnBean.md)
 
 ## MyBatis
 
