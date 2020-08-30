@@ -153,8 +153,8 @@
 ### Netty 主要组件的源码分析
 * [ByteBuf组件](docs/Netty/Netty主要组件源码分析/ByteBuf组件.md)
 * [Channel组件 和 Unsafe组件](docs/Netty/Netty主要组件源码分析/Channel和Unsafe组件.md)
-* [ChannelPipeline 和 ChannelHandler组件](docs/Netty/Netty主要组件源码分析/ChannelPipeline和ChannelHandler组件.md)
 * [EventLoop 和 EventLoopGroup组件](docs/Netty/Netty主要组件源码分析/EventLoop和EventLoopGroup组件.md)
+* [ChannelPipeline 和 ChannelHandler组件](docs/Netty/Netty主要组件源码分析/ChannelPipeline和ChannelHandler组件.md)
 * [Future 和 Promise组件](docs/Netty/Netty主要组件源码分析/Future和Promise组件.md)
 
 ### Netty 高级特性
