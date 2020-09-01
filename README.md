@@ -138,9 +138,6 @@
 ### Netty 粘拆包及解决方案
 * [TCP粘拆包问题及Netty中的解决方案](docs/Netty/TCP粘拆包/TCP粘拆包问题及Netty中的解决方案.md)
 
-### Netty 编解码
-* [Java序列化缺点与主流编解码框架](docs/Netty/Netty编解码/Java序列化缺点与主流编解码框架.md)
-
 ### Netty 多协议开发
 * [基于HTTP协议的Netty开发](docs/Netty/Netty多协议开发/基于HTTP协议的Netty开发.md)
 * [基于WebSocket协议的Netty开发](docs/Netty/Netty多协议开发/基于WebSocket协议的Netty开发.md)
