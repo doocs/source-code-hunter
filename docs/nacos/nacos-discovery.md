@@ -5,18 +5,10 @@
     nacos-discovery-spring-boot-autoconfigure
     nacos-discovery-spring-boot-starter
 
-
-
-
-
 ```properties
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.alibaba.boot.nacos.discovery.autoconfigure.NacosDiscoveryAutoConfiguration
 ```
-
-
-
-
 
 找到注解`NacosDiscoveryAutoConfiguration`
 
@@ -36,9 +28,7 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 }
 ```
 
-
-
-- 注解:`EnableNacosDiscovery` 
+- 注解:`EnableNacosDiscovery`
 
 ```java
 @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
@@ -49,10 +39,6 @@ public @interface EnableNacosDiscovery {}
 ```
 
 - import 类 :`NacosDiscoveryBeanDefinitionRegistrar`
-
-
-
-
 
 ```java
 public class NacosDiscoveryBeanDefinitionRegistrar
@@ -84,25 +70,11 @@ public class NacosDiscoveryBeanDefinitionRegistrar
 }
 ```
 
-
-
-
-
 - 两个流程
 
   1. 将注解`EnableNacosDiscovery`的属性读取,放入到 nacos 的全局属性配置中
 
   2. bean 注入
-
-
-
-
-
-
-
-
-
-
 
 ## nacos 全局配置属性
 
@@ -123,18 +95,12 @@ public static void registerGlobalNacosProperties(AnnotationAttributes attributes
 }
 ```
 
-
-
 - 贴出注解上的信息
 
 ```JAVA
 	NacosProperties globalProperties() default @NacosProperties(username = USERNAME_PLACEHOLDER, password = PASSWORD_PLACEHOLDER, endpoint = ENDPOINT_PLACEHOLDER, namespace = NAMESPACE_PLACEHOLDER, accessKey = ACCESS_KEY_PLACEHOLDER, secretKey = SECRET_KEY_PLACEHOLDER, serverAddr = SERVER_ADDR_PLACEHOLDER, contextPath = CONTEXT_PATH_PLACEHOLDER, clusterName = CLUSTER_NAME_PLACEHOLDER, encode = ENCODE_PLACEHOLDER);
 
 ```
-
-
-
-
 
 - 通过下面这段代码会将注解信息获取到对象`AnnotationAttributes globalPropertiesAttributes`中
 
@@ -143,15 +109,13 @@ public static void registerGlobalNacosProperties(AnnotationAttributes attributes
         .getAnnotation("globalProperties");
   ```
 
-
-
 - 下一段代码是将属性换算出来
 
   ```java
   registerGlobalNacosProperties((Map<?, ?>) globalPropertiesAttributes, registry,
         propertyResolver, beanName)
-      
-      
+
+
       	public static void registerGlobalNacosProperties(Map<?, ?> globalPropertiesAttributes,
   			BeanDefinitionRegistry registry, PropertyResolver propertyResolver,
   			String beanName) {
@@ -161,18 +125,10 @@ public static void registerGlobalNacosProperties(AnnotationAttributes attributes
   		// 单例注册
   		registerSingleton(registry, beanName, globalProperties);
   	}
-  
+
   ```
 
 ![image-20200821111938485](/images/nacos/image-20200821111938485.png)
-
-
-
-
-
-
-
-
 
 ## registerNacosCommonBeans
 
@@ -185,12 +141,8 @@ public static void registerNacosCommonBeans(BeanDefinitionRegistry registry) {
 }
 ```
 
-
-
-
-
 - 主要方法: registerInfrastructureBean
-  1. 定义出bean
+  1. 定义出 bean
   2. 设置构造参数
   3. 注册对象
 
@@ -212,25 +164,13 @@ public static void registerInfrastructureBean(BeanDefinitionRegistry registry,
 }
 ```
 
-
-
-
-
-
-
 ## @EnableConfigurationProperties(value = NacosDiscoveryProperties.class)
 
-属性读取，从application配置文件中读取数据转换成java对象。
+属性读取，从 application 配置文件中读取数据转换成 java 对象。
 
 ![image-20200821132413628](/images/nacos/image-20200821132413628.png)
 
-
-
-
-
 ## NacosDiscoveryAutoRegister
-
-
 
 ```java
 public class NacosDiscoveryAutoRegister
@@ -239,14 +179,10 @@ public class NacosDiscoveryAutoRegister
 
 - 处理一个`WebServerInitializedEvent` 事件的方法
 
-
-
 - 重写方法如下，主要工作内容
   1. 把服务发现配置读取出来
   2. 设置一些数据值
   3. 调用服务注册接口
-
-
 
 ```java
 @Override
@@ -290,21 +226,13 @@ public void onApplicationEvent(WebServerInitializedEvent event) {
 }
 ```
 
-
-
 - 注册的参数
 
   ![image-20200821133350982](/images/nacos/image-20200821133350982.png)
 
-
-
-
-
 ## 服务注册
 
 ![image-20200821133445090](/images/nacos/image-20200821133445090.png)
-
-
 
 - 注册一个实例
   1. 将 instance 对象转换成 BeatInfo 对象
@@ -313,7 +241,7 @@ public void onApplicationEvent(WebServerInitializedEvent event) {
 ```java
     @Override
     public void registerInstance(String serviceName, String groupName, Instance instance) throws NacosException {
-    
+
         if (instance.isEphemeral()) {
             // 实例信息转换
             BeatInfo beatInfo = new BeatInfo();
@@ -335,12 +263,8 @@ public void onApplicationEvent(WebServerInitializedEvent event) {
 
 ```
 
-
-
-
-
 - addBeatInfo
-  - 创建了一个定时任务 BeatTask 
+  - 创建了一个定时任务 BeatTask
 
 ```java
 public void addBeatInfo(String serviceName, BeatInfo beatInfo) {
@@ -356,8 +280,6 @@ public void addBeatInfo(String serviceName, BeatInfo beatInfo) {
     MetricsMonitor.getDom2BeatSizeMonitor().set(dom2Beat.size());
 }
 ```
-
-
 
 ### BeatTask
 
@@ -421,30 +343,27 @@ class BeatTask implements Runnable {
 ```
 
 - 定时任务说明
-  1. 和nacos进行一次交互，根据交互结果的code判断,如果不在nacos会执行注册.
 
-
-
-
+  1. 和 nacos 进行一次交互，根据交互结果的 code 判断,如果不在 nacos 会执行注册.
 
 - 发送请求的方法
 
   ```java
   public String reqAPI(String api, Map<String, String> params, String body, List<String> servers, String method) throws NacosException {
-  
+
       params.put(CommonParams.NAMESPACE_ID, getNamespaceId());
-  
+
       if (CollectionUtils.isEmpty(servers) && StringUtils.isEmpty(nacosDomain)) {
           throw new NacosException(NacosException.INVALID_PARAM, "no server available");
       }
-  
+
       NacosException exception = new NacosException();
-  
+
       if (servers != null && !servers.isEmpty()) {
-  
+
           Random random = new Random(System.currentTimeMillis());
           int index = random.nextInt(servers.size());
-  
+
           for (int i = 0; i < servers.size(); i++) {
               // 获取nacos所在的ip+port地址
               String server = servers.get(index);
@@ -460,7 +379,7 @@ class BeatTask implements Runnable {
               index = (index + 1) % servers.size();
           }
       }
-  
+
       if (StringUtils.isNotBlank(nacosDomain)) {
           for (int i = 0; i < UtilAndComs.REQUEST_DOMAIN_RETRY_COUNT; i++) {
               try {
@@ -473,29 +392,25 @@ class BeatTask implements Runnable {
               }
           }
       }
-  
+
       NAMING_LOGGER.error("request: {} failed, servers: {}, code: {}, msg: {}",
           api, servers, exception.getErrCode(), exception.getErrMsg());
-  
+
       throw new NacosException(exception.getErrCode(), "failed to req API:/api/" + api + " after all servers(" + servers + ") tried: "
           + exception.getMessage());
-  
+
   }
   ```
 
-
-
-
-
 **学习点**
 
-- 这里采用随机值作为第一个server的获取，主要目的是为了将请求随机分配给不同的nacos服务
+- 这里采用随机值作为第一个 server 的获取，主要目的是为了将请求随机分配给不同的 nacos 服务
 
-  如果直接使用for循环的索引那第一台nacos服务会收到所有的请求，直到这台服务坏了才会请求第二台
+  如果直接使用 for 循环的索引那第一台 nacos 服务会收到所有的请求，直到这台服务坏了才会请求第二台
 
         Random random = new Random(System.currentTimeMillis());
         int index = random.nextInt(servers.size());
-    
+
         for (int i = 0; i < servers.size(); i++) {
             // 获取nacos所在的ip+port地址
             String server = servers.get(index);
@@ -510,16 +425,12 @@ class BeatTask implements Runnable {
             }
             index = (index + 1) % servers.size();
         }
-    }
 
-
-
-
-
+  }
 
 ### registerService
 
-- 注册方法就是请求一次接口，将数据发送给nacos就完成了
+- 注册方法就是请求一次接口，将数据发送给 nacos 就完成了
 
 ```java
 public void registerService(String serviceName, String groupName, Instance instance) throws NacosException {
@@ -545,33 +456,18 @@ public void registerService(String serviceName, String groupName, Instance insta
 }
 ```
 
-
-
-
-
-
-
 - 服务注册的接口
+
   - `/nacos/v1/ns/instance`
   - `/nacos/v1/ns/instance/beat`
-
-
 
 - 接下来去寻找这两个接口的实现
 
   `com.alibaba.nacos.naming.controllers.InstanceController`
 
-
-
-
-
-
-
 ## nacos 服务端
 
 ### 实例注册
-
-
 
 ```java
 public void registerInstance(String namespaceId, String serviceName, Instance instance) throws NacosException {
@@ -588,8 +484,6 @@ public void registerInstance(String namespaceId, String serviceName, Instance in
     addInstance(namespaceId, serviceName, instance.isEphemeral(), instance);
 }
 ```
-
-
 
 - 创建空服务的流程
 
@@ -631,9 +525,7 @@ public void createServiceIfAbsent(String namespaceId, String serviceName, boolea
 }
 ```
 
-
-
-- 在了解map结构后不难理解下面这个获取Service的方法了
+- 在了解 map 结构后不难理解下面这个获取 Service 的方法了
 
 ```JAVA
 public Service getService(String namespaceId, String serviceName) {
@@ -643,10 +535,6 @@ public Service getService(String namespaceId, String serviceName) {
     return chooseServiceMap(namespaceId).get(serviceName);
 }
 ```
-
-
-
-
 
 ```java
 private void putServiceAndInit(Service service) throws NacosException {
@@ -658,9 +546,7 @@ private void putServiceAndInit(Service service) throws NacosException {
 }
 ```
 
-
-
-- 把服务加入map对象
+- 把服务加入 map 对象
 
 ```java
 public void putService(Service service) {
@@ -675,9 +561,7 @@ public void putService(Service service) {
 }
 ```
 
-
-
-- init 方法设置了一个数据验证的任务 ， 并且在集群中设置service信息
+- init 方法设置了一个数据验证的任务 ， 并且在集群中设置 service 信息
 
 ```java
 public void init() {
@@ -691,9 +575,7 @@ public void init() {
 }
 ```
 
-- 再往后添加两个key的监听
-
-
+- 再往后添加两个 key 的监听
 
 - addInstance 方法
 
@@ -715,28 +597,17 @@ public void addInstance(String namespaceId, String serviceName, boolean ephemera
 }
 ```
 
-
-
-
-
 - 简单理解 consistencyService 结构信息
   - key： 定义的一个名字
   - value : 实例的列表
 
-
-
-
-
-
 ### 实例健康检查
 
-- 获取实例独享, 从 service 中根据集群名称获取实例列表 ， 再根据ip + 端口 返回实例对象
+- 获取实例独享, 从 service 中根据集群名称获取实例列表 ， 再根据 ip + 端口 返回实例对象
 
 ```java
 Instance instance = serviceManager.getInstance(namespaceId, serviceName, clusterName, ip, port);
 ```
-
-
 
 ```java
 public Instance getInstance(String namespaceId, String serviceName, String cluster, String ip, int port) {
@@ -763,12 +634,6 @@ public Instance getInstance(String namespaceId, String serviceName, String clust
 }
 ```
 
-
-
-
-
-
-
 - 实例健康检查接口做的事件
   1. 获取实例
      1. 实例不存在注册实例
@@ -776,10 +641,6 @@ public Instance getInstance(String namespaceId, String serviceName, String clust
      1. 服务不存在抛出异常
      2. 服务存在执行一个心跳方法
   3. 组装结果返回
-
-
-
-
 
 ```java
 @CanDistro

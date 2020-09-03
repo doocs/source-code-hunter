@@ -1,11 +1,14 @@
-类似于 java.nio包 的 Channel，Netty 提供了自己的 Channel 和其子类实现，用于异步 I/O操作 等。Unsafe 是 Channel 的内部接口，聚合在 Channel 中协助进行网络读写相关的操作，因为它的设计初衷就是 Channel 的内部辅助类，不应该被 Netty框架 的上层使用者调用，所以被命名为 Unsafe。
+类似于 java.nio 包 的 Channel，Netty 提供了自己的 Channel 和其子类实现，用于异步 I/O 操作 等。Unsafe 是 Channel 的内部接口，聚合在 Channel 中协助进行网络读写相关的操作，因为它的设计初衷就是 Channel 的内部辅助类，不应该被 Netty 框架 的上层使用者调用，所以被命名为 Unsafe。
 
 ## Channel 组件
-Netty 的 **Channel组件 是 Netty 对网络操作的封装**，**如 网络数据的读写，与客户端建立连接**，主动关闭连接 等，也包含了 Netty框架 相关的一些功能，如 获取该 Chanel 的 **EventLoop、ChannelPipeline** 等。另外，Netty 并没有直接使用 java.nio包 的 SocketChannel和ServerSocketChannel，而是**使用 NioSocketChannel和NioServerSocketChannel 对其进行了进一步的封装**。下面我们先从 Channel接口 的API开始分析，然后看一下其重要子类的源码实现。
+
+Netty 的 **Channel 组件 是 Netty 对网络操作的封装**，**如 网络数据的读写，与客户端建立连接**，主动关闭连接 等，也包含了 Netty 框架 相关的一些功能，如 获取该 Chanel 的 **EventLoop、ChannelPipeline** 等。另外，Netty 并没有直接使用 java.nio 包 的 SocketChannel 和 ServerSocketChannel，而是**使用 NioSocketChannel 和 NioServerSocketChannel 对其进行了进一步的封装**。下面我们先从 Channel 接口 的 API 开始分析，然后看一下其重要子类的源码实现。
 
 为了便于后面的阅读源码，我们先看下 NioSocketChannel 和 NioServerSocketChannel 的继承关系类图。
 ![在这里插入图片描述](../../../images/Netty/Netty的Channel组件.png)
+
 #### Channel 接口
+
 ```java
 public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparable<Channel> {
 
@@ -14,7 +17,7 @@ public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparabl
      * EventLoop 实际上就是处理网络读写事件的 Reactor线程。
      */
     EventLoop eventLoop();
-    
+
     /**
      * ChannelMetadata 封装了 TCP参数配置
      */
@@ -84,7 +87,7 @@ public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparabl
 	 */
     @Override
     Channel read();
-    
+
     /**
      * 将之前写入到发送环形数组中的消息全部写入到目标Chanel中，发送给通信对方
      */
@@ -94,6 +97,7 @@ public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparabl
 ```
 
 #### AbstractChannel
+
 ```java
 public abstract class AbstractChannel extends DefaultAttributeMap implements Channel {
 
@@ -130,7 +134,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
     public ChannelFuture bind(SocketAddress localAddress, ChannelPromise promise) {
         return pipeline.bind(localAddress, promise);
     }
-    
+
     @Override
     public ChannelFuture connect(SocketAddress remoteAddress) {
         return pipeline.connect(remoteAddress);
@@ -140,7 +144,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
     public ChannelFuture connect(SocketAddress remoteAddress, SocketAddress localAddress) {
         return pipeline.connect(remoteAddress, localAddress);
     }
-    
+
     @Override
     public ChannelFuture connect(SocketAddress remoteAddress, ChannelPromise promise) {
         return pipeline.connect(remoteAddress, promise);
@@ -170,7 +174,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
     public ChannelFuture close(ChannelPromise promise) {
         return pipeline.close(promise);
     }
-    
+
     @Override
     public ChannelFuture deregister() {
         return pipeline.deregister();
@@ -180,7 +184,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
     public ChannelFuture deregister(ChannelPromise promise) {
         return pipeline.deregister(promise);
     }
-    
+
     @Override
     public Channel flush() {
         pipeline.flush();
@@ -279,6 +283,7 @@ public abstract class AbstractNioChannel extends AbstractChannel {
 ```
 
 #### NioServerSocketChannel
+
 ```java
 public class NioServerSocketChannel extends AbstractNioMessageChannel
                              implements io.netty.channel.socket.ServerSocketChannel {
@@ -343,8 +348,8 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
 }
 ```
 
-
 #### NioSocketChannel
+
 ```java
 public class NioSocketChannel extends AbstractNioByteChannel implements io.netty.channel.socket.SocketChannel {
 
@@ -383,7 +388,7 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
         super(parent, socket);
         config = new NioSocketChannelConfig(this, socket.socket());
     }
-    
+
     @Override
     protected SocketChannel javaChannel() {
         return (SocketChannel) super.javaChannel();
@@ -514,7 +519,8 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
 ```
 
 ## Unsafe 功能简介
-Unsafe接口 实际上是 **Channel接口 的辅助接口**，它不应该被用户代码直接调用。**实际的 IO读写操作 都是由 Unsafe接口 负责完成的**。
+
+Unsafe 接口 实际上是 **Channel 接口 的辅助接口**，它不应该被用户代码直接调用。**实际的 IO 读写操作 都是由 Unsafe 接口 负责完成的**。
 
 ```java
 public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparable<Channel> {
@@ -575,6 +581,7 @@ public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparabl
 ```
 
 #### AbstractUnsafe
+
 ```java
 public abstract class AbstractChannel extends DefaultAttributeMap implements Channel {
 
@@ -862,7 +869,9 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 ```
 
 #### AbstractNioUnsafe
-AbstractNioUnsafe 是 AbstractUnsafe类 的 NIO实现，它主要实现了 connect 、finishConnect 等方法。
+
+AbstractNioUnsafe 是 AbstractUnsafe 类 的 NIO 实现，它主要实现了 connect 、finishConnect 等方法。
+
 ```java
 public abstract class AbstractNioChannel extends AbstractChannel {
 

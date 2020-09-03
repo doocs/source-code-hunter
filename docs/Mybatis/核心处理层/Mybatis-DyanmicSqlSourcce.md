@@ -1,11 +1,10 @@
 # Mybatis DyanmicSqlSourcce
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读工程: [SourceHot-Mybatis](https://github.com/SourceHot/mybatis-read.git)
 
 - `org.apache.ibatis.scripting.xmltags.DynamicSqlSource`
 - `org.apache.ibatis.scripting.xmltags.DynamicContext.DynamicContext`
-
-
 
 ```XML
     <select id="list" resultType="com.huifer.mybatis.entity.HsSell">
@@ -19,8 +18,6 @@
     </select>
 
 ```
-
-
 
 ![image-20191219151247240](../../../images/mybatis/image-20191219151247240.png)
 
@@ -43,9 +40,7 @@ public class MixedSqlNode implements SqlNode {
 }
 ```
 
-
-
-- 根据mapper.xml文件中的代码流程 需要走 
+- 根据 mapper.xml 文件中的代码流程 需要走
 
   `org.apache.ibatis.scripting.xmltags.StaticTextSqlNode#apply`
 
@@ -88,7 +83,7 @@ public class StaticTextSqlNode implements SqlNode {
       }
   ```
 
-- 解析`trim`标签 
+- 解析`trim`标签
 
 ![image-20191219152502960](../../../images/mybatis/image-20191219152502960.png)
 
@@ -104,8 +99,6 @@ public class StaticTextSqlNode implements SqlNode {
           return result;
       }
   ```
-
-  
 
 ![image-20191219152655746](../../../images/mybatis/image-20191219152655746.png)
 
@@ -165,7 +158,7 @@ public class StaticTextSqlNode implements SqlNode {
 
 存在返回`true`
 
-执行完成就得到了一个sql
+执行完成就得到了一个 sql
 
 ![image-20191219153553127](../../../images/mybatis/image-20191219153553127.png)
 
@@ -173,9 +166,7 @@ public class StaticTextSqlNode implements SqlNode {
 
 ![image-20191219155129772](../../../images/mybatis/image-20191219155129772.png)
 
-- 发送sql`org.apache.ibatis.executor.SimpleExecutor#doQuery`
-
-
+- 发送 sql`org.apache.ibatis.executor.SimpleExecutor#doQuery`
 
 - 调用链路如下
 
@@ -233,7 +224,7 @@ public class StaticTextSqlNode implements SqlNode {
             }
             return list;
         }
-    
+
     ```
 
     - `org.apache.ibatis.executor.BaseExecutor#queryFromDatabase`
@@ -253,7 +244,7 @@ public class StaticTextSqlNode implements SqlNode {
               }
               return list;
           }
-      
+
       ```
 
       - `org.apache.ibatis.executor.BaseExecutor#doQuery`
@@ -280,8 +271,6 @@ public class StaticTextSqlNode implements SqlNode {
 
 - `org.apache.ibatis.executor.statement.BaseStatementHandler#prepare`
   - `org.apache.ibatis.executor.statement.PreparedStatementHandler#instantiateStatement`
-
-
 
 ```java
     @Override
@@ -326,8 +315,6 @@ public class StaticTextSqlNode implements SqlNode {
 
 - 这个方法都去了`java.sql.Connection#prepareStatement(java.lang.String, java.lang.String[])`
 
-
-
 - 接下来需要考虑的问题是如何将`?`换成我们的参数`2`
 
   ![image-20191219161555793](../../../images/mybatis/image-20191219161555793.png)
@@ -338,10 +325,6 @@ public class StaticTextSqlNode implements SqlNode {
       - `org.apache.ibatis.executor.statement.PreparedStatementHandler#parameterize`
         - `org.apache.ibatis.executor.parameter.ParameterHandler`
           - `org.apache.ibatis.scripting.defaults.DefaultParameterHandler#setParameters`
-
-
-
-
 
 ![image-20191219162258040](../../../images/mybatis/image-20191219162258040.png)
 
@@ -373,8 +356,6 @@ public class StaticTextSqlNode implements SqlNode {
   - `org.apache.ibatis.executor.statement.PreparedStatementHandler#query`
     - `org.apache.ibatis.executor.resultset.ResultSetHandler#handleResultSets`
     - `org.apache.ibatis.executor.resultset.DefaultResultSetHandler#handleResultSets`
-
-
 
 ![image-20191219163628214](../../../images/mybatis/image-20191219163628214.png)
 
@@ -431,4 +412,3 @@ public class StaticTextSqlNode implements SqlNode {
     }
 
 ```
-

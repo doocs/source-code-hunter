@@ -1,30 +1,35 @@
 ## dubbo-remoting 模块整体结构设计
-服务治理框架 大致可分为 “服务通信” 和 “服务管理” 两部分，前面我们分析了有关注册中心的源码，也就是服务管理，接下来要分析的就是跟服务通信有关的源码，也就是远程通讯模块。该模块中提供了多种客户端和服务端通信的功能，而在对NIO框架选型上，dubbo交由用户选择，它集成了mina、netty、grizzly等各类NIO框架来搭建NIO服务器和客户端，并且利用dubbo的SPI扩展机制可以让用户自定义选择。dubbo-remoting的工程结构如下。
+
+服务治理框架 大致可分为 “服务通信” 和 “服务管理” 两部分，前面我们分析了有关注册中心的源码，也就是服务管理，接下来要分析的就是跟服务通信有关的源码，也就是远程通讯模块。该模块中提供了多种客户端和服务端通信的功能，而在对 NIO 框架选型上，dubbo 交由用户选择，它集成了 mina、netty、grizzly 等各类 NIO 框架来搭建 NIO 服务器和客户端，并且利用 dubbo 的 SPI 扩展机制可以让用户自定义选择。dubbo-remoting 的工程结构如下。
 
 ![在这里插入图片描述](../../../images/Dubbo/dubbo-remoting的工程结构.png)
 
 ## dubbo-remoting-api 模块整体结构设计
-本篇我们先来看一下 dubbo-remoting 中 dubbo-remoting-api的项目结构。
+
+本篇我们先来看一下 dubbo-remoting 中 dubbo-remoting-api 的项目结构。
 
 ![在这里插入图片描述](../../../images/Dubbo/dubbo-remoting-api的项目结构.png)
 
 dubbo-remoting-api 定义了远程通信模块最核心的 API，对于 dubbo-remoting-api 的解读会分为如下五个部分，其中第五部分会在本文介绍。
 
-1. buffer包：缓冲在 NIO框架 中是很重要的存在，各个 NIO框架 都实现了自己相应的缓存操作。这个 buffer包 下包括了缓冲区的接口以及抽象类；
-2. exchange包：信息交换层，其中封装了请求响应模式，在传输层之上重新封装了 Request-Response 语义，为了满足 RPC 的需求。这层可以认为专注在 Request 和 Response 携带的信息上。该层是 RPC调用 的通讯基础之一；
-3. telnet包：dubbo 支持通过 telnet命令 来进行服务治理，该包下就封装了这些通用指令的逻辑实现；
-4. transport包：网络传输层，它只负责单向消息传输，是对 Mina、Netty、Grizzly 的抽象，它也可以扩展 UDP 传输，该层也是 RPC调用 的通讯基础之一；
-5. 最外层的源码：该部分也是我们接下来要重点解析的。  
+1. buffer 包：缓冲在 NIO 框架 中是很重要的存在，各个 NIO 框架 都实现了自己相应的缓存操作。这个 buffer 包 下包括了缓冲区的接口以及抽象类；
+2. exchange 包：信息交换层，其中封装了请求响应模式，在传输层之上重新封装了 Request-Response 语义，为了满足 RPC 的需求。这层可以认为专注在 Request 和 Response 携带的信息上。该层是 RPC 调用 的通讯基础之一；
+3. telnet 包：dubbo 支持通过 telnet 命令 来进行服务治理，该包下就封装了这些通用指令的逻辑实现；
+4. transport 包：网络传输层，它只负责单向消息传输，是对 Mina、Netty、Grizzly 的抽象，它也可以扩展 UDP 传输，该层也是 RPC 调用 的通讯基础之一；
+5. 最外层的源码：该部分也是我们接下来要重点解析的。
 
-结合 dubbo-remoting-api模块 的外层类和包划分，我们看看下面的官方架构图。
+结合 dubbo-remoting-api 模块 的外层类和包划分，我们看看下面的官方架构图。
 
 ![在这里插入图片描述](../../../images/Dubbo/Dubbo整体架构图.png)
 
-红框标注的部分是 dubbo整体架构中的 远程通讯架构，其中 Exchange组件 和 Transport组件 在框架设计中起到了很重要的作用，也是支撑 Remoting 的核心。
+红框标注的部分是 dubbo 整体架构中的 远程通讯架构，其中 Exchange 组件 和 Transport 组件 在框架设计中起到了很重要的作用，也是支撑 Remoting 的核心。
 
 ## dubbo-remoting-api 模块最外层源码解析
+
 ### Endpoint 接口
-dubbo 抽象出了一个端的概念，也就是Endpoint接口，这个端就是一个点，而点与点之间可以双向传输。在端的基础上再衍生出通道、客户端以及服务端的概念，也就是下面要介绍的 Channel、Client、Server 三个接口。在传输层，Client 和 Server 的区别只是语义上的区别，并不区分请求和应答职责，而在交换层，Client 和 Server 是有方向的端点，所以区分了明确的请求和应答职责。两者都具备发送的能力，只是客户端和服务端所关注的事情不一样，而Endpoint接口抽象的方法就是它们共同拥有的方法。这也就是它们都能被抽象成端的原因。
+
+dubbo 抽象出了一个端的概念，也就是 Endpoint 接口，这个端就是一个点，而点与点之间可以双向传输。在端的基础上再衍生出通道、客户端以及服务端的概念，也就是下面要介绍的 Channel、Client、Server 三个接口。在传输层，Client 和 Server 的区别只是语义上的区别，并不区分请求和应答职责，而在交换层，Client 和 Server 是有方向的端点，所以区分了明确的请求和应答职责。两者都具备发送的能力，只是客户端和服务端所关注的事情不一样，而 Endpoint 接口抽象的方法就是它们共同拥有的方法。这也就是它们都能被抽象成端的原因。
+
 ```java
 /**
  * Endpoint. (API/SPI, Prototype, ThreadSafe)
@@ -92,8 +97,11 @@ public interface Endpoint {
     boolean isClosed();
 }
 ```
+
 ### Channel 接口
+
 该接口是通道接口，通道是信息传输的载体。Channel 可读可写，并且可以异步读写。Channel 是 client 和 server 的数据传输桥梁。Channel 和 client 是一对一的，也就是一个 client 对应一个 Channel，而 Channel 和 server 则是多对一，也就是一个 server 可以对应多个 Channel。
+
 ```java
 /**
  * Channel. (API/SPI, Prototype, ThreadSafe)
@@ -122,7 +130,9 @@ public interface Channel extends Endpoint {
     void removeAttribute(String key);
 }
 ```
+
 ### ChannelHandler 接口
+
 ```java
 /**
  * ChannelHandler. (API, Prototype, ThreadSafe)
@@ -150,6 +160,7 @@ public interface ChannelHandler {
 
 }
 ```
+
 ### Client 和 Resetable 接口
 
 ```java
@@ -180,6 +191,7 @@ public interface Resetable {
 ```
 
 ### Server 接口
+
 ```java
 /**
  * Remoting Server. (API/SPI, Prototype, ThreadSafe)
@@ -205,7 +217,9 @@ public interface Server extends Endpoint, Resetable {
 ```
 
 ### Codec2 接口
-这两个都是编解码器 接口，在网络中进行传输的数据 都是原始的字节序列，这就需要 发送端使用编码器把 要传输的有意义的信息 序列化成字节序列，接收端再使用解码器 把字节序列再反序列化成 有效信息，而同时具备这两种功能的单一组件就叫 编解码器。在 dubbo 中 Codec 是老编解码器接口，而Codec2是新编解码器接口，并且 dubbo 已经用 CodecAdapter 把 Codec 适配成 Codec2 了。所以在这里就只介绍下Codec2接口。
+
+这两个都是编解码器 接口，在网络中进行传输的数据 都是原始的字节序列，这就需要 发送端使用编码器把 要传输的有意义的信息 序列化成字节序列，接收端再使用解码器 把字节序列再反序列化成 有效信息，而同时具备这两种功能的单一组件就叫 编解码器。在 dubbo 中 Codec 是老编解码器接口，而 Codec2 是新编解码器接口，并且 dubbo 已经用 CodecAdapter 把 Codec 适配成 Codec2 了。所以在这里就只介绍下 Codec2 接口。
+
 ```java
 /**
  * 编解码器接口，需要注意的是：
@@ -236,6 +250,7 @@ public interface Codec2 {
 ```
 
 ### Decodeable 接口
+
 ```java
 /**
  * 可解码的接口，该接口有两个作用，第一是在调用真正的 decode方法 实现的时候会有一些校验，
@@ -250,6 +265,7 @@ public interface Decodeable {
 ```
 
 ### Dispatcher 接口
+
 ```java
 /**
  * 调度器接口，不同的调度器实现，将操作转发到对应的线程池。
@@ -299,6 +315,7 @@ public interface Transporter {
 ```
 
 ### Transporters 类
+
 ```java
 /**
  * 1、该类用到了设计模式的外观模式，通过该类的包装，隐藏了内部具体的实现细节，降低了程序的复杂度，
@@ -371,7 +388,9 @@ public class Transporters {
 ```
 
 ### 远程通信的异常类
+
 RemotingException、ExecutionException 和 TimeoutException 是远程通信的异常类，内容比较简单，这里就简单介绍下 一笔带过咯。
-1. RemotingException 继承了 Exception类，是远程通信的基础异常；
-2. ExecutionException 继承了 RemotingException类，ExecutionException 是远程通信的执行异常；
-3. TimeoutException 继承了 RemotingException类，TimeoutException是超时异常。
+
+1. RemotingException 继承了 Exception 类，是远程通信的基础异常；
+2. ExecutionException 继承了 RemotingException 类，ExecutionException 是远程通信的执行异常；
+3. TimeoutException 继承了 RemotingException 类，TimeoutException 是超时异常。

@@ -1,11 +1,10 @@
 # SpringFactoriesLoader
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring-boot](https://github.com/SourceHot/spring-boot-read)
 
-
 - 全路径 : `org.springframework.core.io.support.SpringFactoriesLoader`
 - 测试类 : `org.springframework.core.io.support.SpringFactoriesLoaderTests`
-
 
 ## loadFactories
 
@@ -33,10 +32,6 @@ public static <T> List<T> loadFactories(Class<T> factoryType, @Nullable ClassLoa
 		return result;
 	}
 ```
-
-
-
-
 
 ## loadSpringFactories
 
@@ -89,16 +84,14 @@ public static <T> List<T> loadFactories(Class<T> factoryType, @Nullable ClassLoa
   org.springframework.core.io.support.DummyFactory =\
   org.springframework.core.io.support.MyDummyFactory2, \
   org.springframework.core.io.support.MyDummyFactory1
-  
+
   java.lang.String=\
   org.springframework.core.io.support.MyDummyFactory1
-  
+
   org.springframework.core.io.support.DummyPackagePrivateFactory=\
   org.springframework.core.io.support.DummyPackagePrivateFactory
-  
-  ```
 
-  
+  ```
 
 - `Enumeration<URL> urls ` 变量存放的是 扫描到的`META-INF/spring.factories` 路径
 
@@ -108,8 +101,6 @@ public static <T> List<T> loadFactories(Class<T> factoryType, @Nullable ClassLoa
   3. 读取文件 Properties 解析
   4. 放入返回结果
   5. 放入缓存
-
-
 
 ## instantiateFactory
 
@@ -134,6 +125,3 @@ private static <T> T instantiateFactory(String factoryImplementationName, Class<
 ```
 
 - 反射创建
-
-
-

@@ -1,10 +1,10 @@
 # Spring OrderUtils
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-Spring](https://github.com/SourceHot/spring-framework-read)
 - `org.springframework.core.annotation.OrderUtils`主要方法如下
-    1. getOrder 
-    1. getPriority
-    
+  1. getOrder
+  1. getPriority
 - 测试类`org.springframework.core.annotation.OrderUtilsTests`
 
 ```java
@@ -33,8 +33,7 @@
     }
 
 ```
-    
-    
+
 ```java
     @Nullable
     public static Integer getPriority(Class<?> type) {

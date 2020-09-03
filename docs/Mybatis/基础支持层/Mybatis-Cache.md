@@ -1,9 +1,11 @@
 # mybatis 缓存
+
 - Author: [HuiFer](https://github.com/huifer)
 - Description: 该文介绍 mybatis Cache 源码
 - 源码阅读工程: [SourceHot-Mybatis](https://github.com/SourceHot/mybatis-read.git)
 
 - `org.apache.ibatis.cache.Cache`
+
 ```java
 public interface Cache {
 
@@ -52,7 +54,9 @@ public interface Cache {
 - WeakCache: 弱引用：更积极地移除基于垃圾收集器状态和弱引用规则的对象。
 
 ## BlockingCache
+
 - BlockingCache 内部使用了`ReentrantLock`来进行加锁开锁这个操作.在插入缓存时上锁,插入缓存后释放.请求缓存值得时候同理
+
 ```java
 public class BlockingCache implements Cache {
 
@@ -157,7 +161,9 @@ public class BlockingCache implements Cache {
 ```
 
 ## FifoCache
+
 - 存储结构是`java.util.LinkedList`
+
 ```java
 public class FifoCache implements Cache {
 
@@ -227,7 +233,9 @@ public class FifoCache implements Cache {
 ```
 
 ## LruCache
+
 - 存储结构是`java.util.LinkedHashMap`
+
 ```java
 /**
  * Lru (least recently used) cache decorator.
@@ -318,4 +326,3 @@ public class LruCache implements Cache {
 
 }
 ```
-

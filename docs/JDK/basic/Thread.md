@@ -1,6 +1,7 @@
-本来想看 ThreadLocal 的源码的，但发现其中最重要的 get/set 方法都是操纵的 Thread类 中的 threadLocals变量 (java.lang.ThreadLocal.ThreadLocalMap)，索性先来看一下 Thread 的源码吧，可以留意一下其中与 ThreadLocal 相关的属性，这样下次阅读 ThreadLocal 的核心API时，就能够轻易理解其原理咯。不多BB，直接上硬菜。
+本来想看 ThreadLocal 的源码的，但发现其中最重要的 get/set 方法都是操纵的 Thread 类 中的 threadLocals 变量 (java.lang.ThreadLocal.ThreadLocalMap)，索性先来看一下 Thread 的源码吧，可以留意一下其中与 ThreadLocal 相关的属性，这样下次阅读 ThreadLocal 的核心 API 时，就能够轻易理解其原理咯。不多 BB，直接上硬菜。
 
-实现多线程从本质上都是由 Thread类 来完成的，其源码量很多，本次只看一些常见且重要的部分，源码和解析如下。
+实现多线程从本质上都是由 Thread 类 来完成的，其源码量很多，本次只看一些常见且重要的部分，源码和解析如下。
+
 ```java
 public class Thread implements Runnable {
 	/** 这里只看一些 常见的参数 */
@@ -16,7 +17,7 @@ public class Thread implements Runnable {
 	private ThreadGroup group;
 	/** 类加载器 */
 	private ClassLoader contextClassLoader;
-	/** 
+	/**
 	 * ThreadLocal 能为线程设置线程私有变量 就是通过下面这个threadLocals变量完成的，
 	 * ThreadLocal的get/set方法就是通过操作 各个线程的 threadLocals 变量实现的。
 	 * 1、线程A持有一个 ThreadLocalMap 变量；
@@ -28,7 +29,7 @@ public class Thread implements Runnable {
 	ThreadLocal.ThreadLocalMap inheritableThreadLocals;
 	/** 线程栈的大小 */
 	private long stackSize;
-	/** 
+	/**
 	 * Thread类定义了6个线程状态：New、Runnable、Blocked、Waiting、TimedWaiting、Terminated(终止)
 	 * 实际上还会把 Runnable 再细分为 就绪(未抢到时间片) 和 运行中(抢到时间片)
 	 */
@@ -41,10 +42,10 @@ public class Thread implements Runnable {
 	public static final int MAX_PRIORITY = 10;
 
 	/**
-	 * 内部枚举类，用来描述线程状态，状态值有： 
+	 * 内部枚举类，用来描述线程状态，状态值有：
 	 * NEW：          新建，还未调用start()方法；
-	 * RUNNABLE：     运行，在java多线程模型中，就绪和运行都是运行状态； 
-	 * BLOCKED：      阻塞； 
+	 * RUNNABLE：     运行，在java多线程模型中，就绪和运行都是运行状态；
+	 * BLOCKED：      阻塞；
 	 * WAITING：      等待，需要其他的线程来唤醒；
 	 * TIMED_WAITING：超时等待，可以在指定的时间内自动醒来，如 sleep()方法；
 	 * TERMINATED：   终止，线程执行完毕。
@@ -248,7 +249,7 @@ public class Thread implements Runnable {
 		if (target != null)
 			target.run();
 	}
-	
+
 	/**
 	 * 请求终止线程。interrupt不会真正停止一个线程，它仅仅是给这个线程发了一个信号，
 	 * 告诉它要结束了，具体要中断还是继续运行，将由被通知的线程自己处理
@@ -315,6 +316,7 @@ public class Thread implements Runnable {
 	public final native boolean isAlive();
 }
 ```
+
 之前一直对线程状态 及 状态切换的概念模糊不清，现在通过源码中对线程状态的定义，我们可以画张图来重新回顾一下，以使我们对其有更加深刻的理解。
 
 ![avatar](../../../images/JDK1.8/ThreadStatusChange.png)

@@ -1,26 +1,33 @@
-## 注册中心在Dubbo中的作用
-服务治理框架可以大致分为 服务通信 和 服务管理 两部分，服务管理可以分为服务注册、服务订阅以及服务发现，服务提供者Provider 会往注册中心注册服务，而消费者Consumer 会从注册中心中订阅自己关注的服务，并在关注的服务发生变更时 得到注册中心的通知。Provider、Consumer以及Registry之间的依赖关系 如下图所示。
+## 注册中心在 Dubbo 中的作用
+
+服务治理框架可以大致分为 服务通信 和 服务管理 两部分，服务管理可以分为服务注册、服务订阅以及服务发现，服务提供者 Provider 会往注册中心注册服务，而消费者 Consumer 会从注册中心中订阅自己关注的服务，并在关注的服务发生变更时 得到注册中心的通知。Provider、Consumer 以及 Registry 之间的依赖关系 如下图所示。
 
 ![avatar](../../../images/Dubbo/Dubbo工作原理图.png)
 
 ## dubbo-registry 模块 结构分析
-dubbo的注册中心有多种实现方案，如：zookeeper、redis、multicast等，本章先看一下 dubbo-registry 模块的核心部分 dubbo-registry-api，具体实现部分放到下章来讲。dubbo-registry模块 的结构如下图所示。
+
+dubbo 的注册中心有多种实现方案，如：zookeeper、redis、multicast 等，本章先看一下 dubbo-registry 模块的核心部分 dubbo-registry-api，具体实现部分放到下章来讲。dubbo-registry 模块 的结构如下图所示。
 
 ![avatar](../../../images/Dubbo/dubbo-registry模块结构图.png)
 
 ### Registry 核心组件类图
+
 典型的 接口 -> 抽象类 -> 实现类 的结构设计，如下图所示。
 
 ![avatar](../../../images/Dubbo/Registry组件类图.png)
 
-既然有Registry组件，那么按照很多框架的套路，肯定也有一个用于获取 Registry实例的RegistryFactory，其中用到了工厂方法模式，不同的工厂类用于获取不同类型的实例。其类图结构如下。
+既然有 Registry 组件，那么按照很多框架的套路，肯定也有一个用于获取 Registry 实例的 RegistryFactory，其中用到了工厂方法模式，不同的工厂类用于获取不同类型的实例。其类图结构如下。
 
 ![avatar](../../../images/Dubbo/RegistryFactory组件类图.png)
 
 ## 源码详解
-根据上面的类图，我们开始从上往下 详解dubbo中对于注册中心的设计以及实现。
+
+根据上面的类图，我们开始从上往下 详解 dubbo 中对于注册中心的设计以及实现。
+
 ### RegistryService 接口
-RegistryService 是注册中心模块的服务接口，定义了注册、取消注册、订阅、取消订阅以及查询符合条件的已注册数据 等方法。这里统一说明一下URL，dubbo是以总线模式来时刻传递和保存配置信息的，配置信息都被放在URL上进行传递，随时可以取得相关配置信息，而这里提到了URL有别的作用，就是作为类似于节点的作用，首先服务提供者（Provider）启动时需要提供服务，就会向注册中心写下自己的URL地址。然后消费者启动时需要去订阅该服务，则会订阅Provider注册的地址，并且消费者也会写下自己的URL。
+
+RegistryService 是注册中心模块的服务接口，定义了注册、取消注册、订阅、取消订阅以及查询符合条件的已注册数据 等方法。这里统一说明一下 URL，dubbo 是以总线模式来时刻传递和保存配置信息的，配置信息都被放在 URL 上进行传递，随时可以取得相关配置信息，而这里提到了 URL 有别的作用，就是作为类似于节点的作用，首先服务提供者（Provider）启动时需要提供服务，就会向注册中心写下自己的 URL 地址。然后消费者启动时需要去订阅该服务，则会订阅 Provider 注册的地址，并且消费者也会写下自己的 URL。
+
 ```java
 /**
  * RegistryService. (SPI, Prototype, ThreadSafe)
@@ -95,7 +102,9 @@ public interface RegistryService {
 ```
 
 ### Registry 接口
-注册中心接口，把节点Node 以及注册中心服务RegistryService 的方法整合在了这个接口里面。该接口并没有自己的方法，就是继承了Node和RegistryService接口。这里的Node是节点的接口，里面协定了关于节点的一些操作方法，源码如下。
+
+注册中心接口，把节点 Node 以及注册中心服务 RegistryService 的方法整合在了这个接口里面。该接口并没有自己的方法，就是继承了 Node 和 RegistryService 接口。这里的 Node 是节点的接口，里面协定了关于节点的一些操作方法，源码如下。
+
 ```java
 /**
  * 注册中心接口
@@ -114,7 +123,9 @@ public interface Node {
 ```
 
 ### AbstractRegistry 抽象类
-实现了Registry接口的抽象类。为了减轻注册中心的压力，该抽象类把本地URL缓存到了property文件中，并且实现了注册中心的注册、订阅等方法。
+
+实现了 Registry 接口的抽象类。为了减轻注册中心的压力，该抽象类把本地 URL 缓存到了 property 文件中，并且实现了注册中心的注册、订阅等方法。
+
 ```java
 /**
  * 实现了Registry接口的抽象类，实现了如下方法：
@@ -699,7 +710,9 @@ public abstract class AbstractRegistry implements Registry {
 ```
 
 ### FailbackRegistry 抽象类
-FailbackRegistry抽象类 继承了上面的 AbstractRegistry，AbstractRegistry中的注册、订阅等方法，实际上就是一些内存缓存的变化，而真正的注册订阅的实现逻辑在FailbackRegistry实现，并且FailbackRegistry提供了失败重试的机制。
+
+FailbackRegistry 抽象类 继承了上面的 AbstractRegistry，AbstractRegistry 中的注册、订阅等方法，实际上就是一些内存缓存的变化，而真正的注册订阅的实现逻辑在 FailbackRegistry 实现，并且 FailbackRegistry 提供了失败重试的机制。
+
 ```java
 /**
  * 支持失败重试的 FailbackRegistry抽象类
@@ -1209,7 +1222,9 @@ public abstract class FailbackRegistry extends AbstractRegistry {
 ```
 
 ### RegistryFactory 和 AbstractRegistryFactory
-RegistryFactory接口 是 Registry的工厂接口，用来返回 Registry实例。该接口是一个可扩展接口，可以看到该接口上有个@SPI注解，并且默认值为dubbo，也就是默认扩展的是DubboRegistryFactory。AbstractRegistryFactory 则是实现了 RegistryFactory接口 的抽象类。其源码如下。
+
+RegistryFactory 接口 是 Registry 的工厂接口，用来返回 Registry 实例。该接口是一个可扩展接口，可以看到该接口上有个@SPI 注解，并且默认值为 dubbo，也就是默认扩展的是 DubboRegistryFactory。AbstractRegistryFactory 则是实现了 RegistryFactory 接口 的抽象类。其源码如下。
+
 ```java
 /**
  * 注册中心工厂
@@ -1332,8 +1347,11 @@ public abstract class AbstractRegistryFactory implements RegistryFactory {
     protected abstract Registry createRegistry(URL url);
 }
 ```
+
 ### NotifyListener 和 RegistryDirectory
-最后我们来看一下 dubbo-registry-api 模块下的另一个比较重要的组件，NotifyListener接口 和 RegistryDirectory抽象类。NotifyListener接口 只有一个notify方法，通知监听器。当收到服务变更通知时触发。RegistryDirectory是注册中心服务，维护着所有可用的远程Invoker或者本地的Invoker，它的Invoker集合是从注册中心获取的，另外，它实现了NotifyListener接口。比如消费方要调用某远程服务，会向注册中心订阅这个服务的所有 服务提供方，在订阅 及 服务提供方数据有变动时，回调消费方的NotifyListener服务的notify方法，回调接口传入所有服务提供方的url地址然后将urls转化为invokers，也就是refer应用远程服务。源码如下。
+
+最后我们来看一下 dubbo-registry-api 模块下的另一个比较重要的组件，NotifyListener 接口 和 RegistryDirectory 抽象类。NotifyListener 接口 只有一个 notify 方法，通知监听器。当收到服务变更通知时触发。RegistryDirectory 是注册中心服务，维护着所有可用的远程 Invoker 或者本地的 Invoker，它的 Invoker 集合是从注册中心获取的，另外，它实现了 NotifyListener 接口。比如消费方要调用某远程服务，会向注册中心订阅这个服务的所有 服务提供方，在订阅 及 服务提供方数据有变动时，回调消费方的 NotifyListener 服务的 notify 方法，回调接口传入所有服务提供方的 url 地址然后将 urls 转化为 invokers，也就是 refer 应用远程服务。源码如下。
+
 ```java
 /**
  * 通知监听器

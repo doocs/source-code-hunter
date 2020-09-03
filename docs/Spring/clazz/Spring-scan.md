@@ -1,15 +1,19 @@
 # Spring scan
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-Spring](https://github.com/SourceHot/spring-framework-read)
 
 ## 解析
+
 - Spring 注解形式使用有下面两种方式
-    1. 通过`AnnotationConfigApplicationContext`参数:扫描包
-    2. 通过xml配置`context:component-scan`属性`base-package`
+  1. 通过`AnnotationConfigApplicationContext`参数:扫描包
+  2. 通过 xml 配置`context:component-scan`属性`base-package`
+
 ```java
         AnnotationConfigApplicationContext aac =
                 new AnnotationConfigApplicationContext("com.huifer.source.spring.ann");
 ```
+
 ```xml
     <context:component-scan base-package="com.huifer.source.spring.ann">
     </context:component-scan>
@@ -17,6 +21,7 @@
 
 - 目标明确开始找入口方法
 - `AnnotationConfigApplicationContext`直接点进去看就找到了
+
 ```java
 public AnnotationConfigApplicationContext(String... basePackages) {
         this();
@@ -25,7 +30,9 @@ public AnnotationConfigApplicationContext(String... basePackages) {
         refresh();
     }
 ```
+
 - `context:component-scan`寻找方式:冒号`:`钱+NamespaceHandler 或者全文搜索`component-scan`,最终找到`org.springframework.context.config.ContextNamespaceHandler`
+
 ```java
 public class ContextNamespaceHandler extends NamespaceHandlerSupport {
 
@@ -49,6 +56,7 @@ public class ContextNamespaceHandler extends NamespaceHandlerSupport {
 ![image-20200115093602651](../../../images/spring/image-20200115093602651.png)
 
 - 实现`BeanDefinitionParser`直接看`parse`方法
+
 ```java
     @Override
     @Nullable
@@ -75,7 +83,9 @@ public class ContextNamespaceHandler extends NamespaceHandlerSupport {
 ```
 
 - 回过头看`AnnotationConfigApplicationContext`
+
 ### org.springframework.context.annotation.AnnotationConfigApplicationContext
+
 ```java
 public AnnotationConfigApplicationContext(String... basePackages) {
         this();
@@ -84,6 +94,7 @@ public AnnotationConfigApplicationContext(String... basePackages) {
         refresh();
     }
 ```
+
 ```java
    private final ClassPathBeanDefinitionScanner scanner;
 
@@ -94,7 +105,9 @@ public AnnotationConfigApplicationContext(String... basePackages) {
     }
 
 ```
+
 - `org.springframework.context.annotation.ClassPathBeanDefinitionScanner.scan`
+
 ```java
 public int scan(String... basePackages) {
 
@@ -112,11 +125,9 @@ public int scan(String... basePackages) {
     }
 ```
 
-- 这个地方`doScan`似曾相识,他就是`org.springframework.context.annotation.ComponentScanBeanDefinitionParser.parse`中的`doScan`,下一步解析doScan
+- 这个地方`doScan`似曾相识,他就是`org.springframework.context.annotation.ComponentScanBeanDefinitionParser.parse`中的`doScan`,下一步解析 doScan
 
 ### org.springframework.context.annotation.ClassPathBeanDefinitionScanner.doScan
-
-
 
 ```java
     protected Set<BeanDefinitionHolder> doScan(String... basePackages) {
@@ -159,8 +170,6 @@ public int scan(String... basePackages) {
 
 ```
 
-
-
 #### org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider#findCandidateComponents
 
 ```java
@@ -175,8 +184,6 @@ public int scan(String... basePackages) {
     }
 
 ```
-
-
 
 ```java
     /**
@@ -247,11 +254,7 @@ public int scan(String... basePackages) {
 
 ```
 
-
-
 #### org.springframework.context.annotation.ScopeMetadataResolver#resolveScopeMetadata
-
-
 
 ```java
     /**
@@ -303,9 +306,7 @@ public int scan(String... basePackages) {
 
 #### org.springframework.beans.factory.support.BeanNameGenerator#generateBeanName
 
-- 创建beanName `org.springframework.context.annotation.AnnotationBeanNameGenerator#generateBeanName`
-
-
+- 创建 beanName `org.springframework.context.annotation.AnnotationBeanNameGenerator#generateBeanName`
 
 ```java
     @Override
@@ -362,16 +363,10 @@ public class DemoService {
 }
 ```
 
-
-
 ![image-20200115143315633](../../../images/spring/image-20200115143315633.png)
-
-
 
 - `org.springframework.context.annotation.AnnotationBeanNameGenerator#buildDefaultBeanName(org.springframework.beans.factory.config.BeanDefinition, org.springframework.beans.factory.support.BeanDefinitionRegistry)`
   - `org.springframework.context.annotation.AnnotationBeanNameGenerator#buildDefaultBeanName(org.springframework.beans.factory.config.BeanDefinition)`
-
-
 
 ```JAVA
     protected String buildDefaultBeanName(BeanDefinition definition) {
@@ -400,13 +395,9 @@ public class BeanConfig {
 
 ![image-20200115143456554](../../../images/spring/image-20200115143456554.png)
 
-
-
-
-
 #### org.springframework.context.annotation.ClassPathBeanDefinitionScanner#postProcessBeanDefinition
 
-- 这个方法没什么难点，直接是set方法
+- 这个方法没什么难点，直接是 set 方法
 
 ```java
     protected void postProcessBeanDefinition(AbstractBeanDefinition beanDefinition, String beanName) {
@@ -472,15 +463,9 @@ static void processCommonDefinitionAnnotations(AnnotatedBeanDefinition abd, Anno
     }
 ```
 
-
-
 - 方法思路:
   1. 获取注解的属性值
   2. 设置注解属性
-
-
-
-
 
 #### org.springframework.context.annotation.ClassPathBeanDefinitionScanner#checkCandidate
 
@@ -509,13 +494,7 @@ static void processCommonDefinitionAnnotations(AnnotatedBeanDefinition abd, Anno
 
 ```
 
-
-
-
-
 #### org.springframework.context.annotation.AnnotationConfigUtils#applyScopedProxyMode
-
-
 
 ```JAVA
     static BeanDefinitionHolder applyScopedProxyMode(
@@ -531,4 +510,3 @@ static void processCommonDefinitionAnnotations(AnnotatedBeanDefinition abd, Anno
     }
 
 ```
-

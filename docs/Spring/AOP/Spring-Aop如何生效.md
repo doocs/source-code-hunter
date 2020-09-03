@@ -1,12 +1,16 @@
 # Spring AOP 如何生效
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-Spring](https://github.com/SourceHot/spring-framework-read)
 
 ## 解析
-- 在使用 Spring AOP 技术的时候会有下面这段代码在xml配置文件中出现,来达到 Spring 支持 AOP
+
+- 在使用 Spring AOP 技术的时候会有下面这段代码在 xml 配置文件中出现,来达到 Spring 支持 AOP
+
 ```xml
     <aop:aspectj-autoproxy/>
 ```
+
 - 源码阅读目标找到了,那么怎么去找入口或者对这句话的标签解析方法呢?项目中使用搜索
 
   ![image-20200115083744268](../../../images/spring/image-20200115083744268.png)
@@ -18,6 +22,7 @@
 - 类图
 
 ![image-20200115084031725](../../../images/spring/image-20200115084031725.png)
+
 ```java
     @Override
     @Nullable
@@ -50,7 +55,9 @@
     }
 
 ```
+
 - `org.springframework.aop.config.AopConfigUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(org.springframework.beans.factory.support.BeanDefinitionRegistry, java.lang.Object)`
+
 ```java
     @Nullable
     public static BeanDefinition registerAspectJAnnotationAutoProxyCreatorIfNecessary(
@@ -61,7 +68,9 @@
     }
 
 ```
+
 - `org.springframework.aop.config.AopConfigUtils.registerOrEscalateApcAsRequired`
+
 ```java
     /**
      * 注册或者升级 bean
@@ -103,7 +112,9 @@
     }
 
 ```
+
 ### org.springframework.aop.config.AopNamespaceUtils.useClassProxyingIfNecessary
+
 ```java
     /**
      * proxy-target-class 和 expose-proxy 标签处理
@@ -124,7 +135,9 @@
     }
 
 ```
+
 - `org.springframework.aop.config.AopConfigUtils.forceAutoProxyCreatorToUseClassProxying`
+
 ```java
     public static void forceAutoProxyCreatorToUseClassProxying(BeanDefinitionRegistry registry) {
         if (registry.containsBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME)) {
@@ -134,8 +147,9 @@
     }
 
 ```
-- `forceAutoProxyCreatorToExposeProxy`方法就不贴出代码了,操作和`forceAutoProxyCreatorToUseClassProxying`一样都是将读取到的数据放入bean对象作为一个属性存储
 
+- `forceAutoProxyCreatorToExposeProxy`方法就不贴出代码了,操作和`forceAutoProxyCreatorToUseClassProxying`一样都是将读取到的数据放入 bean 对象作为一个属性存储
 
 ## 总结
-- 实现`org.springframework.beans.factory.xml.BeanDefinitionParser`接口的类,多用于对xml标签的解析,并且入口为`parse`方法,如果是一个bean对象通常会和Spring监听器一起出现
+
+- 实现`org.springframework.beans.factory.xml.BeanDefinitionParser`接口的类,多用于对 xml 标签的解析,并且入口为`parse`方法,如果是一个 bean 对象通常会和 Spring 监听器一起出现

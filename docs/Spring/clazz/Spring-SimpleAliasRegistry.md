@@ -1,9 +1,12 @@
 # Spring-SimpleAliasRegistry
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [huifer-spring](https://github.com/huifer/spring-framework)
 
 ## AliasRegistry
-- `SimpleAliasRegistry`继承`org.springframework.core.AliasRegistry` 
+
+- `SimpleAliasRegistry`继承`org.springframework.core.AliasRegistry`
+
 ```java
 public interface AliasRegistry {
 
@@ -50,7 +53,9 @@ public interface AliasRegistry {
 
 }
 ```
-##  SimpleAliasRegistry
+
+## SimpleAliasRegistry
+
 ```java
 /**
  * Simple implementation of the {@link AliasRegistry} interface.

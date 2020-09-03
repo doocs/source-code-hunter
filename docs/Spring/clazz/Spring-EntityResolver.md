@@ -1,10 +1,13 @@
 # EntityResolver
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [huifer-spring](https://github.com/huifer/spring-framework)
-- 源码路径: `org.xml.sax.EntityResolver`,非Spring类
+- 源码路径: `org.xml.sax.EntityResolver`,非 Spring 类
 
 ## DelegatingEntityResolver#resolveEntity
+
 - org.springframework.beans.factory.xml.DelegatingEntityResolver.resolveEntity
+
 ```java
     @Override
     @Nullable
@@ -25,16 +28,21 @@
     }
 
 ```
-- 上述这段代码是针对xml进行校验
+
+- 上述这段代码是针对 xml 进行校验
+
 ```xml
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 ```
+
 - 如上所示以`.xsd`结尾,应该执行` return this.schemaResolver.resolveEntity(publicId, systemId);`方法
-`http://www.springframework.org/schema/beans/spring-beans.xsd`
+  `http://www.springframework.org/schema/beans/spring-beans.xsd`
 - `org.springframework.beans.factory.xml.PluggableSchemaResolver.resolveEntity`
+
 ## PluggableSchemaResolver#resolveEntity
+
 ```java
     @Override
     @Nullable
@@ -87,7 +95,7 @@
 
 ## BeansDtdResolver#resolveEntity
 
-创建一个Dtd的约束文件
+创建一个 Dtd 的约束文件
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -141,18 +149,14 @@
 
 ```
 
-
-
-
 - systemId `https://www.springframework.org/dtd/spring-beans-2.0.dtd`
 
 ![image-20200108082335031](../../../images/spring//image-20200108082335031.png)
 
-
 ## 总结
 
-- DelegatingEntityResolver#resolveEntity,是对xml文档的校验前置步骤,根据`dtd`和`xsd`加载本地资源文件
-    `spring-framework\spring-beans\src\main\resources\org\springframework\beans\factory\xml\spring-beans.dtd`
-    `spring-framework\spring-beans\src\main\resources\org\springframework\beans\factory\xml\spring-beans.xsd`
+- DelegatingEntityResolver#resolveEntity,是对 xml 文档的校验前置步骤,根据`dtd`和`xsd`加载本地资源文件
+  `spring-framework\spring-beans\src\main\resources\org\springframework\beans\factory\xml\spring-beans.dtd`
+  `spring-framework\spring-beans\src\main\resources\org\springframework\beans\factory\xml\spring-beans.xsd`
 - `PluggableSchemaResolver`负责加载`xsd`文件
 - `BeansDtdResolver`负责加载`dtd`文件

@@ -1,8 +1,9 @@
-String的源码大家应该都能看懂，这里就不一一分析咯，重点讲一下equals()和hashcode()方法，然后看一下String类常用方法的实现，就当一起温习一下咯。
+String 的源码大家应该都能看懂，这里就不一一分析咯，重点讲一下 equals()和 hashcode()方法，然后看一下 String 类常用方法的实现，就当一起温习一下咯。
+
 ```java
 public final class String
     implements java.io.Serializable, Comparable<String>, CharSequence {
-    
+
     /** 保存String的字节数组 */
     private final char value[];
 
@@ -40,7 +41,7 @@ public final class String
         }
         return false;
     }
-    
+
     public int hashCode() {
         int h = hash;
         if (h == 0 && value.length > 0) {

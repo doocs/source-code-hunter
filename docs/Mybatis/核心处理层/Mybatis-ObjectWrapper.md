@@ -1,4 +1,5 @@
 # Mybatis ObjectWrapper
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读工程: [SourceHot-Mybatis](https://github.com/SourceHot/mybatis-read.git)
 - 源码位于: `org.apache.ibatis.reflection.wrapper.ObjectWrapper`‘
@@ -6,6 +7,7 @@
 类图：
 
 ![image-20191223100956713](../../../images/mybatis/image-20191223100956713.png)
+
 ```java
 public interface ObjectWrapper {
 
@@ -114,7 +116,9 @@ public interface ObjectWrapper {
 
 }
 ```
+
 ## BaseWrapper
+
 ```java
 /**
  * @author Clinton Begin
@@ -230,6 +234,7 @@ public abstract class BaseWrapper implements ObjectWrapper {
 ```
 
 ## BeanWrapper
+
 ```java
 public class BeanWrapper extends BaseWrapper {
 
@@ -448,7 +453,9 @@ public class BeanWrapper extends BaseWrapper {
 
 }
 ```
+
 ## MapWrapper
+
 ```java
 public class MapWrapper extends BaseWrapper {
 
@@ -583,7 +590,9 @@ public class MapWrapper extends BaseWrapper {
 
 }
 ```
+
 ## CollectionWrapper
+
 ```java
 public class CollectionWrapper implements ObjectWrapper {
 

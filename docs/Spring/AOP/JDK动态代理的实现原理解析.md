@@ -1,4 +1,5 @@
-最近在看 Spring AOP 部分的源码，所以对JDK动态代理具体是如何实现的这件事产生了很高的兴趣，而且能从源码上了解这个原理的话，也有助于对 spring-aop 模块的理解。话不多说，上代码。
+最近在看 Spring AOP 部分的源码，所以对 JDK 动态代理具体是如何实现的这件事产生了很高的兴趣，而且能从源码上了解这个原理的话，也有助于对 spring-aop 模块的理解。话不多说，上代码。
+
 ```java
 /**
  * 一般会使用实现了 InvocationHandler接口 的类作为代理对象的生产工厂，
@@ -6,20 +7,20 @@
  * 这些我们都能通过下面这段代码看懂，但代理对象是如何生成的？invoke()方法 又是如何被调用的呢？
  */
 public class ProxyFactory implements InvocationHandler {
-	
+
     private Object target = null;
-    
+
     public Object getInstanse(Object target){
-        
+
         this.target = target;
-        return Proxy.newProxyInstance(target.getClass().getClassLoader(), 
+        return Proxy.newProxyInstance(target.getClass().getClassLoader(),
                 target.getClass().getInterfaces(), this);
     }
-    
+
     @Override
     public Object invoke(Object proxy, Method method, Object[] args)
             throws Throwable {
-        
+
         Object ret = null;
         System.out.println("前置增强");
         ret = method.invoke(target, args);
@@ -63,7 +64,7 @@ public class ProxyTest {
         // 总的来说，就是在 invoke()方法 中完成 target目标方法 的调用，及前置后置增强，
         // JDK 动态生成的代理类中对 invoke()方法 进行了回调
     }
-    
+
     /**
      * 将 ProxyGenerator 生成的动态代理类的输出到文件中，利用反编译工具 luyten 等就可
      * 以看到生成的代理类的源码咯，下面给出了其反编译好的代码实现
@@ -99,7 +100,7 @@ public final class $Proxy0 extends Proxy implements MyInterface {
     private static Method m0;
     private static Method m3;
     private static Method m2;
-    
+
     static {
         try {
             $Proxy0.m1 = Class.forName("java.lang.Object").getMethod("equals", Class.forName("java.lang.Object"));
@@ -115,11 +116,11 @@ public final class $Proxy0 extends Proxy implements MyInterface {
             throw new NoClassDefFoundError(ex2.getMessage());
         }
     }
-    
+
     public $Proxy0(final InvocationHandler invocationHandler) {
         super(invocationHandler);
     }
-    
+
     public final void play() {
         try {
         	// 这个 h 其实就是我们调用 Proxy.newProxyInstance()方法 时传进去的 ProxyFactory对象(它实现了
@@ -134,7 +135,7 @@ public final class $Proxy0 extends Proxy implements MyInterface {
             throw new UndeclaredThrowableException(t);
         }
     }
-    
+
     public final boolean equals(final Object o) {
         try {
             return (boolean)super.h.invoke(this, $Proxy0.m1, new Object[] { o });
@@ -146,7 +147,7 @@ public final class $Proxy0 extends Proxy implements MyInterface {
             throw new UndeclaredThrowableException(t);
         }
     }
-    
+
     public final int hashCode() {
         try {
             return (int)super.h.invoke(this, $Proxy0.m0, null);
@@ -158,7 +159,7 @@ public final class $Proxy0 extends Proxy implements MyInterface {
             throw new UndeclaredThrowableException(t);
         }
     }
-    
+
     public final String toString() {
         try {
             return (String)super.h.invoke(this, $Proxy0.m2, null);

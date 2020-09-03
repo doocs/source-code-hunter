@@ -1,15 +1,21 @@
 ## 简介
-AbstractQueuedSynchronizer 是Doug Lea大师创作的用来构建锁或者其他同步组件的基础框架类。J.U.C中许多锁和并发工具类的核心实现都依赖于AQS，如：ReentrantLock、ReentrantReadWriteLock、Semaphore、CountDownLatch 等。
 
-AQS的源码中 方法很多，但主要做了三件事情：
+AbstractQueuedSynchronizer 是 Doug Lea 大师创作的用来构建锁或者其他同步组件的基础框架类。J.U.C 中许多锁和并发工具类的核心实现都依赖于 AQS，如：ReentrantLock、ReentrantReadWriteLock、Semaphore、CountDownLatch 等。
+
+AQS 的源码中 方法很多，但主要做了三件事情：
+
 1. 管理 同步状态；
 2. 维护 同步队列；
 3. 阻塞和唤醒 线程。
 
 另外，从行为上来区分就是 获取锁 和 释放锁，从模式上来区分就是 独占锁 和 共享锁。
+
 ## 实现原理
-AQS内部维护了一个FIFO队列来管理锁。线程首先会尝试获取锁，如果失败，则将当前线程以及等待状态等信息包成一个Node节点放入同步队列阻塞起来，当持有锁的线程释放锁时，就会唤醒队列中的后继线程。
+
+AQS 内部维护了一个 FIFO 队列来管理锁。线程首先会尝试获取锁，如果失败，则将当前线程以及等待状态等信息包成一个 Node 节点放入同步队列阻塞起来，当持有锁的线程释放锁时，就会唤醒队列中的后继线程。
+
 #### 获取锁的伪代码
+
 ```
 while (不满足获取锁的条件) {
     把当前线程包装成节点插入同步队列
@@ -18,7 +24,9 @@ while (不满足获取锁的条件) {
 }
 将当前线程从同步队列中移除
 ```
+
 #### 释放锁的伪代码
+
 ```
 修改同步状态
 if (修改后的状态允许其他线程获取到锁)
@@ -26,7 +34,9 @@ if (修改后的状态允许其他线程获取到锁)
 ```
 
 ## 源码解析
-#### AQS的核心数据结构 Node(内部类)
+
+#### AQS 的核心数据结构 Node(内部类)
+
 ```java
 /**
  * 当共享资源被某个线程占有，其他请求该资源的线程将会阻塞，从而进入同步队列。
@@ -104,7 +114,9 @@ static final class Node {
     }
 }
 ```
+
 #### 获取独占锁的实现
+
 ```java
 /**
  * 首先尝试获取一次锁，如果成功，则返回；
@@ -268,7 +280,7 @@ private void cancelAcquire(Node node) {
             (ws <= 0 && compareAndSetWaitStatus(pred, ws, Node.SIGNAL))) &&
            pred.thread != null) {
            Node next = node.next;
-           /* 
+           /*
             * 如果node的后继节点next非取消状态的话，则用CAS尝试把pred的后继置为node的后继节点
             * 这里if条件为false或者CAS失败都没关系，这说明可能有多个线程在取消，总归会有一个能成功的
             */
@@ -280,7 +292,7 @@ private void cancelAcquire(Node node) {
             * 在这些情况下为了保证队列的活跃性，需要去唤醒一次后继线程。
             * 举例来说pred == head完全有可能实际上目前已经没有线程持有锁了，
             * 自然就不会有释放锁唤醒后继的动作。如果不唤醒后继，队列就挂掉了。
-            * 
+            *
             * 这种情况下看似由于没有更新pred的next的操作，队列中可能会留有一大把的取消节点。
             * 实际上不要紧，因为后继线程唤醒之后会走一次试获取锁的过程，
             * 失败的话会走到shouldParkAfterFailedAcquire的逻辑。
@@ -288,7 +300,7 @@ private void cancelAcquire(Node node) {
             */
            unparkSuccessor(node);
        }
-       
+
        /*
         * 取消节点的next之所以设置为自己本身而不是null,
         * 是为了方便AQS中Condition部分的isOnSyncQueue方法,
@@ -299,7 +311,7 @@ private void cancelAcquire(Node node) {
         *
         * 在GC层面，和设置为null具有相同的效果
         */
-       node.next = node; 
+       node.next = node;
    }
 }
 
@@ -337,7 +349,9 @@ private void unparkSuccessor(Node node) {
 ```
 
 #### 释放独占锁的实现
-释放一个独占锁，首先会调用tryRelease方法，在完全释放掉独占锁后，其后继线程是可以获取到独占锁的，因此释放线程需要做的事情是：唤醒一个队列中的后继线程，让它去尝试获取独占锁。
+
+释放一个独占锁，首先会调用 tryRelease 方法，在完全释放掉独占锁后，其后继线程是可以获取到独占锁的，因此释放线程需要做的事情是：唤醒一个队列中的后继线程，让它去尝试获取独占锁。
+
 ```java
 public final boolean release(int arg) {
     if (tryRelease(arg)) {
@@ -370,11 +384,16 @@ public final boolean release(int arg) {
     return false;
 }
 ```
-整个release做的事情就是：
-1. 调用tryRelease；
-2. 如果tryRelease返回true也就是独占锁被完全释放，唤醒后继线程。
+
+整个 release 做的事情就是：
+
+1. 调用 tryRelease；
+2. 如果 tryRelease 返回 true 也就是独占锁被完全释放，唤醒后继线程。
+
 #### 获取共享锁的实现
-共享锁允许多个线程持有，如果要使用AQS中的共享锁，在实现 tryAcquireShared方法 时需要注意，返回负数表示获取失败，返回0表示成功，但是后继争用线程不会成功，返回正数表示获取成功，并且后继争用线程也可能成功。
+
+共享锁允许多个线程持有，如果要使用 AQS 中的共享锁，在实现 tryAcquireShared 方法 时需要注意，返回负数表示获取失败，返回 0 表示成功，但是后继争用线程不会成功，返回正数表示获取成功，并且后继争用线程也可能成功。
+
 ```java
 public final void acquireShared(int arg) {
     if (tryAcquireShared(arg) < 0)
@@ -465,8 +484,11 @@ private void doReleaseShared() {
     }
 }
 ```
+
 #### 释放共享锁的实现
-共享锁的获取和释放都会涉及到 doReleaseShared方法，也就是后继线程的唤醒。
+
+共享锁的获取和释放都会涉及到 doReleaseShared 方法，也就是后继线程的唤醒。
+
 ```java
 public final boolean releaseShared(int arg) {
     if (tryReleaseShared(arg)) {

@@ -1,13 +1,14 @@
-HashMap 大家都清楚，底层是 数组 + (链表 / 红黑树)，**元素是无序的**，而 LinkedHashMap 则比 HashMap 多了这一个功能，并且，LinkedHashMap 的有序可以按两种顺序排列，一种是按照插入的顺序，一种是按照访问的顺序（初始化LinkedHashMap对象时设置accessOrder参数为true），而其内部是靠 建立一个双向链表 来维护这个顺序的，在每次插入、删除后，都会调用一个函数来进行 双向链表的维护，这也是实现 LRU Cache 功能的基础。
+HashMap 大家都清楚，底层是 数组 + (链表 / 红黑树)，**元素是无序的**，而 LinkedHashMap 则比 HashMap 多了这一个功能，并且，LinkedHashMap 的有序可以按两种顺序排列，一种是按照插入的顺序，一种是按照访问的顺序（初始化 LinkedHashMap 对象时设置 accessOrder 参数为 true），而其内部是靠 建立一个双向链表 来维护这个顺序的，在每次插入、删除后，都会调用一个函数来进行 双向链表的维护，这也是实现 LRU Cache 功能的基础。
 
-先说几个比较重要的结论，大家可以根据这些结论从后面的源码解析中 得到证据。    
+先说几个比较重要的结论，大家可以根据这些结论从后面的源码解析中 得到证据。
+
 1. LinkedHashMap 继承了 HashMap，所以和 HashMap 的底层数据结构是一样的，都是数组+链表+红黑树，扩容机制也一样；
 2. LinkedHashMap 是通过双向链表来维护数据的，与 HashMap 的拉链式存储不一样；
-3. LinkedHashMap 存储顺序与添加顺序是一样得，同时可以根据 accessOrder参数 来决定是否在访问时移动元素，以实现 LRU 功能。
+3. LinkedHashMap 存储顺序与添加顺序是一样得，同时可以根据 accessOrder 参数 来决定是否在访问时移动元素，以实现 LRU 功能。
 
 ```java
 public class LinkedHashMap<K,V> extends HashMap<K,V> implements Map<K,V> {
-    
+
     /**
      * 在 HashMap.Node节点 的基础上增加了 “前继节点” 和 “后继节点” 这种双向链表的功能特性
      */
@@ -17,24 +18,24 @@ public class LinkedHashMap<K,V> extends HashMap<K,V> implements Map<K,V> {
             super(hash, key, value, next);
         }
     }
-    
+
     /**
      * 记录这个 LinkedHashMap容器的 头节点
      */
     transient LinkedHashMap.Entry<K,V> head;
-    
+
     /**
      * 记录这个 LinkedHashMap容器的 尾节点
      */
     transient LinkedHashMap.Entry<K,V> tail;
-    
+
     /**
      * 是否根据访问 进行排序，true为是，可通过构造方法进行设置
      */
     final boolean accessOrder;
-    
+
     // 下面是一些私有的内部公用方法
-    
+
     // 将元素连接到链表尾部
     private void linkNodeLast(LinkedHashMap.Entry<K,V> p) {
         LinkedHashMap.Entry<K,V> last = tail;
@@ -46,7 +47,7 @@ public class LinkedHashMap<K,V> extends HashMap<K,V> implements Map<K,V> {
             last.after = p;
         }
     }
-    
+
     // apply src's links to dst
     private void transferLinks(LinkedHashMap.Entry<K,V> src, LinkedHashMap.Entry<K,V> dst) {
         LinkedHashMap.Entry<K,V> b = dst.before = src.before;
@@ -60,22 +61,22 @@ public class LinkedHashMap<K,V> extends HashMap<K,V> implements Map<K,V> {
         else
             a.before = dst;
     }
-    
+
     // 下面是一些 重写的 HashMap 的 hook methods，其中 afterNodeInsertion、afterNodeRemoval
     // afterNodeAccess及方法，在每次插入、删除、访问后，都会回调 用来维护双向链表
-    
+
     void reinitialize() {
         super.reinitialize();
         head = tail = null;
     }
-    
+
     Node<K,V> newNode(int hash, K key, V value, Node<K,V> e) {
         LinkedHashMap.Entry<K,V> p =
             new LinkedHashMap.Entry<K,V>(hash, key, value, e);
         linkNodeLast(p);
         return p;
     }
-    
+
     Node<K,V> replacementNode(Node<K,V> p, Node<K,V> next) {
         LinkedHashMap.Entry<K,V> q = (LinkedHashMap.Entry<K,V>)p;
         LinkedHashMap.Entry<K,V> t =
@@ -83,20 +84,20 @@ public class LinkedHashMap<K,V> extends HashMap<K,V> implements Map<K,V> {
         transferLinks(q, t);
         return t;
     }
-    
+
     TreeNode<K,V> newTreeNode(int hash, K key, V value, Node<K,V> next) {
         TreeNode<K,V> p = new TreeNode<K,V>(hash, key, value, next);
         linkNodeLast(p);
         return p;
     }
-    
+
     TreeNode<K,V> replacementTreeNode(Node<K,V> p, Node<K,V> next) {
         LinkedHashMap.Entry<K,V> q = (LinkedHashMap.Entry<K,V>)p;
         TreeNode<K,V> t = new TreeNode<K,V>(q.hash, q.key, q.value, next);
         transferLinks(q, t);
         return t;
     }
-    
+
     // 在删除元素之后，将元素从双向链表中删除
     void afterNodeRemoval(Node<K,V> e) { // unlink
         LinkedHashMap.Entry<K,V> p =
@@ -111,7 +112,7 @@ public class LinkedHashMap<K,V> extends HashMap<K,V> implements Map<K,V> {
         else
             a.before = b;
     }
-    
+
     // 可用于删除最老的元素
     void afterNodeInsertion(boolean evict) { // possibly remove eldest
         LinkedHashMap.Entry<K,V> first;
@@ -124,7 +125,7 @@ public class LinkedHashMap<K,V> extends HashMap<K,V> implements Map<K,V> {
     protected boolean removeEldestEntry(Map.Entry<K,V> eldest) {
         return false;
     }
-    
+
     // 在访问元素之后，将该元素放到双向链表的尾巴处
     void afterNodeAccess(Node<K,V> e) { // move node to last
         LinkedHashMap.Entry<K,V> last;
@@ -150,14 +151,14 @@ public class LinkedHashMap<K,V> extends HashMap<K,V> implements Map<K,V> {
             ++modCount;
         }
     }
-    
+
     void internalWriteEntries(java.io.ObjectOutputStream s) throws IOException {
         for (LinkedHashMap.Entry<K,V> e = head; e != null; e = e.after) {
             s.writeObject(e.key);
             s.writeObject(e.value);
         }
     }
-    
+
     /**
      * 跟 HashMap 的构造方法没啥区别，初始容量、扩容因子 用以减少resize和rehash，提升容器整体性能
      */
@@ -165,12 +166,12 @@ public class LinkedHashMap<K,V> extends HashMap<K,V> implements Map<K,V> {
         super(initialCapacity, loadFactor);
         accessOrder = false;
     }
-    
+
     public LinkedHashMap(int initialCapacity) {
         super(initialCapacity);
         accessOrder = false;
     }
-    
+
     /**
      * 注意！accessOrder参数默认为false，如果想使用 LRU机制，记得设为 true
      */
@@ -178,13 +179,13 @@ public class LinkedHashMap<K,V> extends HashMap<K,V> implements Map<K,V> {
         super();
         accessOrder = false;
     }
-    
+
     public LinkedHashMap(Map<? extends K, ? extends V> m) {
         super();
         accessOrder = false;
         putMapEntries(m, false);
     }
-    
+
     /**
      * 使用这个构造方法 设置accessOrder
      */
@@ -192,7 +193,7 @@ public class LinkedHashMap<K,V> extends HashMap<K,V> implements Map<K,V> {
         super(initialCapacity, loadFactor);
         this.accessOrder = accessOrder;
     }
-    
+
     /**
      * 是否包含指定元素
      */
@@ -204,7 +205,7 @@ public class LinkedHashMap<K,V> extends HashMap<K,V> implements Map<K,V> {
         }
         return false;
     }
-    
+
     /**
      * 获取指定key对应的value，如果accessOrder为true，会回调afterNodeAccess方法
      * 将元素放到队尾
@@ -217,7 +218,7 @@ public class LinkedHashMap<K,V> extends HashMap<K,V> implements Map<K,V> {
             afterNodeAccess(e);
         return e.value;
     }
-    
+
     /**
      * 根据 key 获取对应的 value，如果key不存在，则返回给定的默认值 defaultValue
      */
@@ -229,7 +230,7 @@ public class LinkedHashMap<K,V> extends HashMap<K,V> implements Map<K,V> {
            afterNodeAccess(e);
        return e.value;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -237,7 +238,7 @@ public class LinkedHashMap<K,V> extends HashMap<K,V> implements Map<K,V> {
         super.clear();
         head = tail = null;
     }
-    
+
     /**
      * 获取key的set集合
      */
@@ -249,7 +250,7 @@ public class LinkedHashMap<K,V> extends HashMap<K,V> implements Map<K,V> {
         }
         return ks;
     }
-    
+
     /**
      * 返回 键值对 的Set集合
      */

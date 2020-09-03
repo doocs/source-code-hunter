@@ -1,8 +1,9 @@
-前面我们分析了 Thread类的源码，有了前面的铺垫，通过源码 理解ThreadLocal的秘密就容易多了。
+前面我们分析了 Thread 类的源码，有了前面的铺垫，通过源码 理解 ThreadLocal 的秘密就容易多了。
 
-ThreadLocal类 提供了 get/set线程局部变量的实现，ThreadLocal成员变量与正常的成员变量不同，每个线程都可以通过 ThreadLocal成员变量 get/set自己的专属值。ThreadLocal实例 通常是类中的私有静态变量，常用于将状态与线程关联，例如：用户ID或事务ID。
+ThreadLocal 类 提供了 get/set 线程局部变量的实现，ThreadLocal 成员变量与正常的成员变量不同，每个线程都可以通过 ThreadLocal 成员变量 get/set 自己的专属值。ThreadLocal 实例 通常是类中的私有静态变量，常用于将状态与线程关联，例如：用户 ID 或事务 ID。
 
-tips：在类中定义ThreadLocal变量时，一般在定义时就进行实例化！
+tips：在类中定义 ThreadLocal 变量时，一般在定义时就进行实例化！
+
 ```java
 public class ThreadLocal<T> {
 
@@ -31,7 +32,7 @@ public class ThreadLocal<T> {
     	// threadLocals变量
         return t.threadLocals;
     }
-    
+
     void createMap(Thread t, T firstValue) {
         t.threadLocals = new ThreadLocalMap(this, firstValue);
     }
@@ -256,12 +257,13 @@ public class ThreadLocal<T> {
     }
 }
 ```
+
 简单画个图总结一下 ThreadLocal 的原理，如下。
 
 ![avatar](../../../images/JDK1.8/ThreadLocal原理.png)
 
-最后强调一下 ThreadLocal的使用注意事项：
+最后强调一下 ThreadLocal 的使用注意事项：
 
 1. ThreadLocal 不是用来解决线程安全问题的，多线程不共享，不存在竞争！其目的是使线程能够使用本地变量。
 
-2. 项目如果使用了线程池，那么线程回收后ThreadLocal变量要remove掉，否则线程池回收线程后，变量还在内存中，可能会带来意想不到的后果！例如Tomcat容器的线程池，可以在拦截器中处理：继承 HandlerInterceptorAdapter，然后复写 afterCompletion()方法，remove掉变量！！！
+2. 项目如果使用了线程池，那么线程回收后 ThreadLocal 变量要 remove 掉，否则线程池回收线程后，变量还在内存中，可能会带来意想不到的后果！例如 Tomcat 容器的线程池，可以在拦截器中处理：继承 HandlerInterceptorAdapter，然后复写 afterCompletion()方法，remove 掉变量！！！

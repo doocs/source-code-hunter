@@ -1,23 +1,26 @@
-设计模式是解决问题的方案，从大神的代码中学习对设计模式的使用，可以有效提升个人编码及设计代码的能力。本系列博文用于总结阅读过的框架源码（Spring系列、Mybatis）及JDK源码中 所使用过的设计模式，并结合个人工作经验，重新理解设计模式。
+设计模式是解决问题的方案，从大神的代码中学习对设计模式的使用，可以有效提升个人编码及设计代码的能力。本系列博文用于总结阅读过的框架源码（Spring 系列、Mybatis）及 JDK 源码中 所使用过的设计模式，并结合个人工作经验，重新理解设计模式。
 
 本篇博文主要看一下行为型的几个设计模式，即，策略模式、模板方法模式、迭代器模式、观察者模式 及 责任链模式。
 
-
 ## 策略模式
+
 #### 个人理解
+
 去年看了蛮多源码，发现 框架的开发者在实际使用设计模式时，大都会根据实际情况 使用其变体，老老实实按照书上的类图及定义去设计代码的比较少。不过我们依然还是先看一下书上的定义，然后比较一下理论与实践的一些差别吧。策略模式的类图及定义如下。
 
 ![avatar](../../../images/DesignPattern/策略模式类图.png)
 
 定义一系列算法，封装每个算法 并使它们可以互换。该模式的主要角色如下：
 
-- Strategy接口：用于定义一个算法族，它们都具有behavior()方法；
-- Context：使用该算法的类，持有Strategy对象，其中的setStrategy(Strategy stra)方法可以动态地改变strategy对象，以此改变自己所使用的算法。      
+- Strategy 接口：用于定义一个算法族，它们都具有 behavior()方法；
+- Context：使用该算法的类，持有 Strategy 对象，其中的 setStrategy(Strategy stra)方法可以动态地改变 strategy 对象，以此改变自己所使用的算法。
 
-很多书上都使用Duck和QuackBehavior作为示例进行说明，这里就不重复咯，主要看一下Spring中是如何使用该模式的。
+很多书上都使用 Duck 和 QuackBehavior 作为示例进行说明，这里就不重复咯，主要看一下 Spring 中是如何使用该模式的。
 
-#### Spring中的实现
-Spring的 AbstractAutowireCapableBeanFactory 在进行bean实例化时使用了策略模式的变种，其中InstantiationStrategy 接口 定义了实例化方法，实现类SimpleInstantiationStrategy 和 CglibSubclassingInstantiationStrategy 分别实现了各自的算法，AbstractAutowireCapableBeanFactory 则通过持有 InstantiationStrategy 对象，对算进行使用。其源码实现如下。
+#### Spring 中的实现
+
+Spring 的 AbstractAutowireCapableBeanFactory 在进行 bean 实例化时使用了策略模式的变种，其中 InstantiationStrategy 接口 定义了实例化方法，实现类 SimpleInstantiationStrategy 和 CglibSubclassingInstantiationStrategy 分别实现了各自的算法，AbstractAutowireCapableBeanFactory 则通过持有 InstantiationStrategy 对象，对算进行使用。其源码实现如下。
+
 ```java
 /**
  * 本接口用于定义bean实例的创建，通过给定的RootBeanDefinition对象
@@ -32,10 +35,10 @@ public interface InstantiationStrategy {
      */
     Object instantiate(RootBeanDefinition beanDefinition, String beanName, BeanFactory owner)
             throws BeansException;
-    
+
     Object instantiate(RootBeanDefinition beanDefinition, String beanName, BeanFactory owner,
             Constructor<?> ctor, Object[] args) throws BeansException;
-    
+
     Object instantiate(RootBeanDefinition beanDefinition, String beanName, BeanFactory owner,
             Object factoryBean, Method factoryMethod, Object[] args) throws BeansException;
 
@@ -54,7 +57,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
             synchronized (beanDefinition.constructorArgumentLock) {
                 // 获取对象的构造方法或生成对象的工厂方法对bean进行实例化
                 constructorToUse = (Constructor<?>) beanDefinition.resolvedConstructorOrFactoryMethod;
-                
+
                 // 如果前面没有获取到构造方法，则通过反射获取
                 if (constructorToUse == null) {
                     // 使用JDK的反射机制，判断要实例化的Bean是否是接口
@@ -106,33 +109,33 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
      */
     protected Object instantiateWithMethodInjection(
             RootBeanDefinition beanDefinition, String beanName, BeanFactory owner) {
-    
+
         // 必须生成cglib子类
         return new CglibSubclassCreator(beanDefinition, owner).instantiate(null, null);
     }
-    
+
     @Override
     protected Object instantiateWithMethodInjection(
             RootBeanDefinition beanDefinition, String beanName, BeanFactory owner,
             Constructor ctor, Object[] args) {
-    
+
         return new CglibSubclassCreator(beanDefinition, owner).instantiate(ctor, args);
     }
-    
+
     /**
      * 为避免3.2之前的Spring版本中的外部cglib依赖而创建的内部类
      */
     private static class CglibSubclassCreator {
-    
+
         private final RootBeanDefinition beanDefinition;
-    
+
         private final BeanFactory owner;
-    
+
         public CglibSubclassCreator(RootBeanDefinition beanDefinition, BeanFactory owner) {
             this.beanDefinition = beanDefinition;
             this.owner = owner;
         }
-    
+
         //使用CGLIB进行Bean对象实例化
         public Object instantiate(Constructor ctor, Object[] args) {
             //实例化Enhancer对象，并为Enhancer对象设置父类，生成Java对象的参数，比如：基类、回调方法等
@@ -145,7 +148,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
                     new LookupOverrideMethodInterceptor(),
                     new ReplaceOverrideMethodInterceptor()
             });
-    
+
             //使用CGLIB的create方法生成实例对象
             return (ctor == null) ? enhancer.create() : enhancer.create(ctor.getParameterTypes(), args);
         }
@@ -158,18 +161,18 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
     /** 创建bean实例的策略，注意 这里直接实例化的是 CglibSubclassingInstantiationStrategy 对象 */
     private InstantiationStrategy instantiationStrategy = new CglibSubclassingInstantiationStrategy();
-    
+
     /**
      * 设置用于创建bean实例的实例化策略，默认使用CglibSubclassingInstantiationStrategy
      */
     public void setInstantiationStrategy(InstantiationStrategy instantiationStrategy) {
         this.instantiationStrategy = instantiationStrategy;
     }
-    
+
     protected InstantiationStrategy getInstantiationStrategy() {
         return this.instantiationStrategy;
     }
-    
+
     /**
      * 使用默认的无参构造方法实例化Bean对象
      */
@@ -187,7 +190,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                 }, getAccessControlContext());
             }
             else {
-                
+
                 /**
                  * ！！！！！！！！！！！！！！
                  * 使用初始化策略实例化Bean对象
@@ -203,19 +206,22 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             throw new BeanCreationException(mbd.getResourceDescription(), beanName, "Instantiation of bean failed", ex);
         }
     }
-    
+
     ...
-	
+
 }
 ```
-与标准的策略模式的设计区别在于，实现类CglibSubclassingInstantiationStrategy并不是直接实现了InstantiationStrategy接口，而是继承了SimpleInstantiationStrategy，SimpleInstantiationStrategy直接实现了 通过JDK反射机制实例化bean的策略，而CglibSubclassingInstantiationStrategy则是在自己的私有静态内部类中 完成的 通过CGLIB实例化bean的策略。  
 
-另外，虽然AbstractAutowireCapableBeanFactory默认持有的是CglibSubclassingInstantiationStrategy的实例，但具体使用哪个实现类中的策略，则是由CglibSubclassingInstantiationStrategy的父类SimpleInstantiationStrategy中的instantiate()方法决定的。也就是说，虽然持有的是CglibSubclassingInstantiationStrategy对象，但实际上可能使用的是 JDK反射机制实例化bean的策略。  
+与标准的策略模式的设计区别在于，实现类 CglibSubclassingInstantiationStrategy 并不是直接实现了 InstantiationStrategy 接口，而是继承了 SimpleInstantiationStrategy，SimpleInstantiationStrategy 直接实现了 通过 JDK 反射机制实例化 bean 的策略，而 CglibSubclassingInstantiationStrategy 则是在自己的私有静态内部类中 完成的 通过 CGLIB 实例化 bean 的策略。
+
+另外，虽然 AbstractAutowireCapableBeanFactory 默认持有的是 CglibSubclassingInstantiationStrategy 的实例，但具体使用哪个实现类中的策略，则是由 CglibSubclassingInstantiationStrategy 的父类 SimpleInstantiationStrategy 中的 instantiate()方法决定的。也就是说，虽然持有的是 CglibSubclassingInstantiationStrategy 对象，但实际上可能使用的是 JDK 反射机制实例化 bean 的策略。
 
 设计模式的生产实践可能比 理论上的那些示例复杂的多，所以，若想确实提高自己代码的设计能力，还是要摆脱书本，多看实际应用。
 
 #### Mybatis 中的实现
-mybatis 的 DefaultSqlSession 使用了策略模式，DefaultSqlSession 扮演了 Context 的角色，Executor 接口及其实现类扮演了策略接口及实现。DefaultSqlSession 持有 Executor 对象，在DefaultSqlSession 实例化时通过构造方法传入具体的 Executor 对象，根据持有的 Executor 对象的不同，而使用不同的策略进行数据库操作。具体使用哪个 Executor 的实例，由 Configuration 的 newExecutor() 方法决定。
+
+mybatis 的 DefaultSqlSession 使用了策略模式，DefaultSqlSession 扮演了 Context 的角色，Executor 接口及其实现类扮演了策略接口及实现。DefaultSqlSession 持有 Executor 对象，在 DefaultSqlSession 实例化时通过构造方法传入具体的 Executor 对象，根据持有的 Executor 对象的不同，而使用不同的策略进行数据库操作。具体使用哪个 Executor 的实例，由 Configuration 的 newExecutor() 方法决定。
+
 ```java
 public class DefaultSqlSession implements SqlSession {
 
@@ -272,7 +278,7 @@ public interface Executor {
   void rollback(boolean required) throws SQLException;
 
   Transaction getTransaction();
-  
+
   ......
 }
 
@@ -280,7 +286,7 @@ public interface Executor {
 public abstract class BaseExecutor implements Executor {
 
   ......
-  
+
   protected BaseExecutor(Configuration configuration, Transaction transaction) {
     this.transaction = transaction;
     this.deferredLoads = new ConcurrentLinkedQueue<>();
@@ -290,7 +296,7 @@ public abstract class BaseExecutor implements Executor {
     this.configuration = configuration;
     this.wrapper = this;
   }
-  
+
   ......
 }
 
@@ -334,7 +340,7 @@ public class SimpleExecutor extends BaseExecutor {
       closeStatement(stmt);
     }
   }
-  
+
   ......
 }
 
@@ -380,7 +386,7 @@ public class BatchExecutor extends BaseExecutor {
     handler.batch(stmt);
     return BATCH_UPDATE_RETURN_VALUE;
   }
-  
+
   ......
 }
 
@@ -407,19 +413,23 @@ public class Configuration {
     executor = (Executor) interceptorChain.pluginAll(executor);
     return executor;
   }
-  
+
   ......
 }
 ```
 
 ## 模板方法模式
+
 #### 个人理解
-在该模式中，一个算法可以分为多个步骤，这些步骤的执行次序在一个被称为“模板方法”的方法中定义，而算法的每个步骤都对应着一个方法，这些方法被称为 “基本方法”。 模板方法按照它定义的顺序依次调用多个基本方法，从而实现整个算法流程。在模板方法模式中，会将模板方法的实现以及那些固定不变的基本方法的实现放在父类中，而那些不固定的基 本方法在父类中只是抽象方法，其真正的实现代码会被延迟到子类中完成。 
 
-我觉得这是最简单且常用的设计模式之一咯，自己在实现一些功能时也会使用这种模式，在抽象类中定义好流程的执行顺序，通用的流程在抽象类中实现，个性化的流程交给各个子类去实现。spring及mybatis中均有应用。
+在该模式中，一个算法可以分为多个步骤，这些步骤的执行次序在一个被称为“模板方法”的方法中定义，而算法的每个步骤都对应着一个方法，这些方法被称为 “基本方法”。 模板方法按照它定义的顺序依次调用多个基本方法，从而实现整个算法流程。在模板方法模式中，会将模板方法的实现以及那些固定不变的基本方法的实现放在父类中，而那些不固定的基 本方法在父类中只是抽象方法，其真正的实现代码会被延迟到子类中完成。
 
-#### Spring中的应用
+我觉得这是最简单且常用的设计模式之一咯，自己在实现一些功能时也会使用这种模式，在抽象类中定义好流程的执行顺序，通用的流程在抽象类中实现，个性化的流程交给各个子类去实现。spring 及 mybatis 中均有应用。
+
+#### Spring 中的应用
+
 Spring 中的 AbstractApplicationContext 和其子类 AbstractRefreshableApplicationContext、GenericApplicationContext 使用了模板方法模式。源码实现及详细注释如下。
+
 ```java
 public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		implements ConfigurableApplicationContext, DisposableBean {
@@ -438,11 +448,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
         }
         return beanFactory;
     }
-    
+
     protected abstract void refreshBeanFactory() throws BeansException, IllegalStateException;
-    
+
     public abstract ConfigurableListableBeanFactory getBeanFactory() throws IllegalStateException;
-	
+
 }
 
 
@@ -476,7 +486,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
             throw new ApplicationContextException("I/O error parsing bean definition source for " + getDisplayName(), ex);
         }
     }
-    
+
     @Override
     public final ConfigurableListableBeanFactory getBeanFactory() {
         synchronized (this.beanFactoryMonitor) {
@@ -501,15 +511,17 @@ public class GenericApplicationContext extends AbstractApplicationContext implem
         this.beanFactory.setSerializationId(getId());
         this.refreshed = true;
     }
-    
+
     public final ConfigurableListableBeanFactory getBeanFactory() {
         return this.beanFactory;
     }
 }
 ```
 
-#### Mybatis中的应用
-mybatis的 Executor 组件使用了该模式，其中抽象类 BaseExecutor 定义了模板方法和抽象方法，实现类 SimpleExecutor、BatchExecutor 及 ReuseExecutor 对抽象方法进行具体实现。源码如下。
+#### Mybatis 中的应用
+
+mybatis 的 Executor 组件使用了该模式，其中抽象类 BaseExecutor 定义了模板方法和抽象方法，实现类 SimpleExecutor、BatchExecutor 及 ReuseExecutor 对抽象方法进行具体实现。源码如下。
+
 ```java
 public abstract class BaseExecutor implements Executor {
 
@@ -818,16 +830,20 @@ public class ReuseExecutor extends BaseExecutor {
   }
 }
 ```
-可以看得出来，模板方法就是BaseExecutor的update()、flushStatements()、queryFromDatabase() 及 queryCursor()，分别使用了抽象方法doUpdate()、doFlushStatements()、doQuery() 及 doQueryCursor()。
+
+可以看得出来，模板方法就是 BaseExecutor 的 update()、flushStatements()、queryFromDatabase() 及 queryCursor()，分别使用了抽象方法 doUpdate()、doFlushStatements()、doQuery() 及 doQueryCursor()。
 
 ## 迭代器模式
+
 #### 个人理解
-这个模式最经典的实现莫过于 Java的集合类咯。同样还是先简单介绍一下这个设计模式，然后结合ArrayList的源码进行分析。
+
+这个模式最经典的实现莫过于 Java 的集合类咯。同样还是先简单介绍一下这个设计模式，然后结合 ArrayList 的源码进行分析。
 
 本设计模式用于提供一种遍历集合元素的方法，且不暴露集合对象的内部表示。其主要角色 和 简单实现如下：
 
 - Aggregate：聚合类，有一个可以获取 Iterator 对象的 iterator() 方法；
-- Iterator：主要定义了hasNest() 和 next()方法；
+- Iterator：主要定义了 hasNest() 和 next()方法；
+
 ```java
 public interface Aggregate {
     Iterator iterator();
@@ -837,14 +853,14 @@ public interface Aggregate {
 public class ConcreteAggregate implements Aggregate {
 
     private Integer[] elements;
-    
+
     public ConcreteAggregate() {
         elements = new Integer[10];
         for (int i = 0; i < elements.length; i++) {
             elements[i] = i;
         }
     }
-    
+
     @Override
     public Iterator iterator() {
         return new ConcreteIterator(elements);
@@ -855,7 +871,7 @@ public class ConcreteAggregate implements Aggregate {
 public interface Iterator<Integer> {
 
     boolean hasNext();
-    
+
     Integer next();
 }
 
@@ -864,16 +880,16 @@ public class ConcreteIterator<Integer> implements Iterator {
 
     private Integer[] elements;
     private int position = 0;
-    
+
     public ConcreteIterator(Integer[] elements) {
         this.elements = elements;
     }
-    
+
     @Override
     public boolean hasNext() {
         return position < elements.length;
     }
-    
+
     @Override
     public Integer next() {
         return elements[position ++];
@@ -894,6 +910,7 @@ public class Client {
 ```
 
 #### ArrayList 对迭代器模式的实现
+
 ```java
 public class ArrayList<E> extends AbstractList<E>
         implements List<E>, RandomAccess, Cloneable, java.io.Serializable {
@@ -945,16 +962,20 @@ public class ArrayList<E> extends AbstractList<E>
 ```
 
 ## 观察者模式
+
 #### 个人理解
-这个模式也是平时很少使用的，所以就简单介绍一下，然后结合JDK中的源码加深理解。该模式用于定义对象之间的一对多依赖，当一个对象状态改变时，它的所有依赖都会收到通知，然后自动更新。类图和主要角色如下：
+
+这个模式也是平时很少使用的，所以就简单介绍一下，然后结合 JDK 中的源码加深理解。该模式用于定义对象之间的一对多依赖，当一个对象状态改变时，它的所有依赖都会收到通知，然后自动更新。类图和主要角色如下：
 
 ![avatar](../../../images/DesignPattern/观察者模式类图.png)
 
-- Subject主题：具有注册、移除及通知观察者的功能，主题是通过维护一个观察者列表来实现这些功能的；
-- Observer观察者：其注册需要Subject的registerObserver()方法。
+- Subject 主题：具有注册、移除及通知观察者的功能，主题是通过维护一个观察者列表来实现这些功能的；
+- Observer 观察者：其注册需要 Subject 的 registerObserver()方法。
 
-#### JDK中的源码实现
-java.util包中提供了 Observable 类和 Observer 接口，其中要求，被观察者需要继承Observable类，观察则需要实现Observer接口。下面看一下其源码实现。
+#### JDK 中的源码实现
+
+java.util 包中提供了 Observable 类和 Observer 接口，其中要求，被观察者需要继承 Observable 类，观察则需要实现 Observer 接口。下面看一下其源码实现。
+
 ```java
 /**
  * 当一个类希望获知 所观察的对象的变化时，可以通过实现本接口来完成
@@ -987,7 +1008,7 @@ public interface Observer {
  */
 public class Observable {
     private boolean changed = false;
-    /** 
+    /**
      * 通过一个Vector来维护 观察者列表。
      * 由于该集合主要涉及元素的增删操作，所以个人认为使用LinkedList
      * 效果会更好一下
@@ -1076,24 +1097,27 @@ public class Observable {
 ```
 
 ## 责任链模式
-一般用在消息请求的处理上，如 Netty 的 ChannelHandler组件，Tomcat 对 HTTP 请求的处理。我们当然可以将 请求的处理逻辑都写在一个类中，但这个类会非常雕肿且不易于维护，不符合开发封闭原则。
 
-在责任链模式中，将上述臃肿的请求处理逻辑 拆分到多个 功能逻辑单一的 Handler 处理类中，这样我们就可以根据业务需求，将多个 Handler 对象组合成一条责任链，实现请求的处理。在一条责任链中，每个 Handler对象 都包含对下一个 Handler对象 的引用，一个 Handler对象 处理完请求消息（或不能处理该请求）时， 会把请求传给下一个 Handler对象 继续处理，依此类推，直至整条责任链结束。简单看一下责任链模式的类图。
+一般用在消息请求的处理上，如 Netty 的 ChannelHandler 组件，Tomcat 对 HTTP 请求的处理。我们当然可以将 请求的处理逻辑都写在一个类中，但这个类会非常雕肿且不易于维护，不符合开发封闭原则。
+
+在责任链模式中，将上述臃肿的请求处理逻辑 拆分到多个 功能逻辑单一的 Handler 处理类中，这样我们就可以根据业务需求，将多个 Handler 对象组合成一条责任链，实现请求的处理。在一条责任链中，每个 Handler 对象 都包含对下一个 Handler 对象 的引用，一个 Handler 对象 处理完请求消息（或不能处理该请求）时， 会把请求传给下一个 Handler 对象 继续处理，依此类推，直至整条责任链结束。简单看一下责任链模式的类图。
 
 ![avatar](../../../images/DesignPattern/责任链模式.png)
 
 #### Netty 中的应用
-在 Netty 中，将 Channel 的数据管道抽象为 ChannelPipeline，消息在 ChannelPipeline 中流动和传递。ChannelPipeline 是 ChannelHandler 的容器，持有 I/O事件拦截器 ChannelHandler 的链表，负责对 ChannelHandler 的管理和调度。由 ChannelHandler 对 I/O事件 进行拦截和处理，并可以通过接口方便地新增和删除 ChannelHandler 来实现不同业务逻辑的处理。下图是 ChannelPipeline源码中描绘的责任链事件处理过程。
+
+在 Netty 中，将 Channel 的数据管道抽象为 ChannelPipeline，消息在 ChannelPipeline 中流动和传递。ChannelPipeline 是 ChannelHandler 的容器，持有 I/O 事件拦截器 ChannelHandler 的链表，负责对 ChannelHandler 的管理和调度。由 ChannelHandler 对 I/O 事件 进行拦截和处理，并可以通过接口方便地新增和删除 ChannelHandler 来实现不同业务逻辑的处理。下图是 ChannelPipeline 源码中描绘的责任链事件处理过程。
 ![avatar](../../../images/Netty/ChannelPipeline责任链事件处理过程.png)
 其具体过程处理如下：
 
-1. 底层SocketChannel 的 read方法 读取 ByteBuf，触发 ChannelRead事件，由 I/O线程 NioEventLoop 调用 ChannelPipeline 的 fireChannelRead()方法，将消息传输到 ChannelPipeline中。
+1. 底层 SocketChannel 的 read 方法 读取 ByteBuf，触发 ChannelRead 事件，由 I/O 线程 NioEventLoop 调用 ChannelPipeline 的 fireChannelRead()方法，将消息传输到 ChannelPipeline 中。
 
 2. 消息依次被 InboundHandler 1、InboundHandler 2 … InboundHandler N 拦截处理，在这个过程中，任何 ChannelHandler 都可以中断当前的流程，结束消息的传递。
 
 3. 当调用 ChannelHandlerContext 的 write()方法 发送消息，消息从 OutbountHandler 1 开始 一直到 OutboundHandler N，最终被添加到消息发送缓冲区中等待刷新和发送。
 
-在 Netty 中将事件根据源头的不同分为 InBound事件 和 OutBound事件。InBound事件 通常由 I/O线程 触发，例如 TCP链路 建立和关闭、读事件等等，分别会触发相应的事件方法。而 OutBound事件 则一般由用户主动发起的 网络I/O操作，例如用户发起的连接操作，绑定操作和消息发送操作等，也会分别触发相应的事件方法。由于 netty 中提供了一个抽象类 ChannelHandlerAdapter，它默认不处理拦截的事件。所以，在实际编程过程中，我们只需要继承 ChannelHandlerAdapter，在我们的 自定义Handler 中覆盖业务关心的事件方法即可。其源码如下。
+在 Netty 中将事件根据源头的不同分为 InBound 事件 和 OutBound 事件。InBound 事件 通常由 I/O 线程 触发，例如 TCP 链路 建立和关闭、读事件等等，分别会触发相应的事件方法。而 OutBound 事件 则一般由用户主动发起的 网络 I/O 操作，例如用户发起的连接操作，绑定操作和消息发送操作等，也会分别触发相应的事件方法。由于 netty 中提供了一个抽象类 ChannelHandlerAdapter，它默认不处理拦截的事件。所以，在实际编程过程中，我们只需要继承 ChannelHandlerAdapter，在我们的 自定义 Handler 中覆盖业务关心的事件方法即可。其源码如下。
+
 ```java
 /**
  * 它扮演了 责任链模式中的 Client角色，持有 构造 并使用 ChannelHandler责任链
@@ -1208,6 +1232,6 @@ abstract class AbstractChannelHandlerContext extends DefaultAttributeMap
     volatile AbstractChannelHandlerContext prev;
 
 	......
-	
+
 }
 ```

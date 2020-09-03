@@ -1,8 +1,9 @@
 # SpringBoot ConditionalOnBean
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring-boot](https://github.com/SourceHot/spring-boot-read)
 
-- 在 SpringBoot 中有下列当XXX存在或不存的时候执行初始化
+- 在 SpringBoot 中有下列当 XXX 存在或不存的时候执行初始化
   - ConditionalOnBean
     ConditionalOnClass
     ConditionalOnCloudPlatform
@@ -16,8 +17,6 @@
     ConditionalOnResource
     ConditionalOnSingleCandidate
     ConditionalOnWebApplication
-
-
 
 ## ConditionalOnBean
 
@@ -60,10 +59,6 @@ public @interface ConditionalOnBean {
 }
 ```
 
-
-
-
-
 ## SearchStrategy
 
 ```java
@@ -87,10 +82,6 @@ public enum SearchStrategy {
 }
 ```
 
-
-
-
-
 ## OnBeanCondition
 
 - org.springframework.boot.autoconfigure.condition.OnBeanCondition
@@ -104,29 +95,17 @@ public enum SearchStrategy {
   org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition
   ```
 
-
-
-
-
 - 类图
 
   ![image-20200824085726621](//images/SpringBoot//SpringBoot/image-20200824085726621.png)
 
-
-
-
-
 在看这部分源码之前需要先了解 `Conditional`和`Condition`的源码
 
-- 简单描述	
+- 简单描述
 
-  通过实现`Condition` 来确认是否初始化bean
-
-
+  通过实现`Condition` 来确认是否初始化 bean
 
 - 从类图上我们可以看到 `condition` 的继承关系. 在这里需要去找到`SpringBootCondition`
-
-
 
 - `org.springframework.boot.autoconfigure.condition.SpringBootCondition#matches(org.springframework.context.annotation.ConditionContext, org.springframework.core.type.AnnotatedTypeMetadata)`
 
@@ -158,10 +137,6 @@ public enum SearchStrategy {
   }
   ```
 
-
-
-
-
 - `getOutcomes` 子类实现
 
   `org.springframework.boot.autoconfigure.condition.OnBeanCondition#getOutcomes`
@@ -174,13 +149,7 @@ public enum SearchStrategy {
   - 第一个参数: 需要自动配置的类
   - 配置注解信息
 
-
-
-
-
 ### ConditionOutcome 和 ConditionMessage
-
-
 
 ```java
 public class ConditionOutcome {
@@ -202,11 +171,7 @@ public final class ConditionMessage {
 }
 ```
 
-
-
-
-
-- 造一个对象用来进行debug
+- 造一个对象用来进行 debug
 
 ```java
 
@@ -228,8 +193,6 @@ public class Beans {
 }
 
 ```
-
-
 
 ## getMatchOutcome
 
@@ -283,21 +246,11 @@ public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeM
 }
 ```
 
-
-
 - 开始方法分析
-
-
 
 ### getMatchingBeans
 
-
-
 - `org.springframework.boot.autoconfigure.condition.OnBeanCondition#getMatchingBeans`
-
-
-
-
 
 ```java
 protected final MatchResult getMatchingBeans(ConditionContext context, Spec<?> spec) {
@@ -354,9 +307,7 @@ protected final MatchResult getMatchingBeans(ConditionContext context, Spec<?> s
 }
 ```
 
-
-
-- 在`MatchResult result = new MatchResult()`  之前的代码作用是确认ioc容器
+- 在`MatchResult result = new MatchResult()` 之前的代码作用是确认 ioc 容器
 
 #### getNamesOfBeansIgnoredByType
 
@@ -379,15 +330,7 @@ protected final MatchResult getMatchingBeans(ConditionContext context, Spec<?> s
 
 ```
 
-
-
-
-
-
-
 #### getBeanNamesForType
-
-
 
 ```java
 /**
@@ -406,13 +349,7 @@ private Set<String> getBeanNamesForType(ClassLoader classLoader, boolean conside
 }
 ```
 
-
-
-
-
 #### getBeanNamesForType
-
-
 
 ```java
 /**
@@ -427,11 +364,9 @@ private Set<String> getBeanNamesForType(ListableBeanFactory beanFactory, boolean
 }
 ```
 
-
-
 #### collectBeanNamesForType
 
-- 这里最终回到了spring beanFactory 的方法  getBeanNamesForType
+- 这里最终回到了 spring beanFactory 的方法 getBeanNamesForType
 
 ```java
 private Set<String> collectBeanNamesForType(ListableBeanFactory beanFactory, boolean considerHierarchy,
@@ -452,15 +387,7 @@ private Set<String> collectBeanNamesForType(ListableBeanFactory beanFactory, boo
 }
 ```
 
-
-
-到这里需要忽略的beanName 就全部找出来了
-
-
-
-
-
-
+到这里需要忽略的 beanName 就全部找出来了
 
 ```java
 // 匹配类型在移除
@@ -492,29 +419,19 @@ for (String type : spec.getTypes()) {
         }
 ```
 
-- 在忽略bean找到之后做一个类型移除的操作.
-
-
+- 在忽略 bean 找到之后做一个类型移除的操作.
 
 ![image-20200825140750035](/images/SpringBoot//image-20200825140750035.png)
 
-
-
-
-
-
-
 ### 返回值
 
-- 在返回之前做一堆判断条件. 一旦符合条件这个地方会做一个noMatch的一个对象(`ConditionOutcome`) ，通过返回match对象`ConditionOutcome`
+- 在返回之前做一堆判断条件. 一旦符合条件这个地方会做一个 noMatch 的一个对象(`ConditionOutcome`) ，通过返回 match 对象`ConditionOutcome`
 
 ```java
 public static ConditionOutcome noMatch(ConditionMessage message) {
    return new ConditionOutcome(false, message);
 }
 ```
-
-
 
 ```java
         if (!matchResult.isAllMatched()) {
@@ -552,26 +469,12 @@ public static ConditionOutcome noMatch(ConditionMessage message) {
         return ConditionOutcome.match(matchMessage);
 ```
 
-
-
-
-
-
-
 ![image-20200825141506531](/images/SpringBoot//image-20200825141506531.png)
 
-
-
 - 到此结果封装完毕.回到方法`org.springframework.boot.autoconfigure.condition.SpringBootCondition#matches(org.springframework.context.annotation.ConditionContext, org.springframework.core.type.AnnotatedTypeMetadata)` 继续进行
-  - 再往后就继续执行spring的bean初始化咯
-
-
-
-
+  - 再往后就继续执行 spring 的 bean 初始化咯
 
 ## MessageSourceAutoConfiguration
-
-
 
 - 启动阶段的一个类运行解读
 
@@ -584,7 +487,7 @@ public static ConditionOutcome noMatch(ConditionMessage message) {
   @Conditional(ResourceBundleCondition.class)
   @EnableConfigurationProperties
   public class MessageSourceAutoConfiguration {}
-  
+
   ```
 
   - 根据类的注解信息我们可以找到有`ResourceBundleCondition`
@@ -593,7 +496,7 @@ public static ConditionOutcome noMatch(ConditionMessage message) {
 
 - 获取类名或者方法名的结果是`MessageSourceAutoConfiguration`全路径
 
-- 继续往下是一个比较的方法(是否符合match)
+- 继续往下是一个比较的方法(是否符合 match)
 
   `org.springframework.boot.autoconfigure.condition.SpringBootCondition#getMatchOutcome`这个方法是一个抽象方法子类实现
 
@@ -622,21 +525,13 @@ public static ConditionOutcome noMatch(ConditionMessage message) {
 
   这个方法主要将比较信息放入,
 
-- 后续的行为依然是判断是否匹配,匹配就创建. 
-
-
-
-
-
-
+- 后续的行为依然是判断是否匹配,匹配就创建.
 
 ## Spring Boot 启动阶段的自动注入
 
 ```java
 org.springframework.boot.autoconfigure.AutoConfigurationImportSelector#filter
 ```
-
-
 
 ```java
 private List<String> filter(List<String> configurations, AutoConfigurationMetadata autoConfigurationMetadata) {
@@ -678,21 +573,13 @@ private List<String> filter(List<String> configurations, AutoConfigurationMetada
 }
 ```
 
-
-
 - 在这里有一个关注点 循环方法`getAutoConfigurationImportFilters()`
-
-
-
-
 
 ```JAVA
 protected List<AutoConfigurationImportFilter> getAutoConfigurationImportFilters() {
    return SpringFactoriesLoader.loadFactories(AutoConfigurationImportFilter.class, this.beanClassLoader);
 }
 ```
-
-
 
 在`spring.factories`文件中找到`AutoConfigurationImportFilter`后面的值
 
@@ -703,19 +590,10 @@ org.springframework.boot.autoconfigure.condition.OnClassCondition,\
 org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition
 ```
 
-
-
-
-
 - 此时我们可以和前文的源码分析连接起来有一个完整的认识了
 
   ![image-20200825142332485](/images/SpringBoot//image-20200825142332485.png)
 
-
-
-
-
 - 最后来看整体类图
 
   ![image-20200825142418115](/images/SpringBoot//image-20200825142418115.png)
-

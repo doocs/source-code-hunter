@@ -1,9 +1,12 @@
-# Spring Import 
+# Spring Import
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 
 ## 分析
+
 - org.springframework.context.annotation.Import
+
 ```java
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -19,9 +22,12 @@ public @interface Import {
     Class<?>[] value();
 }
 ```
+
 ### ImportBeanDefinitionRegistrar
-- 注册Import Bean 
+
+- 注册 Import Bean
 - `org.springframework.context.annotation.ImportBeanDefinitionRegistrar`
+
 ```java
 public interface ImportBeanDefinitionRegistrar {
 
@@ -40,11 +46,13 @@ public interface ImportBeanDefinitionRegistrar {
 
 }
 ```
+
 - 两个实现类
-    1. `org.springframework.context.annotation.AutoProxyRegistrar`
-    2. `org.springframework.context.annotation.AspectJAutoProxyRegistrar`
+  1. `org.springframework.context.annotation.AutoProxyRegistrar`
+  2. `org.springframework.context.annotation.AspectJAutoProxyRegistrar`
 
 #### AutoProxyRegistrar
+
 ```java
 public class AutoProxyRegistrar implements ImportBeanDefinitionRegistrar {
 

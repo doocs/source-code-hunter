@@ -1,8 +1,13 @@
 在数据持久层，数据源和事务是两个非常重要的组件，对数据持久层的影响很大，在实际开发中，一般会使用 Mybatis 集成第三方数据源组件，如：c3p0、Druid，另外，Mybatis 也提供了自己的数据库连接池实现，本文会通过 Mybatis 的源码实现来了解数据库连接池的设计。而事务方面，一般使用 Spring 进行事务的管理，这里不做详细分析。下面我们看一下 Mybatis 是如何对这两部分进行封装的。
+
 ## 1 DataSource
-常见的数据源都会实现 javax.sql.DataSource接口，Mybatis 中提供了两个该接口的实现类，分别是：PooledDataSource 和 UnpooledDataSource，并使用不同的工厂类分别管理这两个类的对象。
+
+常见的数据源都会实现 javax.sql.DataSource 接口，Mybatis 中提供了两个该接口的实现类，分别是：PooledDataSource 和 UnpooledDataSource，并使用不同的工厂类分别管理这两个类的对象。
+
 ### 1.1 DataSourceFactory
-DataSourceFactory系列类 的设计比较简单，DataSourceFactory 作为顶级接口，UnpooledDataSourceFactory 实现了该接口，PooledDataSourceFactory 又继承了 UnpooledDataSourceFactory。
+
+DataSourceFactory 系列类 的设计比较简单，DataSourceFactory 作为顶级接口，UnpooledDataSourceFactory 实现了该接口，PooledDataSourceFactory 又继承了 UnpooledDataSourceFactory。
+
 ```java
 public interface DataSourceFactory {
 
@@ -70,7 +75,9 @@ public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
 ```
 
 ### 1.2 UnpooledDataSource
-本实现类实现了 DataSource接口 中的 getConnection() 及其重载方法，用于获取数据库连接。其中的主要属性及方法如下：
+
+本实现类实现了 DataSource 接口 中的 getConnection() 及其重载方法，用于获取数据库连接。其中的主要属性及方法如下：
+
 ```java
 public class UnpooledDataSource implements DataSource {
 
@@ -163,17 +170,23 @@ public class UnpooledDataSource implements DataSource {
   }
 }
 ```
+
 ### 1.3 PooledDataSource
+
 数据库建立连接是非常耗时的，且并发的连接数也非常有限。而数据库连接池可以实现数据库的重用、提高响应速度、防止数据库因连接过多而假死等。
 **数据库连接池的设计思路一般为：**
+
 1. **连接池初始化时创建一定数量的连接，并添加到连接池中备用；**
 2. **当程序需要使用数据库连接时，从连接池中请求，用完后会将其返还给连接池，而不是直接关闭；**
 3. **连接池会控制总连接上限及空闲连接上线，如果连接池中的连接总数已达上限，且都被占用，后续的连接请求会短暂阻塞后重新尝试获取连接，如此循环，直到有连接可用；**
 4. **如果连接池中空闲连接较多，已达到空闲连接上限，则返回的连接会被关闭掉，以降低系统开销。**
 
 PooledDataSource 实现了简易的数据库连接池功能，其创建数据库连接的功能依赖了上面的 UnpooledDataSource。
+
 #### 1.3.1 PooledConnection
-PooledDataSource 通过管理 PooledConnection 来实现对 java.sql.Connection 的管理。PooledConnection 封装了 java.sql.Connection数据库连接对象 及其代理对象（JDK动态代理生成的）。PooledConnection 继承了 JDK动态代理 的 InvocationHandler接口。
+
+PooledDataSource 通过管理 PooledConnection 来实现对 java.sql.Connection 的管理。PooledConnection 封装了 java.sql.Connection 数据库连接对象 及其代理对象（JDK 动态代理生成的）。PooledConnection 继承了 JDK 动态代理 的 InvocationHandler 接口。
+
 ```java
 class PooledConnection implements InvocationHandler {
 
@@ -228,8 +241,11 @@ class PooledConnection implements InvocationHandler {
   }
 }
 ```
+
 #### 1.3.2 PoolState
+
 PoolState 主要用于管理 PooledConnection 对象状态，其通过持有两个 List&lt;PooledConnection&gt;集合 分别管理空闲状态的连接 和 活跃状态的连接。另外，PoolState 还定义了一系列用于统计的字段。
+
 ```java
 public class PoolState {
 
@@ -335,9 +351,11 @@ public class PoolState {
   }
 }
 ```
+
 #### 1.3.3 PooledDataSource
-PooledDataSource 管理的数据库连接对象 是由其持有的 UnpooledDataSource对象 创建的，并由 PoolState 管理所有连接的状态。
-PooledDataSource 的 getConnection()方法 会首先调用 popConnection()方法 获取 PooledConnection对象，然后通过 PooledConnection 的 getProxyConnection()方法 获取数据库连接的代理对象。popConnection()方法 是 PooledDataSource 的核心逻辑之一，其整体的逻辑关系如下图：
+
+PooledDataSource 管理的数据库连接对象 是由其持有的 UnpooledDataSource 对象 创建的，并由 PoolState 管理所有连接的状态。
+PooledDataSource 的 getConnection()方法 会首先调用 popConnection()方法 获取 PooledConnection 对象，然后通过 PooledConnection 的 getProxyConnection()方法 获取数据库连接的代理对象。popConnection()方法 是 PooledDataSource 的核心逻辑之一，其整体的逻辑关系如下图：
 
 ![avatar](../../../images/mybatis/数据库连接池流程图.png)
 
@@ -633,7 +651,9 @@ public class PooledDataSource implements DataSource {
   }
 }
 ```
-最后，我们来看一下 popConnection() 和 pushConnection() 都调用了的 isValid()方法，该方法除了检测 PooledConnection 中的 valid字段 外 还还会调用 PooledDataSource 中的 pingConnection()方法，让数据库连接对象 执行指定的 sql语句，检测连接是否正常。
+
+最后，我们来看一下 popConnection() 和 pushConnection() 都调用了的 isValid()方法，该方法除了检测 PooledConnection 中的 valid 字段 外 还还会调用 PooledDataSource 中的 pingConnection()方法，让数据库连接对象 执行指定的 sql 语句，检测连接是否正常。
+
 ```java
 class PooledConnection implements InvocationHandler {
   /**
@@ -703,9 +723,12 @@ public class PooledDataSource implements DataSource {
   }
 }
 ```
+
 ## 2 Transaction
-遵循 “接口-实现类” 的设计原则，Mybatis 也是先使用 Transaction接口 对数据库事务做了抽象，而实现类则只提供了两个，即：JdbcTransaction 和 ManagedTransaction。这两种对象的获取，使用了两个对应的工厂类 JdbcTransactionFactory 和 ManagedTransactionFactory。
+
+遵循 “接口-实现类” 的设计原则，Mybatis 也是先使用 Transaction 接口 对数据库事务做了抽象，而实现类则只提供了两个，即：JdbcTransaction 和 ManagedTransaction。这两种对象的获取，使用了两个对应的工厂类 JdbcTransactionFactory 和 ManagedTransactionFactory。
 不过一般我们并不会使用 Mybatis 管理事务，而是将 Mybatis 集成到 Spring，由 Spring 进行事务的管理。细节部分会在后面的文章中详细讲解。
+
 ```java
 public interface Transaction {
 

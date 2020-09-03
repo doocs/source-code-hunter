@@ -3,11 +3,7 @@
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-Spring](https://github.com/SourceHot/spring-framework-read)
 
-
 ## ClassMetadata
-
-
-
 
 ```java
 public interface ClassMetadata {
@@ -89,19 +85,9 @@ public interface ClassMetadata {
 }
 ```
 
-
-
-
-
 ![image-20200824094154847](/images/spring/image-20200824094154847.png)
 
-
-
-
-
 ## AnnotatedTypeMetadata
-
-
 
 ```java
 public interface AnnotatedTypeMetadata {
@@ -129,9 +115,6 @@ public interface AnnotatedTypeMetadata {
 
 }
 ```
-
-
-
 
 ## AnnotationMetadata
 
@@ -199,12 +182,6 @@ public interface AnnotationMetadata extends ClassMetadata, AnnotatedTypeMetadata
 }
 ```
 
-
-
-
-
-
-
 ## MethodMetadata
 
 ```java
@@ -248,12 +225,6 @@ public interface MethodMetadata extends AnnotatedTypeMetadata {
 }
 ```
 
-
-
-
-
-
-
 ## MetadataReader
 
 ```java
@@ -283,10 +254,6 @@ public interface MetadataReader {
 }
 ```
 
-
-
-
-
 ## MetadataReaderFactory
 
 - 用来创建 MetadataReader
@@ -313,23 +280,13 @@ public interface MetadataReaderFactory {
 }
 ```
 
-
-
 - 接口解释的差不多了.接下来看一些实现
-
-
-
-
 
 ## StandardClassMetadata
 
-- 通过JAVA 反射来获取类的元信息
+- 通过 JAVA 反射来获取类的元信息
 
-- 这个类采用的方式是Java class的方法,通过构造方法来填写一个Class对象. 之后使用这个对象的方法
-
-
-
-
+- 这个类采用的方式是 Java class 的方法,通过构造方法来填写一个 Class 对象. 之后使用这个对象的方法
 
 ```java
 public class StandardClassMetadata implements ClassMetadata {
@@ -418,17 +375,11 @@ public class StandardClassMetadata implements ClassMetadata {
 }
 ```
 
-
-
-
-
 ## StandardMethodMetadata
 
-- 通过java反射获取方法的元信息
-- 构造方法传递一个method
+- 通过 java 反射获取方法的元信息
+- 构造方法传递一个 method
   - 如果这个方法有注解，会进行注解的解析
-
-
 
 ```java
 public class StandardMethodMetadata implements MethodMetadata {
@@ -444,7 +395,7 @@ public class StandardMethodMetadata implements MethodMetadata {
       this(introspectedMethod, false);
    }
 
- 
+
    @Deprecated
    public StandardMethodMetadata(Method introspectedMethod, boolean nestedAnnotationsAsMap) {
       Assert.notNull(introspectedMethod, "Method must not be null");
@@ -532,17 +483,13 @@ public class StandardMethodMetadata implements MethodMetadata {
 }
 ```
 
-
-
 ## StandardAnnotationMetadata
 
-- StandardAnnotationMetadata是StandardClassMetadata的子类
+- StandardAnnotationMetadata 是 StandardClassMetadata 的子类
 
-- 还是一个基于JAVA 反射做的一个类
+- 还是一个基于 JAVA 反射做的一个类
 
-
-
-- 获取注解属性map
+- 获取注解属性 map
 
 ```java
 @Override
@@ -560,8 +507,6 @@ public Map<String, Object> getAnnotationAttributes(String annotationName, boolea
   - `org.springframework.core.annotation.AnnotatedElementUtils#getAnnotationAttributes`
     - `org.springframework.core.annotation.MergedAnnotation#asAnnotationAttributes`
 
-
-
 ```java
 @Nullable
 public static AnnotationAttributes getMergedAnnotationAttributes(AnnotatedElement element,
@@ -573,21 +518,14 @@ public static AnnotationAttributes getMergedAnnotationAttributes(AnnotatedElemen
 }
 ```
 
-
-
 - 查看这个方法的源码借助测试类`org.springframework.core.annotation.AnnotatedElementUtilsTests#getMergedAnnotationAttributesOnClassWithLocalAnnotation`
 - getAnnotations() 方法
-
-
-
-
 
 ### getAnnotations
 
 - `org.springframework.core.annotation.MergedAnnotations#from(java.lang.reflect.AnnotatedElement, org.springframework.core.annotation.MergedAnnotations.SearchStrategy, org.springframework.core.annotation.RepeatableContainers)`
+
   - `org.springframework.core.annotation.TypeMappedAnnotations#from(java.lang.reflect.AnnotatedElement, org.springframework.core.annotation.MergedAnnotations.SearchStrategy, org.springframework.core.annotation.RepeatableContainers, org.springframework.core.annotation.AnnotationFilter)`
-
-
 
 - 最终我们找到的代码如下
 
@@ -602,19 +540,9 @@ static MergedAnnotations from(AnnotatedElement element, SearchStrategy searchStr
 }
 ```
 
-
-
-- 判断是否为空. 为空返回None，不会为空构造出一个对象org.springframework.core.annotation.TypeMappedAnnotations
-
-
-
-
+- 判断是否为空. 为空返回 None，不会为空构造出一个对象 org.springframework.core.annotation.TypeMappedAnnotations
 
 ### MergedAnnotations
-
-
-
-
 
 ```java
 public interface MergedAnnotations extends Iterable<MergedAnnotation<Annotation>> {
@@ -626,7 +554,7 @@ public interface MergedAnnotations extends Iterable<MergedAnnotation<Annotation>
 	// 获取匹配的注解
 	<A extends Annotation> MergedAnnotation<A> get(Class<A> annotationType);
 		// 省略其他
-    
+
 }
 ```
 
@@ -638,12 +566,6 @@ public interface MergedAnnotations extends Iterable<MergedAnnotation<Annotation>
   2. `from`
 
      将多个注解合并
-
-     
-
-
-
-
 
 ### SearchStrategy
 
@@ -700,10 +622,6 @@ enum SearchStrategy {
 }
 ```
 
-
-
-
-
 - `org.springframework.core.annotation.TypeMappedAnnotations#get(java.lang.String, java.util.function.Predicate<? super org.springframework.core.annotation.MergedAnnotation<A>>, org.springframework.core.annotation.MergedAnnotationSelector<A>)`
 
 ```java
@@ -721,10 +639,6 @@ public <A extends Annotation> MergedAnnotation<A> get(String annotationType,
 }
 ```
 
-
-
-
-
 #### Scan
 
 `org.springframework.core.annotation.AnnotationsScanner#scan(C, java.lang.reflect.AnnotatedElement, org.springframework.core.annotation.MergedAnnotations.SearchStrategy, org.springframework.core.annotation.AnnotationsProcessor<C,R>, java.util.function.BiPredicate<C,java.lang.Class<?>>)`
@@ -738,8 +652,6 @@ static <C, R> R scan(C context, AnnotatedElement source, SearchStrategy searchSt
    return processor.finish(result);
 }
 ```
-
-
 
 在这个里面重点关注`PROCESS`方法
 
@@ -759,8 +671,6 @@ private static <C, R> R process(C context, AnnotatedElement source,
 }
 ```
 
-
-
 测试类
 
 ```java
@@ -770,8 +680,6 @@ private static <C, R> R process(C context, AnnotatedElement source,
 ```
 
 显然这是一个类他会走`processClass`方法
-
-
 
 - 根据扫描方式进行扫描
 
@@ -797,27 +705,15 @@ private static <C, R> R processClass(C context, Class<?> source,
 }
 ```
 
-
-
 - 扫描的形式就不贴出完整代码了
-
-
 
 `finish`就包装一下返回.
 
 - 此时`org.springframework.core.annotation.AnnotatedElementUtils#getMergedAnnotationAttributes(java.lang.reflect.AnnotatedElement, java.lang.String, boolean, boolean)`这个方法走到了最后一步`org.springframework.core.annotation.AnnotatedElementUtils#getAnnotationAttributes`
 
-
-
-
-
-- 最后的组装map方法
+- 最后的组装 map 方法
 
   `org.springframework.core.annotation.TypeMappedAnnotation#asMap(java.util.function.Function<org.springframework.core.annotation.MergedAnnotation<?>,T>, org.springframework.core.annotation.MergedAnnotation.Adapt...)`
-
-
-
-
 
 ```java
 @Override
@@ -825,8 +721,6 @@ public AnnotationAttributes asAnnotationAttributes(Adapt... adaptations) {
    return asMap(mergedAnnotation -> new AnnotationAttributes(mergedAnnotation.getType()), adaptations);
 }
 ```
-
-
 
 ```java
 @Override
@@ -847,15 +741,13 @@ public <T extends Map<String, Object>> T asMap(Function<MergedAnnotation<?>, T> 
 }
 ```
 
-- 获取属性列表,循环, 放入map 返回.
+- 获取属性列表,循环, 放入 map 返回.
 
   map
 
-  ​	key: 注解的函数
+  ​ key: 注解的函数
 
-  ​	value: 函数对应的值
-
-
+  ​ value: 函数对应的值
 
 ```java
 @Transactional("TxConfig")
@@ -885,38 +777,28 @@ readOnlay:false
 
 ![image-20200824104529315](/images/spring/image-20200824104529315.png)
 
-
-
-
-
-
-
-
-
-
-
 ## SimpleMetadataReader
 
 - 构造方法传递三个参数直接使用
 
   ```java
   final class SimpleMetadataReader implements MetadataReader {
-  
+
      private static final int PARSING_OPTIONS = ClassReader.SKIP_DEBUG
            | ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES;
-  
+
      private final Resource resource;
-  
+
      private final AnnotationMetadata annotationMetadata;
-  
-  
+
+
      SimpleMetadataReader(Resource resource, @Nullable ClassLoader classLoader) throws IOException {
         SimpleAnnotationMetadataReadingVisitor visitor = new SimpleAnnotationMetadataReadingVisitor(classLoader);
         getClassReader(resource).accept(visitor, PARSING_OPTIONS);
         this.resource = resource;
         this.annotationMetadata = visitor.getMetadata();
      }
-  
+
      private static ClassReader getClassReader(Resource resource) throws IOException {
         try (InputStream is = new BufferedInputStream(resource.getInputStream())) {
            try {
@@ -928,39 +810,33 @@ readOnlay:false
            }
         }
      }
-  
-  
+
+
      @Override
      public Resource getResource() {
         return this.resource;
      }
-  
+
      @Override
      public ClassMetadata getClassMetadata() {
         return this.annotationMetadata;
      }
-  
+
      @Override
      public AnnotationMetadata getAnnotationMetadata() {
         return this.annotationMetadata;
      }
-  
+
   }
   ```
-
-
-
-
-
-
 
 ## SimpleMetadataReaderFactory
 
 - 关注点为如何获取`MetadataReader`
-  1. 通过资源直接new出来
-  2. 通过className转换成资源地址,
+  1. 通过资源直接 new 出来
+  2. 通过 className 转换成资源地址,
   3. 将资源地址转换成`Resource`对象
-  4. new出来
+  4. new 出来
 
 ```java
 @Override

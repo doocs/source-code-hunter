@@ -1,9 +1,12 @@
 # Spring 定时任务
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 
 ## EnableScheduling
+
 - 首先关注的类为启动定时任务的注解`@EnableScheduling`
+
 ```java
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -15,7 +18,9 @@ public @interface EnableScheduling {
 ```
 
 ## SchedulingConfiguration
+
 - 注册定时任务相关信息
+
 ```java
 @Configuration
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
@@ -36,7 +41,9 @@ public class SchedulingConfiguration {
 ```
 
 ## ScheduledAnnotationBeanPostProcessor
-- 关注application事件,以及spring生命周期相关的接口实现
+
+- 关注 application 事件,以及 spring 生命周期相关的接口实现
+
 ```java
   /**
      * application 事件
@@ -96,6 +103,7 @@ public class SchedulingConfiguration {
 ```
 
 - 处理定时任务注解
+
 ```java
 protected void processScheduled(Scheduled scheduled, Method method, Object bean) {
         try {
@@ -241,18 +249,21 @@ protected void processScheduled(Scheduled scheduled, Method method, Object bean)
     }
 ```
 
-
 ## 定时任务
+
 - CronTask
-    - cron定时任务
+  - cron 定时任务
 - FixedDelayTask
-    - 间隔时间的定时任务
+  - 间隔时间的定时任务
 - FixedRateTask
-    - 调用频率的定时任务
+  - 调用频率的定时任务
 - ScheduledTask
-    - 定时任务对象
+  - 定时任务对象
+
 ### cron 表达式解析
+
 - `org.springframework.scheduling.support.CronSequenceGenerator.doParse`
+
 ```java
     private void doParse(String[] fields) {
         setNumberHits(this.seconds, fields[0], 0, 60);
@@ -272,8 +283,10 @@ protected void processScheduled(Scheduled scheduled, Method method, Object bean)
 ```
 
 ### 执行定时任务
+
 - 这里以 CronTask 任务进行分析,其他定时任务同理
-    - `org.springframework.scheduling.config.ScheduledTaskRegistrar.scheduleCronTask`
+  - `org.springframework.scheduling.config.ScheduledTaskRegistrar.scheduleCronTask`
+
 ```java
     @Nullable
     public ScheduledTask scheduleCronTask(CronTask task) {

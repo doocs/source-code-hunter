@@ -1,4 +1,5 @@
 # MapperMethod
+
 - Author: [HuiFer](https://github.com/huifer)
 - Description: 该文介绍 mybatis MapperMethod 源码
 - 源码地址: `org.apache.ibatis.binding.MapperMethod`,核心方法是`execute`
@@ -91,8 +92,8 @@
 
 ```
 
-
 - 返回值为多个的情况
+
 ```java
     /**
      * 针对多个查询结果进行 ,转换成不同的 list 或者数组
@@ -128,6 +129,7 @@
 ```
 
 ### convertToArray
+
 ```java
     /**
      * 转换为数组
@@ -154,7 +156,9 @@
     }
 
 ```
+
 ### convertToDeclaredCollection
+
 ```java
     /**
      * 转换为不同的list对象
@@ -176,28 +180,22 @@
 
 ```
 
-
 - 上述两个为转换的过程,其实质还是在 `org.apache.ibatis.session.SqlSession` 中做执行操作
 
+## debug
 
+- 修改 mapper 返回数组对`org.apache.ibatis.binding.MapperMethod#convertToArray`方法进行测试
 
-## debug 
-- 修改mapper返回数组对`org.apache.ibatis.binding.MapperMethod#convertToArray`方法进行测试
 ```java
     HsSell[] list(@Param("ID") Integer id);
 ```
 
 ![image-20191219092442456](../../../images/mybatis/image-20191219092442456.png)
 
-- 修改mapper,对`org.apache.ibatis.binding.MapperMethod#convertToDeclaredCollection`进行测试
+- 修改 mapper,对`org.apache.ibatis.binding.MapperMethod#convertToDeclaredCollection`进行测试
 
   ```java
       LinkedList<HsSell> list(@Param("ID") Integer id);
   ```
 
-  
-
 ![image-20191219093043035](../../../images/mybatis/image-20191219093043035.png)
-
-
-

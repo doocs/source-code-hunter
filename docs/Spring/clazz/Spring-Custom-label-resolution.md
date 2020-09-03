@@ -1,15 +1,16 @@
 # Spring 自定义标签解析
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-Spring](https://github.com/SourceHot/spring-framework-read)
 - 与自定义标签解析相关的类
-    1. `org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser`
-    2. `org.springframework.beans.factory.xml.NamespaceHandlerSupport`
-    
+  1. `org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser`
+  2. `org.springframework.beans.factory.xml.NamespaceHandlerSupport`
 - 开始源码之前先搭建一个环境
 
-
 ## 环境搭建
+
 - 创建对象
+
 ```java
 public class UserXtd {
     private String userName;
@@ -32,7 +33,9 @@ public class UserXtd {
     }
 }
 ```
+
 - 创建 xsd 文件
+
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
@@ -48,7 +51,9 @@ public class UserXtd {
     </element>
 </schema>
 ```
+
 - 创建 namespaceHandler
+
 ```java
 public class UserNamespaceHandler extends NamespaceHandlerSupport {
     @Override
@@ -57,7 +62,9 @@ public class UserNamespaceHandler extends NamespaceHandlerSupport {
     }
 }
 ```
+
 - 创建 beanDefinitionParser
+
 ```java
 public class UserBeanDefinitionParser extends AbstractSingleBeanDefinitionParser {
     /**
@@ -88,15 +95,21 @@ public class UserBeanDefinitionParser extends AbstractSingleBeanDefinitionParser
 }
 
 ```
+
 - 创建 resource/META-INF/spring.handlers
+
 ```text
 http\://www.huifer.com/schema/user=com.huifer.source.spring.parser.UserNamespaceHandler
 ```
+
 - 创建 resource/META-INF/spring.schemas
+
 ```text
 http\://www.huifer.com/schema/user.xsd=META-INF/spring-test.xsd
 ```
-- 创建测试用例xml
+
+- 创建测试用例 xml
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -110,7 +123,9 @@ http\://www.huifer.com/schema/user.xsd=META-INF/spring-test.xsd
 
 </beans>
 ```
+
 - 创建 Java 运行方法
+
 ```java
 /**
  * 自定义标签测试用例
@@ -123,10 +138,13 @@ public class XSDDemo {
     }
 }
 ```
+
 - 这里我们希望输出结果是`huifer97@163.com`,运行后结果也确实是`huifer97@163.com`
 
 ## 解析 DefaultNamespaceHandlerResolver
+
 - 入口方法`org.springframework.beans.factory.xml.DefaultBeanDefinitionDocumentReader.parseBeanDefinitions`
+
 ```java
     protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate) {
         if (delegate.isDefaultNamespace(root)) {
@@ -152,10 +170,11 @@ public class XSDDemo {
     }
 
 ```
+
 - 调用链路
 - `org.springframework.beans.factory.xml.BeanDefinitionParserDelegate.parseCustomElement(org.w3c.dom.Element)`
-    - `org.springframework.beans.factory.xml.BeanDefinitionParserDelegate.parseCustomElement(org.w3c.dom.Element, org.springframework.beans.factory.config.BeanDefinition)`
-    
+  - `org.springframework.beans.factory.xml.BeanDefinitionParserDelegate.parseCustomElement(org.w3c.dom.Element, org.springframework.beans.factory.config.BeanDefinition)`
+
 ```java
     /**
      * Parse a custom element (outside of the default namespace).
@@ -187,15 +206,13 @@ public class XSDDemo {
 
 ![image-20200109084131415](../../../images/spring/image-20200109084131415.png)
 
-- `http://www.huifer.com/schema/user`和我们定义的xsd文件中的url相同，如何找到对应的NamespaceHandler,在`META-INF/spring.handlers`中有定义,
+- `http://www.huifer.com/schema/user`和我们定义的 xsd 文件中的 url 相同，如何找到对应的 NamespaceHandler,在`META-INF/spring.handlers`中有定义,
 
   `http\://www.huifer.com/schema/user=com.huifer.source.spring.parser.UserNamespaceHandler`
 
-  `NamespaceHandler handler = this.readerContext.getNamespaceHandlerResolver().resolve(namespaceUri);`这行代码就是获取`spring.handlers`中的定义	
+  `NamespaceHandler handler = this.readerContext.getNamespaceHandlerResolver().resolve(namespaceUri);`这行代码就是获取`spring.handlers`中的定义
 
 - 处理方法`org.springframework.beans.factory.xml.DefaultNamespaceHandlerResolver.resolve`
-
-
 
 ```java
     /**
@@ -252,8 +269,6 @@ public class XSDDemo {
 
 ```
 
-
-
 - `org.springframework.beans.factory.xml.DefaultNamespaceHandlerResolver#getHandlerMappings`跟踪这个方法
 
 ```JAVA
@@ -267,15 +282,13 @@ public class XSDDemo {
     }
 ```
 
-
-
 ![image-20200109085606240](../../../images/spring/image-20200109085606240.png)
 
 - 这里直接存在数据了,他是从什么时候加载的?
 
 - `org.springframework.beans.factory.xml.XmlBeanDefinitionReader#registerBeanDefinitions`
 
-  这个方法在注册bean定义的时候调用
+  这个方法在注册 bean 定义的时候调用
 
   ```java
       public int registerBeanDefinitions(Document doc, Resource resource) throws BeanDefinitionStoreException {
@@ -286,7 +299,7 @@ public class XSDDemo {
           documentReader.registerBeanDefinitions(doc, createReaderContext(resource));
           return getRegistry().getBeanDefinitionCount() - countBefore;
       }
-  
+
   ```
 
 - 继续跟踪`createReaderContext`
@@ -300,7 +313,7 @@ public class XSDDemo {
           return new XmlReaderContext(resource, this.problemReporter, this.eventListener,
                   this.sourceExtractor, this, getNamespaceHandlerResolver());
       }
-  
+
   ```
 
 - 继续跟踪`getNamespaceHandlerResolver`
@@ -314,7 +327,7 @@ public class XSDDemo {
           }
           return this.namespaceHandlerResolver;
       }
-  
+
   ```
 
 - 继续跟踪`createDefaultNamespaceHandlerResolver`
@@ -328,8 +341,6 @@ public class XSDDemo {
       }
   ```
 
-  
-
 - 继续跟踪`DefaultNamespaceHandlerResolver`
 
   `org.springframework.beans.factory.xml.DefaultNamespaceHandlerResolver`
@@ -338,7 +349,7 @@ public class XSDDemo {
       public DefaultNamespaceHandlerResolver(@Nullable ClassLoader classLoader) {
           this(classLoader, DEFAULT_HANDLER_MAPPINGS_LOCATION);
       }
-  
+
   ```
 
   他回到了我们之前疑问的地方 `handlerMappings` 如何出现的
@@ -368,10 +379,8 @@ public class XSDDemo {
       public String toString() {
           return "NamespaceHandlerResolver using mappings " + getHandlerMappings();
       }
-  
+
   ```
-
-
 
 ```JAVA
     /**
@@ -414,12 +423,6 @@ public class XSDDemo {
 ```
 
 ![image-20200109094032421](../../../images/spring/image-20200109094032421.png)
-
-
-
-
-
-
 
 ## org.springframework.beans.factory.xml.DefaultNamespaceHandlerResolver#resolve
 
@@ -495,8 +498,6 @@ public class UserNamespaceHandler extends NamespaceHandlerSupport {
 
 ```
 
-
-
 - 方法走完，回到开始的方法
 
   ```java
@@ -526,16 +527,10 @@ public class UserNamespaceHandler extends NamespaceHandlerSupport {
           // 自定义处理器
           return handler.parse(ele, new ParserContext(this.readerContext, this, containingBd));
       }
-  
+
   ```
 
-  
-
 ![image-20200109092801572](../../../images/spring/image-20200109092801572.png)
-
-
-
-
 
 ## org.springframework.beans.factory.xml.NamespaceHandler#parse
 
@@ -548,7 +543,7 @@ public class UserNamespaceHandler extends NamespaceHandlerSupport {
           BeanDefinitionParser parser = findParserForElement(element, parserContext);
           return (parser != null ? parser.parse(element, parserContext) : null);
       }
-  
+
   ```
 
 ### org.springframework.beans.factory.xml.NamespaceHandlerSupport#findParserForElement
@@ -583,8 +578,8 @@ public class UserNamespaceHandler extends NamespaceHandlerSupport {
          * {@link AbstractSingleBeanDefinitionParser#parseInternal(org.w3c.dom.Element, org.springframework.beans.factory.xml.ParserContext)}
          */
         AbstractBeanDefinition definition = parseInternal(element, parserContext);
-       
-        
+
+
     }
 ```
 
@@ -631,8 +626,6 @@ public class UserNamespaceHandler extends NamespaceHandlerSupport {
 
 ![image-20200109094654409](../../../images/spring/image-20200109094654409.png)
 
-
-
 执行`com.huifer.source.spring.parser.UserBeanDefinitionParser#doParse`
 
 ```JAVA
@@ -651,8 +644,3 @@ public class UserNamespaceHandler extends NamespaceHandlerSupport {
         }
     }
 ```
-
-
-
-
-

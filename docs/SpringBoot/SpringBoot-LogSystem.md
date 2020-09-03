@@ -1,20 +1,19 @@
 # SpringBoot 日志系统
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring-boot](https://github.com/SourceHot/spring-boot-read)
 
 - 包路径: `org.springframework.boot.logging`
 
 ## 日志级别
+
 - 日志级别: `org.springframework.boot.logging.LogLevel`
+
 ```java
 public enum LogLevel {
 	TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF
 }
 ```
-
-
-
-
 
 ## java 日志实现
 
@@ -39,12 +38,12 @@ public enum LogLevel {
 
   ```java
   	protected static class LogLevels<T> {
-  
+
         /**
          * key ： SpringBoot 中定义的日志级别, value: 其他日志框架的日志级别
          */
   		private final Map<LogLevel, T> systemToNative;
-  
+
         /**
          * key : 其他日志框架的日志级别 , value: springBoot 中定义中定义的日志级别
          */
@@ -52,14 +51,12 @@ public enum LogLevel {
       }
   ```
 
-  
-
 ## LoggingSystem
 
 - 抽象类
 - `org.springframework.boot.logging.LoggingSystem`
 
-- 一个map对象: `SYSTEMS`
+- 一个 map 对象: `SYSTEMS`
 
 ```JAVA
 	/**
@@ -78,11 +75,7 @@ public enum LogLevel {
 
 ```
 
-
-
 - 各个抽象方法
-
-
 
 | 方法名称                | 作用                               |
 | ----------------------- | ---------------------------------- |
@@ -93,8 +86,6 @@ public enum LogLevel {
 | getSupportedLogLevels   | 获取支持的日志级别                 |
 | setLogLevel             | 设置日志级别                       |
 | getLoggerConfigurations | 获取日志配置                       |
-
-
 
 ### get
 
@@ -137,13 +128,7 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
 ```
 
-
-
-
-
 ![image-20200323151409473](../../../images/SpringBoot/image-20200323151409473.png)
-
-
 
 - 默认日志: `org.springframework.boot.logging.logback.LogbackLoggingSystem`
 
@@ -174,12 +159,8 @@ public static LoggingSystem get(ClassLoader classLoader) {
   		// 添加过滤器
   		loggerContext.getTurboFilterList().add(FILTER);
   	}
-  
+
   ```
-
-  
-
-
 
 - 初始化之前的的操作完成了初始化方法开始
 
@@ -194,10 +175,8 @@ public static LoggingSystem get(ClassLoader classLoader) {
   		}
   		initialize(event.getEnvironment(), event.getSpringApplication().getClassLoader());
   	}
-  
-  ```
 
-  
+  ```
 
 - `org.springframework.boot.context.logging.LoggingApplicationListener#initializeSystem`
 
@@ -217,7 +196,7 @@ public static LoggingSystem get(ClassLoader classLoader) {
   		initializeFinalLoggingLevels(environment, this.loggingSystem);
   		registerShutdownHookIfNecessary(environment, this.loggingSystem);
   	}
-  
+
   ```
 
   ```JAVA
@@ -241,10 +220,8 @@ public static LoggingSystem get(ClassLoader classLoader) {
   			}
   		}
   	}
-  	
+
   ```
-
-
 
 - `org.springframework.boot.logging.logback.LogbackLoggingSystem#initialize`
 
@@ -267,8 +244,6 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
 ```
 
-
-
 - `org.springframework.boot.logging.AbstractLoggingSystem#initializeWithConventions`
 
   ```JAVA
@@ -289,10 +264,10 @@ public static LoggingSystem get(ClassLoader classLoader) {
   		// 加载默认配置
   		loadDefaults(initializationContext, logFile);
   	}
-  
+
   ```
 
-  - `org.springframework.boot.logging.logback.LogbackLoggingSystem#loadDefaults` 
+  - `org.springframework.boot.logging.logback.LogbackLoggingSystem#loadDefaults`
 
     ```JAVA
     	@Override
@@ -315,12 +290,8 @@ public static LoggingSystem get(ClassLoader classLoader) {
     		new DefaultLogbackConfiguration(initializationContext, logFile).apply(configurator);
     		context.setPackagingDataEnabled(true);
     	}
-    
+
     ```
-
-
-
-
 
 ```JAVA
 	@Override
@@ -343,8 +314,6 @@ public static LoggingSystem get(ClassLoader classLoader) {
 	}
 ```
 
-
-
 标记`markAsInitialized`
 
 ```JAVA
@@ -354,13 +323,7 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
 ```
 
-
-
 此时日志初始化完成
-
-
-
-
 
 ### 默认配置文件
 
@@ -374,13 +337,7 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
 ```
 
-
-
-
-
 - 切回`org.springframework.boot.logging.AbstractLoggingSystem#initializeWithConventions`方法
-
-
 
 - 添加依赖
 
@@ -397,15 +354,9 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
 ![image-20200323161442058](../../../images/SpringBoot/image-20200323161442058.png)
 
-
-
-
-
 ![image-20200323161522570](../../../images/SpringBoot/image-20200323161522570.png)
 
 - 此时配置文件地址出现了
-
-
 
 ```JAVA
 	protected String getSelfInitializationConfig() {
@@ -438,8 +389,6 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
 - 此时自定义配置文件如何获取的已经明了
 
-
-
 #### reinitialize
 
 ```JAVA
@@ -453,8 +402,6 @@ public static LoggingSystem get(ClassLoader classLoader) {
 	}
 
 ```
-
-
 
 ```JAVA
 	@Override
@@ -488,9 +435,7 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
 ```
 
-
-
-```JAVA
+```java
 	private void configureByResourceUrl(LoggingInitializationContext initializationContext, LoggerContext loggerContext,
 			URL url) throws JoranException {
 		if (url.toString().endsWith("xml")) {
@@ -508,4 +453,4 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
 ```
 
-- 执行配置属于logback 操作源码不在此进行分析
+- 执行配置属于 logback 操作源码不在此进行分析

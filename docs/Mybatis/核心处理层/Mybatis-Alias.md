@@ -1,10 +1,10 @@
 # Mybatis Alias
+
 - Author: [HuiFer](https://github.com/huifer)
 - Description: 该文介绍 mybatis Alias 源码
 - 源码阅读工程: [SourceHot-Mybatis](https://github.com/SourceHot/mybatis-read.git)
 - 源码位置 :`org.apache.ibatis.type.Alias`
 - 与 Alias 相关的一个方法`org.apache.ibatis.type.TypeAliasRegistry.registerAlias(java.lang.String, java.lang.Class<?>)`(别名注册)
-
 
 ```java
     /**
@@ -29,6 +29,7 @@
 ```
 
 - registerAlias 操作的对象是一个`map`对象
+
 ```java
 
     /**
@@ -37,8 +38,11 @@
      */
     private final Map<String, Class<?>> typeAliases = new HashMap<>();
 ```
+
 不难看出这个对象存放的内容是 别名 -> clazz.
+
 - 相关注解`Alias`
+
 ```java
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
@@ -52,7 +56,9 @@ public @interface Alias {
     String value();
 }
 ```
+
 - 看一下实现方式
+
 ```java
     /**
      * 加载{@link Alias} 注解的内容
@@ -70,8 +76,10 @@ public @interface Alias {
         registerAlias(alias, type);
     }
 ```
+
 最后回到了`org.apache.ibatis.type.TypeAliasRegistry.registerAlias(java.lang.String, java.lang.Class<?>)`方法
 我们可以简单编写一个测试类
+
 ```java
 @Alias(value = "hc")
 public class Hc {
@@ -88,4 +96,5 @@ public class Hc {
     }
 
 ```
+
 其他与`Alias`相关的测试类位于: `org.apache.ibatis.type.TypeAliasRegistryTest`

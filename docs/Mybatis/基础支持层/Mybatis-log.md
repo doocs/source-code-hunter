@@ -1,18 +1,22 @@
 # mybatis 日志源码
+
 - Author: [HuiFer](https://github.com/huifer)
 - Description: 该文介绍 mybatis 日志相关源码
 - 源码阅读工程: [SourceHot-Mybatis](https://github.com/SourceHot/mybatis-read.git)
 
 ## 核心类
+
 - `org.apache.ibatis.logging.Log`
 - `org.apache.ibatis.logging.LogFactory`
 - 多个日志实现
-    - `org.apache.ibatis.logging.log4j2.Log4j2Impl`
-    - `org.apache.ibatis.logging.slf4j.Slf4jLocationAwareLoggerImpl`
-    - ...
-    
+  - `org.apache.ibatis.logging.log4j2.Log4j2Impl`
+  - `org.apache.ibatis.logging.slf4j.Slf4jLocationAwareLoggerImpl`
+  - ...
+
 ## 源码流程
+
 - mybatis 提供了一个日志接口,内容如下.
+
 ```java
 /**
  * mybatis 的日志接口,提供日志级别
@@ -42,7 +46,9 @@ public interface Log {
     void warn(String s);
 }
 ```
+
 - 有了日志接口必然有实现类, mybatis 有`log4j2` 、 `slf4j` 等日志的相关实现 , 下面是`Slf4jImpl`的代码,其他代码也是一样的模式进行初始化就不再重复贴代码了.
+
 ```java
 public class Slf4jImpl implements Log {
 
@@ -108,7 +114,9 @@ public class Slf4jImpl implements Log {
 }
 
 ```
+
 - 通过上述方法来达到统一接口多个实现,这个在开发中也经常使用.多日志的实现方法有了还缺一个创建方法,创建方法由`org.apache.ibatis.logging.LogFactory`提供
+
 ```java
 
 /**
@@ -239,6 +247,7 @@ public final class LogFactory {
 - `LogFactory`是一个单例对象,对外公开`getLog`方法在使用时直接`private static final Log log = LogFactory.getLog(CglibProxyFactory.class);`即可
 
 - 在 `org.apache.ibatis.session.Configuration` 中可以看到下面这些注册方法
+
 ```java
         // 日志实现类
         typeAliasRegistry.registerAlias("SLF4J", Slf4jImpl.class);

@@ -1,10 +1,9 @@
 # Spring 事务
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-Spring](https://github.com/SourceHot/spring-framework-read)
 
 ## 声明式事务
-
-
 
 ### Propagation
 
@@ -71,8 +70,6 @@ public enum Propagation {
 
 - 事务级别
 
-
-
 ```java
 public enum Isolation {
 
@@ -124,12 +121,6 @@ public enum Isolation {
 }
 ```
 
-
-
-
-
-
-
 ### EnableTransactionManagement
 
 - 下面代码是一个注解方式的事务配置使用 `EnableTransactionManagement`来开启事务支持
@@ -138,7 +129,7 @@ public enum Isolation {
 @ComponentScan(basePackages = "org.source.hot.spring.overview.ioc.tx.declarative")
 @EnableTransactionManagement
 public class TxConfig {
- 
+
 	@Bean // 数据源
 	public DataSource dataSource() {
 		DruidDataSource dataSource = new DruidDataSource();
@@ -148,21 +139,21 @@ public class TxConfig {
 		dataSource.setDriverClassName(com.mysql.jdbc.Driver.class.getName());
 		return dataSource;
 	}
- 
+
 	@Bean
 	public JdbcTemplate jdbcTemplate(DataSource dataSource) {
 		return new JdbcTemplate(dataSource);
 	}
- 
+
 	@Bean //事务管理器
 	public PlatformTransactionManager platformTransactionManager(DataSource dataSource) {
 		return new DataSourceTransactionManager(dataSource);
 	}
- 
+
 }
 ```
 
-- 注解源码如下,关注于`@Import(TransactionManagementConfigurationSelector.class)` 
+- 注解源码如下,关注于`@Import(TransactionManagementConfigurationSelector.class)`
 
 ```java
 @Target(ElementType.TYPE)
@@ -179,8 +170,6 @@ public @interface EnableTransactionManagement {
 
 }
 ```
-
-
 
 ```java
 public class TransactionManagementConfigurationSelector extends AdviceModeImportSelector<EnableTransactionManagement> {
@@ -209,11 +198,7 @@ public class TransactionManagementConfigurationSelector extends AdviceModeImport
 }
 ```
 
-
-
 ### ProxyTransactionManagementConfiguration
-
-
 
 ```java
 @Configuration(proxyBeanMethods = false)
@@ -270,15 +255,9 @@ public class ProxyTransactionManagementConfiguration extends AbstractTransaction
 }
 ```
 
-
-
-
-
 ### TransactionInterceptor
 
 ![image-20200729144622440](/images/spring/image-20200729144622440.png)
-
-
 
 - 实现了`org.aopalliance.intercept.MethodInterceptor`接口的方法
 
@@ -331,11 +310,9 @@ public class DeclarativeTransactionTest {
 }
 ```
 
-
-
 ![image-20200729145518089](/images/spring/image-20200729145518089.png)
 
-断点开始进行查阅. 再断点后执行一步会直接进入cglib代理对象
+断点开始进行查阅. 再断点后执行一步会直接进入 cglib 代理对象
 
 `org.springframework.aop.framework.CglibAopProxy.DynamicAdvisedInterceptor#intercept` 具体不展开，继续往下执行
 
@@ -343,17 +320,9 @@ public class DeclarativeTransactionTest {
 
 走到`invoke`方法了
 
-
-
-
-
-
-
 入参对象查看
 
 ![image-20200729145835608](/images/spring/image-20200729145835608.png)
-
-
 
 - 获取事务属性
 
@@ -365,7 +334,7 @@ public class DeclarativeTransactionTest {
      if (method.getDeclaringClass() == Object.class) {
         return null;
      }
-  
+
      // First, see if we have a cached value.
      // 尝试缓存中获取
      Object cacheKey = getCacheKey(method, targetClass);
@@ -400,23 +369,17 @@ public class DeclarativeTransactionTest {
         return txAttr;
      }
   }
-  
-  
+
+
   	protected Object getCacheKey(Method method, @Nullable Class<?> targetClass) {
   		return new MethodClassKey(method, targetClass);
   	}
-  
+
   ```
-
-
 
 ![image-20200729162023837](/images/spring/image-20200729162023837.png)
 
 - 此处方法已经获取到了这个方法就是后面的一个切面
-
-
-
-
 
 - 确定事务管理器
 
@@ -429,7 +392,7 @@ public class DeclarativeTransactionTest {
      if (txAttr == null || this.beanFactory == null) {
         return getTransactionManager();
      }
-  
+
      // 属性是否有别名
      String qualifier = txAttr.getQualifier();
      // 如果有
@@ -460,13 +423,7 @@ public class DeclarativeTransactionTest {
   }
   ```
 
-
-
-
-
 ![image-20200729160650401](/images/spring/image-20200729160650401.png)
-
-
 
 - 类型转换
 
@@ -485,18 +442,16 @@ public class DeclarativeTransactionTest {
   }
   ```
 
-
-
 - 获取方法切面
 
   ```java
   private String methodIdentification(Method method, @Nullable Class<?> targetClass,
         @Nullable TransactionAttribute txAttr) {
-  
+
      String methodIdentification = methodIdentification(method, targetClass);
      if (methodIdentification == null) {
         if (txAttr instanceof DefaultTransactionAttribute) {
-           // 直接就获取了.方法签名. 
+           // 直接就获取了.方法签名.
            methodIdentification = ((DefaultTransactionAttribute) txAttr).getDescriptor();
         }
         if (methodIdentification == null) {
@@ -507,13 +462,7 @@ public class DeclarativeTransactionTest {
   }
   ```
 
-  
-
 ![image-20200729161647214](/images/spring/image-20200729161647214.png)
-
-
-
-
 
 - 创建一个新的事务根据事务传播性
 
@@ -521,7 +470,7 @@ public class DeclarativeTransactionTest {
   	@SuppressWarnings("serial")
   	protected TransactionInfo createTransactionIfNecessary(@Nullable PlatformTransactionManager tm,
   			@Nullable TransactionAttribute txAttr, final String joinpointIdentification) {
-  
+
   		// If no name specified, apply method identification as transaction name.
   		// 把切面的地址放进去
   		if (txAttr != null && txAttr.getName() == null) {
@@ -532,7 +481,7 @@ public class DeclarativeTransactionTest {
   				}
   			};
   		}
-  
+
   		TransactionStatus status = null;
   		if (txAttr != null) {
   			if (tm != null) {
@@ -549,18 +498,10 @@ public class DeclarativeTransactionTest {
   		// 处理出一个 TransactionInfo
   		return prepareTransactionInfo(tm, txAttr, joinpointIdentification, status);
   	}
-  
+
   ```
 
-
-
 ![image-20200729163303000](/images/spring/image-20200729163303000.png)
-
-
-
-
-
-
 
 - `tm.getTransaction`
 
@@ -568,29 +509,29 @@ public class DeclarativeTransactionTest {
   @Override
   public final TransactionStatus getTransaction(@Nullable TransactionDefinition definition)
         throws TransactionException {
-  
+
      // Use defaults if no transaction definition given.
      // 获取事务的定义
      TransactionDefinition def = (definition != null ? definition
            : TransactionDefinition.withDefaults());
-  
+
      // 获取事务
      Object transaction = doGetTransaction();
      boolean debugEnabled = logger.isDebugEnabled();
-  
+
      // 是否存在事务
      if (isExistingTransaction(transaction)) {
         // Existing transaction found -> check propagation behavior to find out how to behave.
         // 存在事务后处理什么操作
         return handleExistingTransaction(def, transaction, debugEnabled);
      }
-  
+
      // Check definition settings for new transaction.
      // 超时的校验. 小于默认值抛出异常
      if (def.getTimeout() < TransactionDefinition.TIMEOUT_DEFAULT) {
         throw new InvalidTimeoutException("Invalid transaction timeout", def.getTimeout());
      }
-  
+
      // No existing transaction found -> check propagation behavior to find out how to proceed.
      // 没有事务抛出异常
      if (def.getPropagationBehavior() == TransactionDefinition.PROPAGATION_MANDATORY) {
@@ -699,19 +640,13 @@ public class DeclarativeTransactionTest {
     }
     ```
 
-
-
-
-
-
-
 - `prepareTransactionInfo`简单的`new`对象并且绑定线程
 
   ```JAVA
   protected TransactionInfo prepareTransactionInfo(@Nullable PlatformTransactionManager tm,
         @Nullable TransactionAttribute txAttr, String joinpointIdentification,
         @Nullable TransactionStatus status) {
-  
+
      // 初始化
      TransactionInfo txInfo = new TransactionInfo(tm, txAttr, joinpointIdentification);
      if (txAttr != null) {
@@ -730,7 +665,7 @@ public class DeclarativeTransactionTest {
                  "]: This method is not transactional.");
         }
      }
-  
+
      // We always bind the TransactionInfo to the thread, even if we didn't create
      // a new transaction here. This guarantees that the TransactionInfo stack
      // will be managed correctly even if no transaction was created by this aspect.
@@ -740,13 +675,9 @@ public class DeclarativeTransactionTest {
   }
   ```
 
-
-
-
-
 - `retVal = invocation.proceedWithInvocation();`
 
-  - 这里走的是CGLIB的方法直接会执行结果将结果返回具体方法在
+  - 这里走的是 CGLIB 的方法直接会执行结果将结果返回具体方法在
 
     `org.springframework.aop.framework.CglibAopProxy.CglibMethodInvocation#proceed`
 
@@ -769,10 +700,8 @@ public class DeclarativeTransactionTest {
   				}
   			}
   		}
-  
+
   ```
-
-
 
 - 如果没有异常就直接处理完成返回了
 
@@ -794,8 +723,6 @@ public class DeclarativeTransactionTest {
      cleanupTransactionInfo(txInfo);
   }
   ```
-
-
 
 - `completeTransactionAfterThrowing`回滚异常的处理方法
 
@@ -848,9 +775,7 @@ public class DeclarativeTransactionTest {
 
        `txInfo.getTransactionManager().commit(txInfo.getTransactionStatus())`
 
-  - **注意: 这里的异常如果是exception不会走回滚**
-
-
+  - **注意: 这里的异常如果是 exception 不会走回滚**
 
 - 判断是否需要回滚
 
@@ -871,10 +796,10 @@ public class DeclarativeTransactionTest {
               logger.trace(
                     "Applying rules to determine whether transaction should rollback on " + ex);
            }
-        
+
            RollbackRuleAttribute winner = null;
            int deepest = Integer.MAX_VALUE;
-        
+
            if (this.rollbackRules != null) {
               for (RollbackRuleAttribute rule : this.rollbackRules) {
                  int depth = rule.getDepth(ex);
@@ -884,17 +809,17 @@ public class DeclarativeTransactionTest {
                  }
               }
            }
-        
+
            if (logger.isTraceEnabled()) {
               logger.trace("Winning rollback rule is: " + winner);
            }
-        
+
            // User superclass behavior (rollback on unchecked) if no rule matches.
            if (winner == null) {
               logger.trace("No relevant rollback rule found: applying default rules");
               return super.rollbackOn(ex);
            }
-        
+
            return !(winner instanceof NoRollbackRuleAttribute);
         }
         ```
@@ -909,8 +834,6 @@ public class DeclarativeTransactionTest {
           ```
 
           - 这就是我们的异常判断是否需要回滚
-
-
 
 - `cleanupTransactionInfo`
 
@@ -932,19 +855,7 @@ public class DeclarativeTransactionTest {
   }
   ```
 
-
-
-
-
-
-
-
-
 ## 编程式事务
-
-
-
-
 
 ### DefaultTransactionDefinition
 
@@ -954,13 +865,7 @@ public class DeclarativeTransactionTest {
     2. readOnly
     3. ....
 
-
-
-
-
 ### PlatformTransactionManager
-
-
 
 ```java
 // 获取事务
@@ -972,8 +877,6 @@ void rollback(TransactionStatus status) throws TransactionException;
 ```
 
 - 贴出一部分
-
-
 
 ![image-20200728105926218](/images/spring/image-20200728105926218.png)
 
@@ -1001,18 +904,12 @@ doRollback
 doSetRollbackOnly
 registerAfterCompletionWithExistingTransaction
 doCleanupAfterCompletion
-    
+
 ```
-
-
-
-
 
 ### DataSourceTransactionManager
 
-- xml配置如下
-
-  
+- xml 配置如下
 
 ```xml
 	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
@@ -1031,12 +928,12 @@ doCleanupAfterCompletion
 	</bean>
 ```
 
-- 两个属性，通常我们会配置datasource
+- 两个属性，通常我们会配置 datasource
 
   ```java
   	@Nullable
   	private DataSource dataSource;
-  
+
   	private boolean enforceReadOnly = false;
   ```
 
@@ -1056,11 +953,7 @@ doCleanupAfterCompletion
     ```
 
     - 如果`dataSource`为空会抛出异常
-    - 默认单例会注册到ioc容器中.后续注册流程不具体描述
-
-
-
-
+    - 默认单例会注册到 ioc 容器中.后续注册流程不具体描述
 
 - 方法注释
 
@@ -1353,19 +1246,9 @@ doCleanupAfterCompletion
     }
 ```
 
-
-
-
-
 ### AbstractPlatformTransactionManager
 
 - abstract 修饰具体定义的方法不具体展开。主要关注实现`org.springframework.transaction.PlatformTransactionManager`的几个方法
-
-
-
-
-
-
 
 #### commit 方法
 
@@ -1402,12 +1285,6 @@ public final void commit(TransactionStatus status) throws TransactionException {
    processCommit(defStatus);
 }
 ```
-
-
-
-
-
-
 
 ```java
 private void processCommit(DefaultTransactionStatus status) throws TransactionException {
@@ -1484,11 +1361,7 @@ private void processCommit(DefaultTransactionStatus status) throws TransactionEx
 }
 ```
 
-
-
 #### rollback 方法
-
-
 
 ```java
 @Override
@@ -1504,8 +1377,6 @@ public final void rollback(TransactionStatus status) throws TransactionException
    processRollback(defStatus, false);
 }
 ```
-
-
 
 ```java
 private void processRollback(DefaultTransactionStatus status, boolean unexpected) {
@@ -1574,10 +1445,6 @@ private void processRollback(DefaultTransactionStatus status, boolean unexpected
 }
 ```
 
-
-
-
-
 ### TransactionSynchronizationManager
 
 - 事务同步管理器
@@ -1620,8 +1487,6 @@ private void processRollback(DefaultTransactionStatus status, boolean unexpected
 	private static final ThreadLocal<Boolean> actualTransactionActive =
 			new NamedThreadLocal<>("Actual transaction active");
 ```
-
-
 
 #### 资源方法
 
@@ -1666,9 +1531,9 @@ public static boolean hasResource(Object key) {
      }
      return resourceRef;
   }
-  
+
   	private static class ScopedProxyUnwrapper {
-  
+
   		public static Object unwrapIfNecessary(Object resource) {
   			if (resource instanceof ScopedObject) {
   				return ((ScopedObject) resource).getTargetObject();
@@ -1677,7 +1542,7 @@ public static boolean hasResource(Object key) {
   			}
   		}
   	}
-  
+
   ```
 
 - `doGetResource` 方法去获取资源
@@ -1703,16 +1568,6 @@ public static boolean hasResource(Object key) {
      return value;
   }
   ```
-
-
-
-
-
-
-
-
-
-
 
 ##### 资源绑定
 
@@ -1746,9 +1601,7 @@ public static void bindResource(Object key, Object value) throws IllegalStateExc
 }
 ```
 
-
-
-- debug 使用的是druid的数据源
+- debug 使用的是 druid 的数据源
 
 ![image-20200729090322058](/images/spring/image-20200729090322058.png)
 
@@ -1803,7 +1656,7 @@ static Object unwrapResourceIfNecessary(Object resource) {
 
   ```JAVA
   private static class ScopedProxyUnwrapper {
-  
+
      public static Object unwrapIfNecessary(Object resource) {
         if (resource instanceof ScopedObject) {
            return ((ScopedObject) resource).getTargetObject();
@@ -1816,11 +1669,7 @@ static Object unwrapResourceIfNecessary(Object resource) {
 
   - `com.alibaba.druid.pool.DruidDataSource`不是`ScopedObject` 直接返回
 
-
-
 后续就是一个`map`的`put`方法不具体展开
-
-
 
 ##### 解除资源绑定
 
@@ -1863,28 +1712,25 @@ public static Object unbindResource(Object key) throws IllegalStateException {
 
 ```
 
-map 对象的remove操作
-
-
+map 对象的 remove 操作
 
 #### 其他
 
 - 其他几个都是使用`ThreadLocal`进行数据设置操作即可.
 
-
-
 ---
-### TransactionTemplate 
+
+### TransactionTemplate
 
 - 属性
 
   ```java
   	@Nullable
   	private PlatformTransactionManager transactionManager;
-  
+
   ```
 
-  前文说到	`DataSourceTransactionManager` 实现了 `PlatformTransactionManager` 因此配置的时候我们有如下片段
+  前文说到 `DataSourceTransactionManager` 实现了 `PlatformTransactionManager` 因此配置的时候我们有如下片段
 
   ```xml
   <bean id="transactionTemplate"
@@ -1893,13 +1739,9 @@ map 对象的remove操作
   </bean>
   ```
 
-  
-
 - 事务操作模板类图
 
   ![image-20200728094658684](/images/spring/image-20200728094658684.png)
-
-  
 
 - `org.springframework.beans.factory.InitializingBean`接口的实现
 
@@ -1911,10 +1753,6 @@ map 对象的remove操作
   		}
   	}
   ```
-
-
-
-
 
 #### execute
 
@@ -1955,4 +1793,3 @@ map 对象的remove操作
       }
    }
 ```
-

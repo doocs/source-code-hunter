@@ -1,4 +1,5 @@
 ## 1 事务处理的编程式使用
+
 ```java
     TransactionDefinition td = new DefaultTransactionDefinition();
     // transactionManager 是某一个具体的 PlatformTransactionManager实现类 的对象
@@ -12,16 +13,18 @@
     }
     transactionManager.commit(ts);
 ```
-在使用编程式事务处理的过程中，利用 DefaultTransactionDefinition对象 来持有事务处理属性。同时，在创建事务的过程中得到一个 TransactionStatus对象，然后通过直接调用 transactionManager对象 的 commit() 和 rollback()方法 来完成事务处理。在这个编程式使用事务管理的过程中，没有看到框架特性的使用，非常简单和直接，很好地说明了事务管理的基本实现过程，以及在 Spring事务处理实现 中涉及一些主要的类，比如 TransationStatus、TransactionManager 等，对这些类的使用与声明式事务处理的最终实现是一样的。
 
-与编程式使用事务管理不同，在使用声明式事务处理的时候，因为涉及 Spring框架 对事务处理的统一管理，以及对并发事务和事务属性的处理，所以采用的是一个比较复杂的处理过程，但复杂归复杂，这个过程对使用声明式事务处理的应用来说，基本上是不可见的，而是由 Spring框架 来完成的。有了这些背景铺垫和前面对 AOP封装事务处理 的了解，下面来看看 Spring 是如何提供声明式事务处理的，Spring 在这个相对较为复杂的过程中封装了什么。这层封装包括在事务处理中事务的创建、提交和回滚等比较核心的操作。
+在使用编程式事务处理的过程中，利用 DefaultTransactionDefinition 对象 来持有事务处理属性。同时，在创建事务的过程中得到一个 TransactionStatus 对象，然后通过直接调用 transactionManager 对象 的 commit() 和 rollback()方法 来完成事务处理。在这个编程式使用事务管理的过程中，没有看到框架特性的使用，非常简单和直接，很好地说明了事务管理的基本实现过程，以及在 Spring 事务处理实现 中涉及一些主要的类，比如 TransationStatus、TransactionManager 等，对这些类的使用与声明式事务处理的最终实现是一样的。
+
+与编程式使用事务管理不同，在使用声明式事务处理的时候，因为涉及 Spring 框架 对事务处理的统一管理，以及对并发事务和事务属性的处理，所以采用的是一个比较复杂的处理过程，但复杂归复杂，这个过程对使用声明式事务处理的应用来说，基本上是不可见的，而是由 Spring 框架 来完成的。有了这些背景铺垫和前面对 AOP 封装事务处理 的了解，下面来看看 Spring 是如何提供声明式事务处理的，Spring 在这个相对较为复杂的过程中封装了什么。这层封装包括在事务处理中事务的创建、提交和回滚等比较核心的操作。
 
 ## 2 事务的创建
-作为声明式事务处理实现的起始点，需要注意 TransactionInterceptor拦截器 的 invoke()回调 中使用的 createTransactionIfNecessary()方法，这个方法是在 TransactionInterceptor 的基类 TransactionAspectSupport 中实现的。为了了解这个方法的实现，先分析一下 TransactionInterceptor 的基类实现 TransactionAspectSupport，并以这个方法的实现为入口，了解 Spring 是如何根据当前的事务状态和事务属性配置完成事务创建的。
 
-这个 TransactionAspectSupport 的 createTransactionIfNecessary()方法 作为事务创建的入口，其具体的实现时序如下图所示。在 createTransactionIfNecessary()方法 的调用中，会向 AbstractTransactionManager 执行 getTransaction()方法，这个获取 Transaction事务对象 的过程，在 AbstractTransactionManager实现 中需要对事务的情况做出不同的处理，然后，创建一个 TransactionStatus，并把这个 TransactionStatus 设置到对应的 TransactionInfo 中去，同时将 TransactionInfo 和当前的线程绑定，从而完成事务的创建过程。createTransactionIfNeccessary()方法 调用中，可以看到两个重要的数据对象 TransactionStatus 和 TransactionInfo 的创建，这两个对象持有的数据是事务处理器对事务进行处理的主要依据，对这两个对象的使用贯穿着整个事务处理的全过程。
+作为声明式事务处理实现的起始点，需要注意 TransactionInterceptor 拦截器 的 invoke()回调 中使用的 createTransactionIfNecessary()方法，这个方法是在 TransactionInterceptor 的基类 TransactionAspectSupport 中实现的。为了了解这个方法的实现，先分析一下 TransactionInterceptor 的基类实现 TransactionAspectSupport，并以这个方法的实现为入口，了解 Spring 是如何根据当前的事务状态和事务属性配置完成事务创建的。
 
-![avatar](images/springTransaction/调用createTransactionIfNecessary()方法的时序图.png)
+这个 TransactionAspectSupport 的 createTransactionIfNecessary()方法 作为事务创建的入口，其具体的实现时序如下图所示。在 createTransactionIfNecessary()方法 的调用中，会向 AbstractTransactionManager 执行 getTransaction()方法，这个获取 Transaction 事务对象 的过程，在 AbstractTransactionManager 实现 中需要对事务的情况做出不同的处理，然后，创建一个 TransactionStatus，并把这个 TransactionStatus 设置到对应的 TransactionInfo 中去，同时将 TransactionInfo 和当前的线程绑定，从而完成事务的创建过程。createTransactionIfNeccessary()方法 调用中，可以看到两个重要的数据对象 TransactionStatus 和 TransactionInfo 的创建，这两个对象持有的数据是事务处理器对事务进行处理的主要依据，对这两个对象的使用贯穿着整个事务处理的全过程。
+
+![avatar](<images/springTransaction/调用createTransactionIfNecessary()方法的时序图.png>)
 
 ```java
 public abstract class TransactionAspectSupport implements BeanFactoryAware, InitializingBean {
@@ -102,9 +105,11 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 	}
 }
 ```
+
 在以上的处理过程之后，可以看到，具体的事务创建可以交给事务处理器来完成。在事务的创建过程中，已经为事务的管理做好了准备，包括记录事务处理状态，以及绑定事务信息和线程等。下面到事务处理器中去了解一下更底层的事务创建过程。
 
-createTransactionIfNecessary()方法 通过调用 PlatformTransactionManager 的 getTransaction()方法，生成一个 TransactionStatus对象，封装了底层事务对象的创建。可以看到，AbstractPlatformTransactionManager 提供了创建事务的模板，这个模板会被具体的事务处理器所使用。从下面的代码中可以看到，AbstractPlatformTransactionManager 会根据事务属性配置和当前进程绑定的事务信息，对事务是否需要创建，怎样创建 进行一些通用的处理，然后把事务创建的底层工作交给具体的事务处理器完成。尽管具体的事务处理器完成事务创建的过程各不相同，但是不同的事务处理器对事务属性和当前进程事务信息的处理都是相同的，在 **AbstractPlatformTransactionManager** 中完成了该实现，这个实现过程是 Spring 提供统一事务处理的一个重要部分。
+createTransactionIfNecessary()方法 通过调用 PlatformTransactionManager 的 getTransaction()方法，生成一个 TransactionStatus 对象，封装了底层事务对象的创建。可以看到，AbstractPlatformTransactionManager 提供了创建事务的模板，这个模板会被具体的事务处理器所使用。从下面的代码中可以看到，AbstractPlatformTransactionManager 会根据事务属性配置和当前进程绑定的事务信息，对事务是否需要创建，怎样创建 进行一些通用的处理，然后把事务创建的底层工作交给具体的事务处理器完成。尽管具体的事务处理器完成事务创建的过程各不相同，但是不同的事务处理器对事务属性和当前进程事务信息的处理都是相同的，在 **AbstractPlatformTransactionManager** 中完成了该实现，这个实现过程是 Spring 提供统一事务处理的一个重要部分。
+
 ```java
 public abstract class AbstractPlatformTransactionManager implements PlatformTransactionManager, Serializable {
 
@@ -116,27 +121,27 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
         // doGetTransaction() 是抽象方法，Transaction对象 的取得由具体的事务管理器
         // 实现，比如：DataSourceTransactionManager
         Object transaction = doGetTransaction();
-    
+
         // 缓存 debug标志，以避免重复检查
         boolean debugEnabled = logger.isDebugEnabled();
-    
+
         if (definition == null) {
             // 如果没有给出事务定义，则使用默认值
             definition = new DefaultTransactionDefinition();
         }
-    
+
         // 检查当前线程是否已经存在事务，如果已经存在事务，则根据事务属性中定义的 事务传播属性配置
         // 来处理事务的产生
         if (isExistingTransaction(transaction)) {
             // 对当前线程中已经有事务存在的情况进行处理，结果封装在 TransactionStatus 中
             return handleExistingTransaction(definition, transaction, debugEnabled);
         }
-    
+
         // 检查 definition 中 timeout属性 的设置
         if (definition.getTimeout() < TransactionDefinition.TIMEOUT_DEFAULT) {
             throw new InvalidTimeoutException("Invalid transaction timeout", definition.getTimeout());
         }
-    
+
         // 当前没有事务存在，这时需要根据事务属性设置来创建事务
         // 这里可以看到对事务传播属性配置的处理，比如：MANDATORY、REQUIRED、REQUIRES_NEW、NESTED等
         if (definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_MANDATORY) {
@@ -146,7 +151,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
         else if (definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_REQUIRED ||
                 definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_REQUIRES_NEW ||
             definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_NESTED) {
-            
+
             SuspendedResourcesHolder suspendedResources = suspend(null);
             if (debugEnabled) {
                 logger.debug("Creating new transaction with name [" + definition.getName() + "]: " + definition);
@@ -175,11 +180,13 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
             return prepareTransactionStatus(definition, null, true, newSynchronization, debugEnabled, null);
         }
     }
-} 
+}
 ```
-从上面的代码中可以看到，AbstractTransactionManager 提供的创建事务的实现模板，在这个模板的基础上，具体的事务处理器需要定义自己的实现来完成底层的事务创建工作，比如需要实现 isExistingTransaction() 和 doBegin()方法。关于这些由具体事务处理器实现的方法会在下面结合具体的事务处理器实现，如：DataSourceTransactionManager、HibernateTransactionManager进行分析。
 
-事务创建的结果是生成一个 TransactionStatus对象， 通过这个对象来保存事务处理需要的基本信息，这个对象与前面提到过的 TransactionInfo对象 联系在一起， TransactionStatus 是 TransactionInfo 的一个属性，然后会把 TransactionInfo 保存在 ThreadLocal对象 里，这样当前线程可以通过 ThreadLocal对象 取得 TransactionInfo，以及与这个事务对应的 TransactionStatus对象，从而把事务的处理信息与调用事务方法的当前线程绑定起来。在 AbstractPlatformTransactionManager 创建事务的过程中，可以看到 TransactionStatus 的创建过程。
+从上面的代码中可以看到，AbstractTransactionManager 提供的创建事务的实现模板，在这个模板的基础上，具体的事务处理器需要定义自己的实现来完成底层的事务创建工作，比如需要实现 isExistingTransaction() 和 doBegin()方法。关于这些由具体事务处理器实现的方法会在下面结合具体的事务处理器实现，如：DataSourceTransactionManager、HibernateTransactionManager 进行分析。
+
+事务创建的结果是生成一个 TransactionStatus 对象， 通过这个对象来保存事务处理需要的基本信息，这个对象与前面提到过的 TransactionInfo 对象 联系在一起， TransactionStatus 是 TransactionInfo 的一个属性，然后会把 TransactionInfo 保存在 ThreadLocal 对象 里，这样当前线程可以通过 ThreadLocal 对象 取得 TransactionInfo，以及与这个事务对应的 TransactionStatus 对象，从而把事务的处理信息与调用事务方法的当前线程绑定起来。在 AbstractPlatformTransactionManager 创建事务的过程中，可以看到 TransactionStatus 的创建过程。
+
 ```java
 public abstract class AbstractPlatformTransactionManager implements PlatformTransactionManager, Serializable {
 
@@ -189,7 +196,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
     protected DefaultTransactionStatus newTransactionStatus(
             TransactionDefinition definition, Object transaction, boolean newTransaction,
             boolean newSynchronization, boolean debug, Object suspendedResources) {
-    
+
         // 这里判断是不是新事务，如果是新事务，需要把事务属性存放到当前线程中
         // TransactionSynchronizationManager 维护了一系列的 ThreadLocal变量
         // 来保持事务属性，比如，并发事务隔离级别，是否有活跃的事务等
@@ -202,9 +209,11 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
     }
 }
 ```
-新事务的创建是比较好理解的，这里需要根据事务属性配置进行创建。所谓创建，首先是把创建工作交给具体的事务处理器来完成，比如 DataSourceTransactionManager，把创建的事务对象在 TransactionStatus 中保存下来，然后将其他的事务属性和 线程ThreadLocal变量 进行绑定。
 
-相对于创建全新事务的另一种情况是：在创建当前事务时，线程中已经有事务存在了。这种情况同样需要处理，在声明式事务处理中，在当前线程调用事务方法的时候，就会考虑事务的创建处理，这个处理在方法 handleExistingTransaction() 中完成。这里对现有事务的处理，会涉及事务传播属性的具体处理，比如 PROPAGATION_NOT_SUPPORTED、PROPAGATION_ REQUIRES_ NEW等。
+新事务的创建是比较好理解的，这里需要根据事务属性配置进行创建。所谓创建，首先是把创建工作交给具体的事务处理器来完成，比如 DataSourceTransactionManager，把创建的事务对象在 TransactionStatus 中保存下来，然后将其他的事务属性和 线程 ThreadLocal 变量 进行绑定。
+
+相对于创建全新事务的另一种情况是：在创建当前事务时，线程中已经有事务存在了。这种情况同样需要处理，在声明式事务处理中，在当前线程调用事务方法的时候，就会考虑事务的创建处理，这个处理在方法 handleExistingTransaction() 中完成。这里对现有事务的处理，会涉及事务传播属性的具体处理，比如 PROPAGATION*NOT_SUPPORTED、PROPAGATION* REQUIRES\_ NEW 等。
+
 ```java
 public abstract class AbstractPlatformTransactionManager implements PlatformTransactionManager, Serializable {
 
@@ -214,13 +223,13 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
     private TransactionStatus handleExistingTransaction(
             TransactionDefinition definition, Object transaction, boolean debugEnabled)
             throws TransactionException {
-    
+
         // PROPAGATION_NEVER 表示 以非事务方式执行，如果当前存在事务，则抛出异常
         if (definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_NEVER) {
             throw new IllegalTransactionStateException(
                     "Existing transaction found for transaction marked with propagation 'never'");
         }
-    
+
         // PROPAGATION_NOT_SUPPORTED 表示  以非事务方式执行操作，如果当前存在事务，就把当前事务挂起
         if (definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_NOT_SUPPORTED) {
             if (debugEnabled) {
@@ -234,7 +243,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
             return prepareTransactionStatus(
                     definition, null, false, newSynchronization, debugEnabled, suspendedResources);
         }
-    
+
         // PROPAGATION_REQUIRES_NEW 表示 新建事务，如果当前存在事务，把当前事务挂起
         if (definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_REQUIRES_NEW) {
             if (debugEnabled) {
@@ -260,7 +269,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
                 throw beginErr;
             }
         }
-    
+
         // PROPAGATION_NESTED 表示 如果当前存在事务，则在嵌套事务内执行。如果当前没有事务，
         // 则执行与 PROPAGATION_REQUIRED 类似的操作
         if (definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_NESTED) {
@@ -288,7 +297,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
                 return status;
             }
         }
-    
+
         if (debugEnabled) {
             logger.debug("Participating in existing transaction");
         }
@@ -321,7 +330,9 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 ```
 
 ## 3 事务的挂起
+
 事务的挂起牵涉线程与事务处理信息的保存，下面看一下事务挂起的实现。
+
 ```java
 public abstract class AbstractPlatformTransactionManager implements PlatformTransactionManager, Serializable {
 
@@ -371,10 +382,13 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
     }
 }
 ```
+
 基于以上内容，就可以完成声明式事务处理的创建了。声明式事务处理能使事务处理应用的开发变得简单，但是简单的背后，蕴含着平台付出的许多努力。
 
 ## 4 事务的提交
-下面来看看事务提交是如何实现的。有了前面的对事务创建的分析，下面来分析一下在 Spring 中，声明式事务处理的事务提交是如何完成的。事务提交的调用入口是 TransactionInteceptor 的 invoke()方法，事务提交的具体实现则在其基类 TransactionAspectSupport 的 commitTransactionAfterReturning(TransactionInfo txInfo)方法 中，其中的参数 txInfo 是创建事务时生成的。同时，Spring 的事务管理框架生成的 TransactionStatus对象 就包含在 TransactionInfo对象 中。这个 commitTransactionAfterReturning()方法 在 TransactionInteceptor 的实现部分是比较简单的，它通过直接调用事务处理器来完成事务提交。
+
+下面来看看事务提交是如何实现的。有了前面的对事务创建的分析，下面来分析一下在 Spring 中，声明式事务处理的事务提交是如何完成的。事务提交的调用入口是 TransactionInteceptor 的 invoke()方法，事务提交的具体实现则在其基类 TransactionAspectSupport 的 commitTransactionAfterReturning(TransactionInfo txInfo)方法 中，其中的参数 txInfo 是创建事务时生成的。同时，Spring 的事务管理框架生成的 TransactionStatus 对象 就包含在 TransactionInfo 对象 中。这个 commitTransactionAfterReturning()方法 在 TransactionInteceptor 的实现部分是比较简单的，它通过直接调用事务处理器来完成事务提交。
+
 ```java
 public abstract class TransactionAspectSupport implements BeanFactoryAware, InitializingBean {
 
@@ -391,7 +405,9 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
     }
 }
 ```
+
 与前面分析事务的创建过程一样，我们需要到事务管理器中去看看事务是如何提交的。同样，在 AbstractPlatformTransactionManager 中也有一个模板方法支持具体的事务管理器对事务提交的实现，这个模板方法的实现与前面我们看到的 getTransaction() 很像。
+
 ```java
 public abstract class AbstractPlatformTransactionManager implements PlatformTransactionManager, Serializable {
 
@@ -463,7 +479,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
                 doRollbackOnCommitException(status, err);
                 throw err;
             }
-    
+
             // 触发器 afterCommit()回调，其中抛出的异常已传播到调用方，但该事务仍被视为已提交
             try {
                 triggerAfterCommit(status);
@@ -471,7 +487,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
             finally {
                 triggerAfterCompletion(status, TransactionSynchronization.STATUS_COMMITTED);
             }
-    
+
         }
         finally {
             cleanupAfterCompletion(status);
@@ -479,9 +495,11 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
     }
 }
 ```
+
 可以看到，事务提交的准备都是由具体的事务处理器来实现的。当然，对这些事务提交的处理，需要通过对 TransactionStatus 保存的事务处理的相关状态进行判断。提交过程涉及 AbstractPlatformTransactionManager 中的 doCommit() 和 prepareForCommit()方法，它们都是抽象方法，都在具体的事务处理器中完成实现，在下面对具体事务处理器的实现原理的分析中，可以看到对这些实现方法的具体分析。
 
 ## 5 事务的回滚
+
 ```java
 public abstract class AbstractPlatformTransactionManager implements PlatformTransactionManager, Serializable {
 
@@ -541,6 +559,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
     }
 }
 ```
+
 以上对事务的创建、提交和回滚的实现原理进行了分析，这些过程的实现都比较复杂，一方面 这些处理会涉及很多事务属性的处理；另一方面 会涉及事务处理过程中状态的设置，同时在事务处理的过程中，有许多处理也需要根据相应的状态来完成。这样看来，在实现事务处理的基本过程中就会产生许多事务处理的操作分支。
 
-但总的来说，在事务执行的实现过程中，作为执行控制的 TransactionInfo对象 和 TransactionStatus对象 特别值得我们注意，比如它们如何与线程进行绑定，如何记录事务的执行情况等。如果大家在配置事务属性时有什么疑惑，不妨直接看看这些事务属性的处理过程，通过对这些实现原理的了解，可以极大地提高对这些事务处理属性使用的理解程度。
+但总的来说，在事务执行的实现过程中，作为执行控制的 TransactionInfo 对象 和 TransactionStatus 对象 特别值得我们注意，比如它们如何与线程进行绑定，如何记录事务的执行情况等。如果大家在配置事务属性时有什么疑惑，不妨直接看看这些事务属性的处理过程，通过对这些实现原理的了解，可以极大地提高对这些事务处理属性使用的理解程度。

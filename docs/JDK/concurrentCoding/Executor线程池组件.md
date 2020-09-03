@@ -1,17 +1,20 @@
 ## 线程池核心组件图解
+
 看源码之前，先了解一下该组件 最主要的几个 接口、抽象类和实现类的结构关系。
 
 ![avatar](../../../images/JDK1.8/线程池组件类图.png)
 
-该组件中，Executor 和 ExecutorService接口 定义了线程池最核心的几个方法，提交任务submit
-()、关闭线程池shutdown()。抽象类 AbstractExecutorService 主要对公共行为 submit()系列方法进行了实现，这些 submit()方法 的实现使用了 模板方法模式，其中调用的 execute()方法 是未实现的 来自 Executor接口 的方法。实现类 ThreadPoolExecutor 则对线程池进行了具体而复杂的实现。
+该组件中，Executor 和 ExecutorService 接口 定义了线程池最核心的几个方法，提交任务 submit
+()、关闭线程池 shutdown()。抽象类 AbstractExecutorService 主要对公共行为 submit()系列方法进行了实现，这些 submit()方法 的实现使用了 模板方法模式，其中调用的 execute()方法 是未实现的 来自 Executor 接口 的方法。实现类 ThreadPoolExecutor 则对线程池进行了具体而复杂的实现。
 
 另外还有一个常见的工具类 Executors，里面为开发者封装了一些可以直接拿来用的线程池。
 
 ## 源码赏析
+
 话不多说，直接上源码。（这里只看最主要的代码部分）
 
-### Executor 和 ExecutorService接口
+### Executor 和 ExecutorService 接口
+
 ```java
 public interface Executor {
 
@@ -39,7 +42,9 @@ public interface ExecutorService extends Executor {
     Future<?> submit(Runnable task);
 }
 ```
+
 ### AbstractExecutorService 抽象类
+
 ```java
 /**
  * 该抽象类最主要的内容就是，实现了 ExecutorService 中的 submit()系列方法
@@ -74,7 +79,8 @@ public abstract class AbstractExecutorService implements ExecutorService {
 }
 ```
 
-### ThreadPoolExecutor 
+### ThreadPoolExecutor
+
 ```java
 public class ThreadPoolExecutor extends AbstractExecutorService {
 
@@ -89,7 +95,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
 
     /** 用于创建线程的 线程工厂 */
     private volatile ThreadFactory threadFactory;
-    
+
     /** 核心线程数 */
     private volatile int corePoolSize;
 
@@ -102,7 +108,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      * ** 构造方法 **
      * **************
      */
-     
+
     /** 最后都使用了最后一个构造方法的实现 */
     public ThreadPoolExecutor(int corePoolSize,
                               int maximumPoolSize,
@@ -209,12 +215,15 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
     }
 }
 ```
-ThreadPoolExecutor 中的 execute()方法 执行 Runnable任务 的流程逻辑可以用下图表示。
+
+ThreadPoolExecutor 中的 execute()方法 执行 Runnable 任务 的流程逻辑可以用下图表示。
 
 ![avatar](../../../images/ConcurrentProgramming/线程池流程.png)
 
 ### 工具类 Executors
+
 看类名也知道，它最主要的作用就是提供 static 的工具方法，为开发者提供各种封装好的 具有各自特性的线程池。
+
 ```java
 public class Executors {
 

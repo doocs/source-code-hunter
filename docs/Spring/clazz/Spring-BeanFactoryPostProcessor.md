@@ -1,10 +1,11 @@
 # Spring BeanFactoryPostProcessor
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-Spring](https://github.com/SourceHot/spring-framework-read)
 - 作用: 定制或修改`BeanDefinition`的属性
 
-
 ## Demo
+
 ```java
 public class ChangeAttrBeanPostProcessor implements BeanFactoryPostProcessor {
     private Set<String> attr;
@@ -75,8 +76,6 @@ public class BeanFactoryPostProcessorSourceCode {
 </beans>
 ```
 
-
-
 ## 初始化
 
 - `org.springframework.context.support.AbstractApplicationContext#refresh`
@@ -88,7 +87,7 @@ public class BeanFactoryPostProcessorSourceCode {
   ```JAVA
       protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
           PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
-  
+
           // Detect a LoadTimeWeaver and prepare for weaving, if found in the meantime
           // (e.g. through an @Bean method registered by ConfigurationClassPostProcessor)
           if (beanFactory.getTempClassLoader() == null && beanFactory.containsBean(LOAD_TIME_WEAVER_BEAN_NAME)) {
@@ -96,7 +95,7 @@ public class BeanFactoryPostProcessorSourceCode {
               beanFactory.setTempClassLoader(new ContextTypeMatchClassLoader(beanFactory.getBeanClassLoader()));
           }
       }
-  
+
   ```
 
 - `org.springframework.context.support.PostProcessorRegistrationDelegate#invokeBeanFactoryPostProcessors(org.springframework.beans.factory.config.ConfigurableListableBeanFactory, java.util.List<org.springframework.beans.factory.config.BeanFactoryPostProcessor>)`
@@ -104,7 +103,7 @@ public class BeanFactoryPostProcessorSourceCode {
   ```JAVA
   public static void invokeBeanFactoryPostProcessors(
               ConfigurableListableBeanFactory beanFactory, List<BeanFactoryPostProcessor> beanFactoryPostProcessors) {
-  
+
           // Invoke BeanDefinitionRegistryPostProcessors first, if any.
           Set<String> processedBeans = new HashSet<>();
           // 判断是否为BeanDefinitionRegistry类
@@ -114,7 +113,7 @@ public class BeanFactoryPostProcessorSourceCode {
               List<BeanFactoryPostProcessor> regularPostProcessors = new ArrayList<>();
               // 存放 BeanDefinitionRegistryPostProcessor
               List<BeanDefinitionRegistryPostProcessor> registryProcessors = new ArrayList<>();
-  
+
               // 2.首先处理入参中的beanFactoryPostProcessors
               for (BeanFactoryPostProcessor postProcessor : beanFactoryPostProcessors) {
                   // 判断是否是BeanDefinitionRegistryPostProcessor
@@ -133,13 +132,13 @@ public class BeanFactoryPostProcessorSourceCode {
                       regularPostProcessors.add(postProcessor);
                   }
               }
-  
+
               // Do not initialize FactoryBeans here: We need to leave all regular beans
               // uninitialized to let the bean factory post-processors apply to them!
               // Separate between BeanDefinitionRegistryPostProcessors that implement
               // PriorityOrdered, Ordered, and the rest.
               List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
-  
+
               // First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
               /**
                * 调用实现{@link PriorityOrdered}\{@link BeanDefinitionRegistryPostProcessor}
@@ -159,7 +158,7 @@ public class BeanFactoryPostProcessorSourceCode {
               registryProcessors.addAll(currentRegistryProcessors);
               invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
               currentRegistryProcessors.clear();
-  
+
               // Next, invoke the BeanDefinitionRegistryPostProcessors that implement Ordered.
               postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
               for (String ppName : postProcessorNames) {
@@ -172,7 +171,7 @@ public class BeanFactoryPostProcessorSourceCode {
               registryProcessors.addAll(currentRegistryProcessors);
               invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
               currentRegistryProcessors.clear();
-  
+
               // Finally, invoke all other BeanDefinitionRegistryPostProcessors until no further ones appear.
               boolean reiterate = true;
               while (reiterate) {
@@ -190,7 +189,7 @@ public class BeanFactoryPostProcessorSourceCode {
                   invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
                   currentRegistryProcessors.clear();
               }
-  
+
               // Now, invoke the postProcessBeanFactory callback of all processors handled so far.
               invokeBeanFactoryPostProcessors(registryProcessors, beanFactory);
               invokeBeanFactoryPostProcessors(regularPostProcessors, beanFactory);
@@ -198,13 +197,13 @@ public class BeanFactoryPostProcessorSourceCode {
               // Invoke factory processors registered with the context instance.
               invokeBeanFactoryPostProcessors(beanFactoryPostProcessors, beanFactory);
           }
-  
+
           // Do not initialize FactoryBeans here: We need to leave all regular beans
           // uninitialized to let the bean factory post-processors apply to them!
           // 配置文件中的 BeanFactoryPostProcessor 处理
           String[] postProcessorNames =
                   beanFactory.getBeanNamesForType(BeanFactoryPostProcessor.class, true, false);
-  
+
           // Separate between BeanFactoryPostProcessors that implement PriorityOrdered,
           // Ordered, and the rest.
           List<BeanFactoryPostProcessor> priorityOrderedPostProcessors = new ArrayList<>();
@@ -222,11 +221,11 @@ public class BeanFactoryPostProcessorSourceCode {
                   nonOrderedPostProcessorNames.add(ppName);
               }
           }
-  
+
           // First, invoke the BeanFactoryPostProcessors that implement PriorityOrdered.
           sortPostProcessors(priorityOrderedPostProcessors, beanFactory);
           invokeBeanFactoryPostProcessors(priorityOrderedPostProcessors, beanFactory);
-  
+
           // Next, invoke the BeanFactoryPostProcessors that implement Ordered.
           List<BeanFactoryPostProcessor> orderedPostProcessors = new ArrayList<>();
           for (String postProcessorName : orderedPostProcessorNames) {
@@ -234,7 +233,7 @@ public class BeanFactoryPostProcessorSourceCode {
           }
           sortPostProcessors(orderedPostProcessors, beanFactory);
           invokeBeanFactoryPostProcessors(orderedPostProcessors, beanFactory);
-  
+
           // Finally, invoke all other BeanFactoryPostProcessors.
           // 配置文件中自定义的 BeanFactoryPostProcessor 注册
           List<BeanFactoryPostProcessor> nonOrderedPostProcessors = new ArrayList<>();
@@ -242,22 +241,16 @@ public class BeanFactoryPostProcessorSourceCode {
               nonOrderedPostProcessors.add(beanFactory.getBean(postProcessorName, BeanFactoryPostProcessor.class));
           }
           invokeBeanFactoryPostProcessors(nonOrderedPostProcessors, beanFactory);
-  
+
           // Clear cached merged bean definitions since the post-processors might have
           // modified the original metadata, e.g. replacing placeholders in values...
           beanFactory.clearMetadataCache();
       }
   ```
 
-  
-
 ![image-20200119085346675](../../../images/spring/image-20200119085346675.png)
 
 ![image-20200119085655734](../../../images/spring/image-20200119085655734.png)
-
-
-
-
 
 ## InstantiationAwareBeanPostProcessor
 
@@ -266,8 +259,6 @@ public class BeanFactoryPostProcessorSourceCode {
         PostProcessorRegistrationDelegate.registerBeanPostProcessors(beanFactory, this);
     }
 ```
-
-
 
 ```java
     public static void registerBeanPostProcessors(
@@ -356,9 +347,7 @@ public class BeanFactoryPostProcessorSourceCode {
 
 ```
 
-
-
-- 测试用Bean
+- 测试用 Bean
 
 ```java
 public class DemoInstantiationAwareBeanPostProcessor implements InstantiationAwareBeanPostProcessor {
@@ -370,23 +359,15 @@ public class DemoInstantiationAwareBeanPostProcessor implements InstantiationAwa
 }
 ```
 
+- 按照笔者的注释,可以知道`DemoInstantiationAwareBeanPostProcessor` 这个类是一个无序 Bean
 
-
-- 按照笔者的注释,可以知道`DemoInstantiationAwareBeanPostProcessor` 这个类是一个无序Bean
-
-  ![image-20200119101026726](../../../images/spring/image-20200119101026726.png)
-
-  
+![image-20200119101026726](../../../images/spring/image-20200119101026726.png)
 
 ![image-20200119101017989](../../../images/spring/image-20200119101017989.png)
 
 - 注册方法信息截图
 
 ![image-20200119101107820](../../../images/spring/image-20200119101107820.png)
-
-
-
-
 
 ### 使用阶段(调用阶段)
 

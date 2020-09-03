@@ -1,11 +1,11 @@
 # Spring MessageSource
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-Spring](https://github.com/SourceHot/spring-framework-read)
 
 ## 初始化入口
+
 - `org.springframework.context.support.AbstractApplicationContext.refresh`方法有`initMessageSource()`方法进行了`MessageSource`初始化
-
-
 
 ```java
     protected void initMessageSource() {
@@ -43,19 +43,9 @@
 
 ```
 
-
-
-
-
-读取xml配置文件
+读取 xml 配置文件
 
 ![image-20200119141937915](../../../images/spring/image-20200119141937915.png)
-
-
-
-
-
-
 
 ## getMessage
 
@@ -86,7 +76,7 @@
           }
           throw new NoSuchMessageException(code, locale);
       }
-  
+
   ```
 
   - 两个方法
@@ -102,10 +92,10 @@
                }
                return null;
            }
-       
+
        ```
 
-       - 返回code本身或者`null`
+       - 返回 code 本身或者`null`
 
     2. `org.springframework.context.support.AbstractMessageSource#getMessageInternal`
 
@@ -120,7 +110,7 @@
                    locale = Locale.getDefault();
                }
                Object[] argsToUse = args;
-       
+
                if (!isAlwaysUseMessageFormat() && ObjectUtils.isEmpty(args)) {
                    // Optimized resolution: no arguments to apply,
                    // therefore no MessageFormat needs to be involved.
@@ -131,13 +121,13 @@
                        return message;
                    }
                }
-       
+
                else {
                    // Resolve arguments eagerly, for the case where the message
                    // is defined in a parent MessageSource but resolvable arguments
                    // are defined in the child MessageSource.
                    argsToUse = resolveArguments(args, locale);
-       
+
                    MessageFormat messageFormat = resolveCode(code, locale);
                    if (messageFormat != null) {
                        synchronized (messageFormat) {
@@ -145,7 +135,7 @@
                        }
                    }
                }
-       
+
                // Check locale-independent common messages for the given message code.
                Properties commonMessages = getCommonMessages();
                if (commonMessages != null) {
@@ -154,18 +144,16 @@
                        return formatMessage(commonMessage, args, locale);
                    }
                }
-       
+
                // Not found -> check parent, if any.
                return getMessageFromParent(code, argsToUse, locale);
            }
-       
-       ```
 
-       
+       ```
 
 - `org.springframework.context.support.ResourceBundleMessageSource#resolveCodeWithoutArguments`
 
-  ```JAVA
+  ```java
       @Override
       protected String resolveCodeWithoutArguments(String code, Locale locale) {
           Set<String> basenames = getBasenameSet();
@@ -182,28 +170,16 @@
           }
           return null;
       }
-  
+
   ```
-
-  
-
-
-
-
 
 ![image-20200119143046066](../../../images/spring/image-20200119143046066.png)
 
-
-
 - 加载后截图
 
-  获取方法`String result = getStringOrNull(bundle, code);`就是map获取
+  获取方法`String result = getStringOrNull(bundle, code);`就是 map 获取
 
 ![image-20200119144019171](../../../images/spring/image-20200119144019171.png)
-
-
-
-
 
 - 没有配置文件的情况
 

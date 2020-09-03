@@ -1,19 +1,21 @@
-Dubbo的注册中心 虽然提供了多种实现，但生产上的事实标准基本上都是 基于Zookeeper实现的。这种注册中心的实现方法也是Dubbo最为推荐的。为了易于理解 Zookeeper 在 Dubbo 中的应用，我们先简单看一下zookeeper。
+Dubbo 的注册中心虽然提供了多种实现，但生产上的事实标准基本上都是 基于 Zookeeper 实现的。这种注册中心的实现方法也是 Dubbo 最为推荐的。为了易于理解 Zookeeper 在 Dubbo 中的应用，我们先简单看一下 zookeeper。
 
-由于 Dubbo 是一个分布式RPC开源框架，各服务之间单独部署，往往会出现资源之间数据不一致的问题，比如：某一个服务增加或减少了几台机器，某个服务提供者变更了服务地址，那么服务消费者是很难感知到这种变化的。而 Zookeeper 本身就有保证分布式数据一致性的特性。那么 Dubbo服务是如何被 Zookeeper的数据结构存储管理的呢，zookeeper采用的是树形结构来组织数据节点，它类似于一个标准的文件系统，如下图所示。
+由于 Dubbo 是一个分布式 RPC 开源框架，各服务之间单独部署，往往会出现资源之间数据不一致的问题，比如：某一个服务增加或减少了几台机器，某个服务提供者变更了服务地址，那么服务消费者是很难感知到这种变化的。而 Zookeeper 本身就有保证分布式数据一致性的特性。那么 Dubbo 服务是如何被 Zookeeper 的数据结构存储管理的呢，zookeeper 采用的是树形结构来组织数据节点，它类似于一个标准的文件系统，如下图所示。
 
 ![avatar](../../../images/Dubbo/dubbo注册中心在zookeeper中的结构.png)
 
-该图展示了dubbo在zookeeper中存储的形式以及节点层级。dubbo的Root层是根目录，通过<dubbo:registry group="dubbo" />的“group”来设置zookeeper的根节点，缺省值是“dubbo”。Service层是服务接口的全名。Type层是分类，一共有四种分类，分别是providers 服务提供者列表、consumers 服务消费者列表、routes 路由规则列表、configurations 配置规则列表。URL层 根据不同的Type目录：可以有服务提供者 URL 、服务消费者 URL 、路由规则 URL 、配置规则 URL 。不同的Type关注的URL不同。
+该图展示了 dubbo 在 zookeeper 中存储的形式以及节点层级。dubbo 的 Root 层是根目录，通过<dubbo:registry group="dubbo" />的“group”来设置 zookeeper 的根节点，缺省值是“dubbo”。Service 层是服务接口的全名。Type 层是分类，一共有四种分类，分别是 providers 服务提供者列表、consumers 服务消费者列表、routes 路由规则列表、configurations 配置规则列表。URL 层 根据不同的 Type 目录：可以有服务提供者 URL 、服务消费者 URL 、路由规则 URL 、配置规则 URL 。不同的 Type 关注的 URL 不同。
 
-zookeeper以斜杠来分割每一层的znode节点，比如第一层根节点dubbo就是“/dubbo”，而第二层的Service层就是/dubbo/com.foo.Barservice，zookeeper的每个节点通过路径来表示以及访问，例如服务提供者启动时，向/dubbo/com.foo.Barservice/providers目录下写入自己的URL地址。
+zookeeper 以斜杠来分割每一层的 znode 节点，比如第一层根节点 dubbo 就是“/dubbo”，而第二层的 Service 层就是/dubbo/com.foo.Barservice，zookeeper 的每个节点通过路径来表示以及访问，例如服务提供者启动时，向/dubbo/com.foo.Barservice/providers 目录下写入自己的 URL 地址。
 
 dubbo-registry-zookeeper 模块的工程结构如下图所示，里面就俩类，非常简单。
 
 ![avatar](../../../images/Dubbo/dubbo-registry-zookeeper模块工程结构图.png)
 
 ### ZookeeperRegistry
-该类继承了FailbackRegistry抽象类，针对注册中心核心的 服务注册、服务订阅、取消注册、取消订阅，查询注册列表进行展开，这里用到了 模板方法设计模式，FailbackRegistry中定义了register()、subscribe()等模板方法和 doRegister()、doSubscribe()抽象方法，ZookeeperRegistry基于zookeeper对这些抽象方法进行了实现。其实你会发现zookeeper虽然是最被推荐的，反而它的实现逻辑相对简单，因为调用了zookeeper服务组件，很多的逻辑不需要在dubbo中自己去实现。
+
+该类继承了 FailbackRegistry 抽象类，针对注册中心核心的 服务注册、服务订阅、取消注册、取消订阅，查询注册列表进行展开，这里用到了 模板方法设计模式，FailbackRegistry 中定义了 register()、subscribe()等模板方法和 doRegister()、doSubscribe()抽象方法，ZookeeperRegistry 基于 zookeeper 对这些抽象方法进行了实现。其实你会发现 zookeeper 虽然是最被推荐的，反而它的实现逻辑相对简单，因为调用了 zookeeper 服务组件，很多的逻辑不需要在 dubbo 中自己去实现。
+
 ```java
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -413,7 +415,9 @@ public class ZookeeperRegistry extends FailbackRegistry {
 ```
 
 ### ZookeeperRegistryFactory
-ZookeeperRegistryFactory 继承了 AbstractRegistryFactory抽象类，实现了其中的抽象方法 如createRegistry()，源码如下。
+
+ZookeeperRegistryFactory 继承了 AbstractRegistryFactory 抽象类，实现了其中的抽象方法 如 createRegistry()，源码如下。
+
 ```java
 /**
  * Zookeeper Registry 工厂

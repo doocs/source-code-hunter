@@ -1,20 +1,25 @@
-## JDK的SPI思想
+## JDK 的 SPI 思想
+
 SPI，即 Service Provider Interface。在面向对象的设计里面，模块之间推荐基于接口编程，而不是对实现类进行硬编码，这样做也是为了模块设计的可插拔原则。
 
-比较典型的应用，如 JDBC，Java 定义了一套 JDBC 的接口，但是 Java 本身并不提供对 JDBC 的实现类，而是开发者根据项目实际使用的数据库来选择驱动程序 jar包，比如 mysql，你就将 mysql-jdbc-connector.jar 引入进来；oracle，你就将 oracle-jdbc-connector.jar 引入进来。在系统跑的时候，碰到你使用 jdbc 的接口，他会在底层使用你引入的那个 jar 中提供的实现类。
+比较典型的应用，如 JDBC，Java 定义了一套 JDBC 的接口，但是 Java 本身并不提供对 JDBC 的实现类，而是开发者根据项目实际使用的数据库来选择驱动程序 jar 包，比如 mysql，你就将 mysql-jdbc-connector.jar 引入进来；oracle，你就将 oracle-jdbc-connector.jar 引入进来。在系统跑的时候，碰到你使用 jdbc 的接口，他会在底层使用你引入的那个 jar 中提供的实现类。
 
-## Dubbo的SPI扩展机制原理
-dubbo自己实现了一套SPI机制，并对 JDK的SPI进行了改进。  
-1. JDK标准的SPI只能通过遍历来查找扩展点和实例化，有可能导致一次性加载所有的扩展点，如果不是所有的扩展点都被用到，就会导致资源的浪费。dubbo每个扩展点都有多种实现，例如：com.alibaba.dubbo.rpc.Protocol接口有InjvmProtocol、DubboProtocol、RmiProtocol、HttpProtocol、HessianProtocol等实现，如果只是用到其中一个实现，可是加载了全部的实现，会导致资源的浪费。
-2. 对配置文件中扩展实现的格式的修改，例如，META-INF/dubbo/com.xxx.Protocol 里的 com.foo.XxxProtocol格式 改为了 xxx = com.foo.XxxProtocol 这种以键值对的形式，这样做的目的是为了让我们更容易的定位到问题。比如，由于第三方库不存在，无法初始化，导致无法加载扩展点（“A”），当用户配置使用A时，dubbo就会报无法加载扩展点的错误，而不是报哪些扩展点的实现加载失败以及错误原因，**这是因为原来的配置格式没有记录扩展名的id，导致dubbo无法抛出较为精准的异常，这会加大排查问题的难度**。所以改成key-value的形式来进行配置。
-3. dubbo的SPI机制增加了对IOC、AOP的支持，一个扩展点可以直接通过setter注入到其他扩展点。  
+## Dubbo 的 SPI 扩展机制原理
 
-下面我们看一下Dubbo 的 SPI扩展机制实现的结构目录。
+dubbo 自己实现了一套 SPI 机制，并对 JDK 的 SPI 进行了改进。
+
+1. JDK 标准的 SPI 只能通过遍历来查找扩展点和实例化，有可能导致一次性加载所有的扩展点，如果不是所有的扩展点都被用到，就会导致资源的浪费。dubbo 每个扩展点都有多种实现，例如：com.alibaba.dubbo.rpc.Protocol 接口有 InjvmProtocol、DubboProtocol、RmiProtocol、HttpProtocol、HessianProtocol 等实现，如果只是用到其中一个实现，可是加载了全部的实现，会导致资源的浪费。
+2. 对配置文件中扩展实现的格式的修改，例如，META-INF/dubbo/com.xxx.Protocol 里的 com.foo.XxxProtocol 格式 改为了 xxx = com.foo.XxxProtocol 这种以键值对的形式，这样做的目的是为了让我们更容易的定位到问题。比如，由于第三方库不存在，无法初始化，导致无法加载扩展点（“A”），当用户配置使用 A 时，dubbo 就会报无法加载扩展点的错误，而不是报哪些扩展点的实现加载失败以及错误原因，**这是因为原来的配置格式没有记录扩展名的 id，导致 dubbo 无法抛出较为精准的异常，这会加大排查问题的难度**。所以改成 key-value 的形式来进行配置。
+3. dubbo 的 SPI 机制增加了对 IOC、AOP 的支持，一个扩展点可以直接通过 setter 注入到其他扩展点。
+
+下面我们看一下 Dubbo 的 SPI 扩展机制实现的结构目录。
 
 ![avatar](../../../images/Dubbo/SPI组件目录结构.png)
 
 ### SPI 注解
-首先看一下 SPI注解。在某个接口上加上 @SPI 注解后，表明该接口为可扩展接口。比如，协议扩展接口Protocol，如果使用者在 &lt;dubbo:protocol />、&lt;dubbo:service />、&lt;dubbo:reference /> 都没有指定 protocol属性 的话，那么就默认使用 DubboProtocol 作为接口Protocol的实现，因为在 Protocol 上有 @SPI("dubbo")注解。而这个 protocol属性值 或者默认值会被当作该接口的实现类中的一个key，dubbo 会去 META-INF.dubbo.internal下的com.alibaba.dubbo.rpc.Protocol文件中找该key对应的value，源码如下。
+
+首先看一下 SPI 注解。在某个接口上加上 @SPI 注解后，表明该接口为可扩展接口。比如，协议扩展接口 Protocol，如果使用者在 &lt;dubbo:protocol />、&lt;dubbo:service />、&lt;dubbo:reference /> 都没有指定 protocol 属性 的话，那么就默认使用 DubboProtocol 作为接口 Protocol 的实现，因为在 Protocol 上有 @SPI("dubbo")注解。而这个 protocol 属性值 或者默认值会被当作该接口的实现类中的一个 key，dubbo 会去 META-INF.dubbo.internal 下的 com.alibaba.dubbo.rpc.Protocol 文件中找该 key 对应的 value，源码如下。
+
 ```java
 /**
  * 协议接口
@@ -41,7 +46,7 @@ public interface Protocol {
      */
     @Adaptive
     <T> Exporter<T> export(Invoker<T> invoker) throws RpcException;
-    
+
     /**
      * 引用远程服务：<br>
      * 1. 当用户调用 refer() 所返回的 Invoker 对象的 invoke() 方法时，协议需相应执行同 URL 远端 export() 传入的 Invoker 对象的 invoke() 方法。<br>
@@ -56,7 +61,7 @@ public interface Protocol {
      */
     @Adaptive
     <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException;
-    
+
     /**
      * 释放协议：<br>
      * 1. 取消该协议所有已经暴露和引用的服务。<br>
@@ -107,10 +112,13 @@ public @interface SPI {
 // 配置文件 com.alibaba.dubbo.rpc.Protocol 中的内容
 dubbo=com.alibaba.dubbo.rpc.protocol.dubbo.DubboProtocol
 ```
-value 就是该 Protocol接口 的实现类 DubboProtocol，这样就做到了SPI扩展。
+
+value 就是该 Protocol 接口 的实现类 DubboProtocol，这样就做到了 SPI 扩展。
 
 ### ExtensionLoader
-ExtensionLoader 扩展加载器，这是 dubbo 实现 SPI扩展机制 的核心，几乎所有实现的逻辑都被封装在 ExtensionLoader 中，其源码如下。
+
+ExtensionLoader 扩展加载器，这是 dubbo 实现 SPI 扩展机制 的核心，几乎所有实现的逻辑都被封装在 ExtensionLoader 中，其源码如下。
+
 ```java
 /**
  * 拓展加载器，Dubbo使用的扩展点获取
@@ -496,7 +504,7 @@ public class ExtensionLoader<T> {
         getExtensionClasses();
         // 如果为 true ，不能继续调用 `#getExtension(true)` 方法，会形成死循环。
         if (null == cachedDefaultName || cachedDefaultName.length() == 0
-                || "true".equals(cachedDefaultName)) { 
+                || "true".equals(cachedDefaultName)) {
             return null;
         }
         return getExtension(cachedDefaultName);

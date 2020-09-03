@@ -1,4 +1,5 @@
 # SpringBoot ConfigurationProperties
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring-boot](https://github.com/SourceHot/spring-boot-read)
 
@@ -15,8 +16,6 @@
  * @see EnableConfigurationProperties
 ```
 
-
-
 看到`ConfigurationPropertiesScan` 去看看这个
 
 ## ConfigurationPropertiesScan
@@ -32,15 +31,11 @@ public @interface ConfigurationPropertiesScan {}
 
 - 熟悉的**Import**注解
 
-
-
 ## ConfigurationPropertiesScanRegistrar
 
 ![image-20200323094446756](../../../images/SpringBoot/image-20200323094446756.png)
 
-- debug没有抓到后续补充
-
-
+- debug 没有抓到后续补充
 
 ## EnableConfigurationProperties
 
@@ -52,10 +47,6 @@ public @interface ConfigurationPropertiesScan {}
 public @interface EnableConfigurationProperties {
 }
 ```
-
-
-
-
 
 ## EnableConfigurationPropertiesRegistrar
 
@@ -81,10 +72,6 @@ public @interface EnableConfigurationProperties {
   org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfiguration
   ```
 
-  
-
-
-
 ```java
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
@@ -99,8 +86,6 @@ public @interface EnableConfigurationProperties {
 
 ```
 
-
-
 ### registerInfrastructureBeans
 
 ```JAVA
@@ -113,7 +98,7 @@ public @interface EnableConfigurationProperties {
 	}
 ```
 
-- 此处操作逻辑基本相同,是否存在这个beanName 存在直接注册，不存在补充
+- 此处操作逻辑基本相同,是否存在这个 beanName 存在直接注册，不存在补充
 
 #### ConfigurationPropertiesBindingPostProcessor.register(registry)
 
@@ -132,8 +117,6 @@ public @interface EnableConfigurationProperties {
 
 ```
 
-
-
 #### ConfigurationPropertiesBeanDefinitionValidator.register(registry)
 
 ```JAVA
@@ -150,23 +133,15 @@ public @interface EnableConfigurationProperties {
 
 ```
 
-
-
 ### getTypes(metadata).forEach(beanRegistrar::register)
 
 - 先看输入参数 **metadata**
 
 ![image-20200323134135926](../../../images/SpringBoot/image-20200323134135926.png)
 
-
-
-- getTypes结果
+- getTypes 结果
 
 ![image-20200323134325955](../../../images/SpringBoot/image-20200323134325955.png)
-
-
-
-
 
 - 源码开始，先找出刚才的对象`org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration`
 
@@ -182,8 +157,6 @@ public @interface EnableConfigurationProperties {
   		ServletWebServerFactoryConfiguration.EmbeddedUndertow.class })
   public class ServletWebServerFactoryAutoConfiguration {}
   ```
-
-  
 
 ```JAVA
     /**
@@ -204,8 +177,6 @@ public @interface EnableConfigurationProperties {
 
 - 这里我们可以直接知道返回的是`@EnableConfigurationProperties(ServerProperties.class)` 的数据值: `ServerProperties.class`
 
-
-
 循环注册
 
 ```java
@@ -217,23 +188,11 @@ public @interface EnableConfigurationProperties {
 
 ```
 
-
-
-
-
-
-
-
-
 ---
-
-
 
 ## ConfigurationPropertiesBindingPostProcessor
 
 ![image-20200323095626953](../../../images/SpringBoot/image-20200323095626953.png)
-
-
 
 ### postProcessBeforeInitialization
 
@@ -247,8 +206,6 @@ public @interface EnableConfigurationProperties {
 
 ```
 
-
-
 - get
 
   ```java
@@ -258,10 +215,8 @@ public @interface EnableConfigurationProperties {
   		// 创建 ConfigurationPropertiesBean
   		return create(beanName, bean, bean.getClass(), factoryMethod);
   	}
-  
-  ```
 
-  
+  ```
 
 ```java
 	private static Method findFactoryMethod(ConfigurableListableBeanFactory beanFactory, String beanName) {
@@ -283,8 +238,6 @@ public @interface EnableConfigurationProperties {
 	}
 
 ```
-
-
 
 ```java
 	private static Method findFactoryMethodUsingReflection(ConfigurableListableBeanFactory beanFactory,
@@ -315,10 +268,6 @@ public @interface EnableConfigurationProperties {
 
 ```
 
-
-
-
-
 ### create
 
 - `org.springframework.boot.context.properties.ConfigurationPropertiesBean#create`
@@ -348,11 +297,7 @@ public @interface EnableConfigurationProperties {
 
 ```
 
-
-
 - 第一个需要做的类: `org.springframework.boot.autoconfigure.web.ServerProperties`
-
-
 
 - `annotation`
 
@@ -368,10 +313,6 @@ public @interface EnableConfigurationProperties {
 
 - 此时数据还没有进去
 
-
-
-
-
 #### bind
 
 - 数据绑定
@@ -381,8 +322,6 @@ public @interface EnableConfigurationProperties {
 ![image-20200323105155998](../../../images/SpringBoot/image-20200323105155998.png)
 
 - 上述配置和我在配置文件中写的配置一致
-
-
 
 ```yml
 server:
@@ -410,8 +349,6 @@ server:
 
 ```
 
-
-
 ```java
 BindResult<?> bind(ConfigurationPropertiesBean propertiesBean) {
 	    // 最后的结果
@@ -420,14 +357,12 @@ BindResult<?> bind(ConfigurationPropertiesBean propertiesBean) {
 		ConfigurationProperties annotation = propertiesBean.getAnnotation();
 		// 获取处理器
 		BindHandler bindHandler = getBindHandler(target, annotation);
-		// 
+		//
 		return getBinder().bind(annotation.prefix(), target, bindHandler);
 	}
 ```
 
 ![image-20200323105830138](../../../images/SpringBoot/image-20200323105830138.png)
-
-
 
 ##### findProperty
 
@@ -448,8 +383,6 @@ BindResult<?> bind(ConfigurationPropertiesBean propertiesBean) {
 
 ```
 
-
-
 - `org.springframework.boot.context.properties.source.SpringConfigurationPropertySource#getConfigurationProperty`
 
   ```JAVA
@@ -458,11 +391,11 @@ BindResult<?> bind(ConfigurationPropertiesBean propertiesBean) {
   		PropertyMapping[] mappings = getMapper().map(name);
   		return find(mappings, name);
   	}
-  
+
   ```
 
   ```JAVA
-  
+
   	protected final ConfigurationProperty find(PropertyMapping[] mappings, ConfigurationPropertyName name) {
   		for (PropertyMapping candidate : mappings) {
   			if (candidate.isApplicable(name)) {
@@ -474,7 +407,7 @@ BindResult<?> bind(ConfigurationPropertiesBean propertiesBean) {
   		}
   		return null;
   	}
-  
+
   ```
 
   ```JAVA
@@ -492,28 +425,14 @@ BindResult<?> bind(ConfigurationPropertiesBean propertiesBean) {
   		// 包装返回
   		return ConfigurationProperty.of(configurationPropertyName, value, origin);
   	}
-  
+
   ```
-
-  
-
-
-
-
 
 ![image-20200323115408877](../../../images/SpringBoot/image-20200323115408877.png)
 
-
-
 ![image-20200323115701118](../../../images/SpringBoot/image-20200323115701118.png)
 
-
-
 ![image-20200323115711826](../../../images/SpringBoot/image-20200323115711826.png)
-
-
-
-
 
 ##### getBindHandler
 
@@ -548,9 +467,7 @@ private <T> BindHandler getBindHandler(Bindable<T> target, ConfigurationProperti
 
 ![image-20200323110603959](../../../images/SpringBoot/image-20200323110603959.png)
 
-
-
-- 最后的bind
+- 最后的 bind
 
 ```java
 	private <T> Object bindObject(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
@@ -582,17 +499,8 @@ private <T> BindHandler getBindHandler(Bindable<T> target, ConfigurationProperti
 
 ```
 
-
-
-
-
 ![image-20200323112945449](../../../images/SpringBoot/image-20200323112945449.png)
-
-
-
-
 
 配置信息到此绑定成功,关于如何处理集合相关的配置请各位读者自行学习
 
-----
-
+---

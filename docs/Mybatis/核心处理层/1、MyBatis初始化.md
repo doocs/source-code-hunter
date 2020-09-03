@@ -1,6 +1,9 @@
-和 Spring框架 的 IoC容器初始化 一样，Mybatis 也会通过定位、解析相应的配置文件完成自己的初始化。Mybatis 的配置文件主要有 mybatis-config.xml核心配置文件 及一系列映射配置文件，另外，Mybatis 也会根据注解进行配置。
+和 Spring 框架 的 IoC 容器初始化 一样，Mybatis 也会通过定位、解析相应的配置文件完成自己的初始化。Mybatis 的配置文件主要有 mybatis-config.xml 核心配置文件 及一系列映射配置文件，另外，Mybatis 也会根据注解进行配置。
+
 ## 1 BaseBuilder
-Mybatis初始化 的主要内容是加载并解析 mybatis-config.xml配置文件、映射配置文件以及相关的注解信息。Mybatis 的初始化入口是 SqlSessionFactoryBuilder 的 build()方法。
+
+Mybatis 初始化 的主要内容是加载并解析 mybatis-config.xml 配置文件、映射配置文件以及相关的注解信息。Mybatis 的初始化入口是 SqlSessionFactoryBuilder 的 build()方法。
+
 ```java
 public class SqlSessionFactoryBuilder {
 
@@ -44,7 +47,9 @@ public class SqlSessionFactoryBuilder {
     return new DefaultSqlSessionFactory(config);
   }
 ```
+
 BaseBuilder 中的核心字段如下：
+
 ```java
 public abstract class BaseBuilder {
 
@@ -56,7 +61,7 @@ public abstract class BaseBuilder {
   // TypeHandler 用于完成 JDBC数据类型 与 Java类型 的相互转换，所有的 TypeHandler
   // 都保存在 typeHandlerRegistry 中
   protected final TypeHandlerRegistry typeHandlerRegistry;
-  
+
   public BaseBuilder(Configuration configuration) {
     this.configuration = configuration;
     this.typeAliasRegistry = this.configuration.getTypeAliasRegistry();
@@ -64,9 +69,13 @@ public abstract class BaseBuilder {
   }
 }
 ```
-BaseBuilder 中的 typeAliasRegistry 和 typeHandlerRegistry字段 均来自于 configuration，通过 BaseBuilder 的构造方法可以看到详细内容。
+
+BaseBuilder 中的 typeAliasRegistry 和 typeHandlerRegistry 字段 均来自于 configuration，通过 BaseBuilder 的构造方法可以看到详细内容。
+
 ## 2 XMLConfigBuilder
-XMLConfigBuilder 是 BaseBuilder 的众多子类之一，主要负责解析 mybatis-config.xml配置文件。它通过调用 parseConfiguration()方法 实现整个解析过程，其中，mybatis-config.xml配置文件 中的每个节点都被封装成了一个个相应的解析方法，parseConfiguration()方法 只是依次调用了这些解析方法而已。
+
+XMLConfigBuilder 是 BaseBuilder 的众多子类之一，主要负责解析 mybatis-config.xml 配置文件。它通过调用 parseConfiguration()方法 实现整个解析过程，其中，mybatis-config.xml 配置文件 中的每个节点都被封装成了一个个相应的解析方法，parseConfiguration()方法 只是依次调用了这些解析方法而已。
+
 ```java
 public class XMLConfigBuilder extends BaseBuilder {
 
@@ -115,8 +124,11 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
   }
 ```
+
 Mybatis 中的标签很多，所以相对应的解析方法也很多，这里挑几个比较重要的标签进行分析。
+
 ### 2.1 解析&lt;typeHandlers&gt;标签
+
 ```java
   private void typeHandlerElement(XNode parent) throws Exception {
     if (parent != null) {
@@ -153,7 +165,9 @@ Mybatis 中的标签很多，所以相对应的解析方法也很多，这里挑
     }
   }
 ```
+
 ### 2.2 解析&lt;environments&gt;标签
+
 ```java
   /**
    * Mybatis 可以配置多个 <environment>环境，分别用于开发、测试及生产等，
@@ -185,10 +199,13 @@ Mybatis 中的标签很多，所以相对应的解析方法也很多，这里挑
     }
   }
 ```
-### 2.3 解析&lt;databaseIdProvider&gt;标签
-Mybatis 不像 Hibernate 那样，通过 HQL 的方式直接帮助开发人员屏蔽不同数据库产品在 sql语法 上的差异，针对不同的数据库产品， Mybatis 往往要编写不同的 sql语句。但在 mybatis-config.xml配置文件 中，可以通过 &lt;databaseIdProvider&gt; 定义所有支持的数据库产品的 databaseId，然后在映射配置文件中定义 sql语句节点 时，通过 databaseId 指定该 sql语句 应用的数据库产品，也可以达到类似的屏蔽数据库产品的功能。
 
-Mybatis 初始化时，会根据前面解析到的 DataSource 来确认当前使用的数据库产品，然后在解析映射文件时，加载不带 databaseId属性 的 sql语句 及带有 databaseId属性 的 sql语句，其中，带有 databaseId属性 的 sql语句 优先级更高，会被优先选中。
+### 2.3 解析&lt;databaseIdProvider&gt;标签
+
+Mybatis 不像 Hibernate 那样，通过 HQL 的方式直接帮助开发人员屏蔽不同数据库产品在 sql 语法 上的差异，针对不同的数据库产品， Mybatis 往往要编写不同的 sql 语句。但在 mybatis-config.xml 配置文件 中，可以通过 &lt;databaseIdProvider&gt; 定义所有支持的数据库产品的 databaseId，然后在映射配置文件中定义 sql 语句节点 时，通过 databaseId 指定该 sql 语句 应用的数据库产品，也可以达到类似的屏蔽数据库产品的功能。
+
+Mybatis 初始化时，会根据前面解析到的 DataSource 来确认当前使用的数据库产品，然后在解析映射文件时，加载不带 databaseId 属性 的 sql 语句 及带有 databaseId 属性 的 sql 语句，其中，带有 databaseId 属性 的 sql 语句 优先级更高，会被优先选中。
+
 ```java
   /**
    * 解析 <databaseIdProvider>节点，并创建指定的 DatabaseIdProvider对象，
@@ -217,7 +234,9 @@ Mybatis 初始化时，会根据前面解析到的 DataSource 来确认当前使
     }
   }
 ```
-Mybatis 提供了 DatabaseIdProvider接口，该接口的核心方法为 getDatabaseId(DataSource dataSource)，主要根据 dataSource 查找对应的 databaseId 并返回。该接口的主要实现类为 VendorDatabaseIdProvider。
+
+Mybatis 提供了 DatabaseIdProvider 接口，该接口的核心方法为 getDatabaseId(DataSource dataSource)，主要根据 dataSource 查找对应的 databaseId 并返回。该接口的主要实现类为 VendorDatabaseIdProvider。
+
 ```java
 public class VendorDatabaseIdProvider implements DatabaseIdProvider {
 
@@ -279,8 +298,11 @@ public class VendorDatabaseIdProvider implements DatabaseIdProvider {
   }
 }
 ```
+
 ### 2.4 解析&lt;mappers&gt;标签
-Mybatis 初始化时，除了加载 mybatis-config.xml文件，还会加载全部的映射配置文件，mybatis-config.xml 文件的 &lt;mapper&gt;节点 会告诉 Mybatis 去哪里查找映射配置文件，及使用了配置注解标识的接口。
+
+Mybatis 初始化时，除了加载 mybatis-config.xml 文件，还会加载全部的映射配置文件，mybatis-config.xml 文件的 &lt;mapper&gt;节点 会告诉 Mybatis 去哪里查找映射配置文件，及使用了配置注解标识的接口。
+
 ```java
   /**
    * 解析 <mappers>节点，本方法会创建 XMLMapperBuilder对象 加载映射文件，如果映射配置文件存在
@@ -327,8 +349,11 @@ Mybatis 初始化时，除了加载 mybatis-config.xml文件，还会加载全�
     }
   }
 ```
+
 ## 3 XMLMapperBuilder
+
 和 XMLConfigBuilder 一样，XMLMapperBuilder 也继承了 BaseBuilder，其主要负责解析映射配置文件，其解析配置文件的入口方法也是 parse()，另外，XMLMapperBuilder 也将各个节点的解析过程拆分成了一个个小方法，然后由 configurationElement()方法 统一调用。
+
 ```java
 public class XMLMapperBuilder extends BaseBuilder {
   public void parse() {
@@ -372,13 +397,17 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 }
 ```
+
 XMLMapperBuilder 也根据配置文件进行了一系列节点解析，我们着重分析一下比较重要且常见的 &lt;resultMap&gt;节点 和 &lt;sql&gt;节点
+
 ### 3.1 解析&lt;resultMap&gt;节点
-select语句 查询得到的结果是一张二维表，水平方向上是一个个字段，垂直方向上是一条条记录。而 Java 是面向对象的程序设计语言，对象是根据类的定义创建的，类之间的引用关系可以认为是嵌套结构。JDBC编程 中，为了将结果集中的数据映射成 VO对象，我们需要自己写代码从结果集中获取数据，然后将数据封装成对应的 VO对象，并设置好对象之间的关系，这种 ORM 的过程中存在大量重复的代码。
 
-Mybatis 通过 &lt;resultMap&gt;节点 定义了 ORM规则，可以满足大部分的映射需求，减少重复代码，提高开发效率。
+select 语句 查询得到的结果是一张二维表，水平方向上是一个个字段，垂直方向上是一条条记录。而 Java 是面向对象的程序设计语言，对象是根据类的定义创建的，类之间的引用关系可以认为是嵌套结构。JDBC 编程 中，为了将结果集中的数据映射成 VO 对象，我们需要自己写代码从结果集中获取数据，然后将数据封装成对应的 VO 对象，并设置好对象之间的关系，这种 ORM 的过程中存在大量重复的代码。
 
-在分析 &lt;resultMap&gt;节点 的解析过程之前，先看一下该过程使用的数据结构。每个 ResultMapping对象 记录了结果集中的一列与 JavaBean 中一个属性之间的映射关系。&lt;resultMap&gt;节点 下除了 &lt;discriminator&gt;子节点 的其它子节点，都会被解析成对应的 ResultMapping对象。
+Mybatis 通过 &lt;resultMap&gt;节点 定义了 ORM 规则，可以满足大部分的映射需求，减少重复代码，提高开发效率。
+
+在分析 &lt;resultMap&gt;节点 的解析过程之前，先看一下该过程使用的数据结构。每个 ResultMapping 对象 记录了结果集中的一列与 JavaBean 中一个属性之间的映射关系。&lt;resultMap&gt;节点 下除了 &lt;discriminator&gt;子节点 的其它子节点，都会被解析成对应的 ResultMapping 对象。
+
 ```java
 public class ResultMapping {
 
@@ -411,7 +440,9 @@ public class ResultMapping {
   private boolean lazy;
 }
 ```
-另一个比较重要的类是 ResultMap，每个 &lt;resultMap&gt;节点 都会被解析成一个 ResultMap对象，其中每个节点所定义的映射关系，则使用 ResultMapping对象 表示。
+
+另一个比较重要的类是 ResultMap，每个 &lt;resultMap&gt;节点 都会被解析成一个 ResultMap 对象，其中每个节点所定义的映射关系，则使用 ResultMapping 对象 表示。
+
 ```java
 public class ResultMap {
   private Configuration configuration;
@@ -442,7 +473,9 @@ public class ResultMap {
   private Boolean autoMapping;
 }
 ```
+
 了解了 ResultMapping 和 ResultMap 记录的信息之后，下面开始介绍 &lt;resultMap&gt;节点 的解析过程。在 XMLMapperBuilder 中通过 resultMapElements()方法 解析映射配置文件中的全部 &lt;resultMap&gt;节点，该方法会循环调用 resultMapElement()方法 处理每个 &lt;resultMap&gt; 节点。
+
 ```java
   private ResultMap resultMapElement(XNode resultMapNode) throws Exception {
     return resultMapElement(resultMapNode, Collections.<ResultMapping> emptyList());
@@ -498,7 +531,9 @@ public class ResultMap {
     }
   }
 ```
-从上面的代码我们可以看到，Mybatis 从 &lt;resultMap&gt;节点 获取到 id属性 和 type属性值 之后，就会通过 XMLMapperBuilder 的 buildResultMappingFromContext()方法 为 &lt;result&gt;节点 创建对应的 ResultMapping对象。
+
+从上面的代码我们可以看到，Mybatis 从 &lt;resultMap&gt;节点 获取到 id 属性 和 type 属性值 之后，就会通过 XMLMapperBuilder 的 buildResultMappingFromContext()方法 为 &lt;result&gt;节点 创建对应的 ResultMapping 对象。
+
 ```java
   /**
    * 根据上下文环境构建 ResultMapping
@@ -531,7 +566,9 @@ public class ResultMap {
     return builderAssistant.buildResultMapping(resultType, property, column, javaTypeClass, jdbcTypeEnum, nestedSelect, nestedResultMap, notNullColumn, columnPrefix, typeHandlerClass, flags, resultSet, foreignColumn, lazy);
   }
 ```
-得到 ResultMapping对象集合 之后，会调用 ResultMapResolver 的 resolve()方法，该方法会调用 MapperBuilderAssistant 的 addResultMap()方法 创建 ResultMap对象，并将 ResultMap对象 添加到 Configuration 的 resultMaps集合 中保存。
+
+得到 ResultMapping 对象集合 之后，会调用 ResultMapResolver 的 resolve()方法，该方法会调用 MapperBuilderAssistant 的 addResultMap()方法 创建 ResultMap 对象，并将 ResultMap 对象 添加到 Configuration 的 resultMaps 集合 中保存。
+
 ```java
 public class MapperBuilderAssistant extends BaseBuilder {
   public ResultMap addResultMap(String id, Class<?> type, String extend,
@@ -579,8 +616,11 @@ public class MapperBuilderAssistant extends BaseBuilder {
   }
 }
 ```
+
 ### 3.2 解析&lt;sql&gt;节点
-在映射配置文件中，可以使用 &lt;sql&gt;节点 定义可重用的 SQL语句片段，当需要重用 &lt;sql&gt;节点 中定义的 SQL语句片段 时，只需要使用 &lt;include&gt;节点 引入相应的片段即可，这样，在编写 SQL语句 以及维护这些 SQL语句 时，都会比较方便。XMLMapperBuilder 的 sqlElement()方法 负责解析映射配置文件中定义的 全部&lt;sql&gt;节点。
+
+在映射配置文件中，可以使用 &lt;sql&gt;节点 定义可重用的 SQL 语句片段，当需要重用 &lt;sql&gt;节点 中定义的 SQL 语句片段 时，只需要使用 &lt;include&gt;节点 引入相应的片段即可，这样，在编写 SQL 语句 以及维护这些 SQL 语句 时，都会比较方便。XMLMapperBuilder 的 sqlElement()方法 负责解析映射配置文件中定义的 全部&lt;sql&gt;节点。
+
 ```java
   private void sqlElement(List<XNode> list) throws Exception {
     if (configuration.getDatabaseId() != null) {
@@ -604,13 +644,13 @@ public class MapperBuilderAssistant extends BaseBuilder {
     }
   }
 ```
+
 ## 4 XMLStatementBuilder
 
+## 5 绑定 Mapper 接口
 
+通过之前对 binding 模块 的解析可知，每个映射配置文件的命名空间可以绑定一个 Mapper 接口，并注册到 MapperRegistry 中。XMLMapperBuilder 的 bindMapperForNamespace()方法 中，完成了映射配置文件与对应 Mapper 接口 的绑定。
 
-
-## 5 绑定Mapper接口
-通过之前对 binding模块 的解析可知，每个映射配置文件的命名空间可以绑定一个 Mapper接口，并注册到 MapperRegistry中。XMLMapperBuilder 的 bindMapperForNamespace()方法 中，完成了映射配置文件与对应 Mapper接口 的绑定。
 ```java
 public class XMLMapperBuilder extends BaseBuilder {
   private void bindMapperForNamespace() {
@@ -695,4 +735,5 @@ public class MapperAnnotationBuilder {
   }
 }
 ```
-另外，在 MapperAnnotationBuilder 的 parse()方法 中解析的注解，都能在映射配置文件中找到与之对应的 XML节点，且两者的解析过程也非常相似。
+
+另外，在 MapperAnnotationBuilder 的 parse()方法 中解析的注解，都能在映射配置文件中找到与之对应的 XML 节点，且两者的解析过程也非常相似。

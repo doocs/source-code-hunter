@@ -1,11 +1,13 @@
 ## 前言
+
 接着上一篇的 BeanDefinition 资源定位开始讲。Spring IoC 容器 BeanDefinition 解析过程就是把用户在配置文件中配置的 bean，解析并封装成 IoC 容器可以装载的 BeanDefinition 对象，BeanDefinition 是 Spring 定义的基本数据结构，其中的属性与配置文件中 bean 的属性相对应。
- 
+
 （PS：可以结合我 GitHub 上对 Spring 框架源码的阅读及个人理解一起看，会更有助于各位开发大佬理解。地址如下。  
-spring-beans	 https://github.com/AmyliaY/spring-beans-reading  
-spring-context  https://github.com/AmyliaY/spring-context-reading ）
+spring-beans https://github.com/AmyliaY/spring-beans-reading  
+spring-context https://github.com/AmyliaY/spring-context-reading ）
 
 ## 正文
+
 首先看一下 AbstractRefreshableApplicationContext 的 refreshBeanFactory() 方法，这是一个模板方法，其中调用的 loadBeanDefinitions() 方法是一个抽象方法，交由子类实现。
 
 ```java
@@ -38,7 +40,9 @@ protected final void refreshBeanFactory() throws BeansException {
     }
 }
 ```
+
 下面看一下 AbstractRefreshableApplicationContext 的子类 AbstractXmlApplicationContext 对 loadBeanDefinitions() 方法的实现。
+
 ```java
 @Override
 protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws BeansException, IOException {
@@ -62,7 +66,9 @@ protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throw
     loadBeanDefinitions(beanDefinitionReader);
 }
 ```
+
 接着看一下上面最后一个调用的方法 loadBeanDefinitions(XmlBeanDefinitionReader reader)。
+
 ```java
 /**
  * 读取并解析 .xml 文件中配置的 bean，然后封装成 BeanDefinition 对象
@@ -83,7 +89,7 @@ protected void loadBeanDefinitions(XmlBeanDefinitionReader reader) throws BeansE
         reader.loadBeanDefinitions(configResources);
     }
     // 调用其父类 AbstractRefreshableConfigApplicationContext 中的实现，优先返回
-    // FileSystemXmlApplicationContext 构造方法中调用 setConfigLocations() 方法设置的资源路径    
+    // FileSystemXmlApplicationContext 构造方法中调用 setConfigLocations() 方法设置的资源路径
     String[] configLocations = getConfigLocations();
     if (configLocations != null) {
         // 这里调用其父类 AbstractBeanDefinitionReader 的方法从配置位置加载 BeanDefinition
@@ -91,7 +97,9 @@ protected void loadBeanDefinitions(XmlBeanDefinitionReader reader) throws BeansE
     }
 }
 ```
+
 AbstractBeanDefinitionReader 对 loadBeanDefinitions() 方法的三重重载。
+
 ```java
 /**
  * loadBeanDefinitions() 方法的重载方法之一，调用了另一个重载方法 loadBeanDefinitions(String location)
@@ -129,7 +137,7 @@ public int loadBeanDefinitions(String location, Set<Resource> actualResources) t
             // 将指定位置的 bean 配置文件解析为 BeanDefinition 对象
             // 加载多个指定位置的 BeanDefinition 资源
             Resource[] resources = ((ResourcePatternResolver) resourceLoader).getResources(location);
-            // 调用其子类 XmlBeanDefinitionReader 的方法，实现加载功能 
+            // 调用其子类 XmlBeanDefinitionReader 的方法，实现加载功能
             int loadCount = loadBeanDefinitions(resources);
             if (actualResources != null) {
                 for (Resource resource : resources) {
@@ -170,7 +178,9 @@ public int loadBeanDefinitions(String location, Set<Resource> actualResources) t
     }
 }
 ```
+
 XmlBeanDefinitionReader 读取器中的方法执行流，按代码的先后顺序。
+
 ```java
 /**
  * XmlBeanDefinitionReader 加载资源的入口方法
@@ -283,7 +293,9 @@ public int registerBeanDefinitions(Document doc, Resource resource) throws BeanD
     return getRegistry().getBeanDefinitionCount() - countBefore;
 }
 ```
+
 文档解析器 DefaultBeanDefinitionDocumentReader 对配置文件中元素的解析。
+
 ```java
 // 根据 Spring 对 Bean 的定义规则进行解析
 public void registerBeanDefinitions(Document doc, XmlReaderContext readerContext) {
@@ -311,12 +323,12 @@ protected void doRegisterBeanDefinitions(Element root) {
         }
     }
 
-    // 具体的解析过程由 BeanDefinitionParserDelegate 实现，  
+    // 具体的解析过程由 BeanDefinitionParserDelegate 实现，
     // BeanDefinitionParserDelegate中定义了用于解析 bean 的各种属性及方法
     BeanDefinitionParserDelegate parent = this.delegate;
     this.delegate = createDelegate(this.readerContext, root, parent);
 
-    
+
     // 前置解析处理，可以在解析 bean 之前进行自定义的解析，增强解析的可扩展性
     preProcessXml(root);
     // 从 Document 的根元素开始进行 Bean 定义的 Document 对象
@@ -339,7 +351,7 @@ protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate d
             Node node = nl.item(i);
             if (node instanceof Element) {
                 Element ele = (Element) node;
-                // 如果 ele 定义的 Document 的元素节点使用的是 Spring 默认的 XML 命名空间 
+                // 如果 ele 定义的 Document 的元素节点使用的是 Spring 默认的 XML 命名空间
                 if (delegate.isDefaultNamespace(ele)) {
                     // 使用 Spring 的 bean解析规则 解析元素节点
                     parseDefaultElement(ele, delegate);
@@ -370,7 +382,7 @@ private void parseDefaultElement(Element ele, BeanDefinitionParserDelegate deleg
     else if (delegate.nodeNameEquals(ele, ALIAS_ELEMENT)) {
         processAliasRegistration(ele);
     }
-    // 若元素节点既不是 <Import> 也不是 <Alias>，即普通的 <Bean> 元素，  
+    // 若元素节点既不是 <Import> 也不是 <Alias>，即普通的 <Bean> 元素，
     // 则按照 Spring 的 bean解析规则 解析元素
     else if (delegate.nodeNameEquals(ele, BEAN_ELEMENT)) {
         processBeanDefinition(ele, delegate);
@@ -413,7 +425,7 @@ protected void importBeanDefinitionResource(Element ele) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Imported " + importCount + " bean definitions from URL location [" + location + "]");
             }
-        } 
+        }
         catch (BeanDefinitionStoreException ex) {
             getReaderContext().error(
                     "Failed to import bean definitions from URL location [" + location + "]", ele, ex);
@@ -433,7 +445,7 @@ protected void importBeanDefinitionResource(Element ele) {
             }
             // 封装的相对路径资源不存在
             else {
-                // 获取 Spring IOC 容器资源读取器的基本路径 
+                // 获取 Spring IOC 容器资源读取器的基本路径
                 String baseLocation = getReaderContext().getResource().getURL().toString();
                 // 根据 Spring IoC 容器资源读取器的基本路径加载给定导入路径的资源
                 importCount = getReaderContext().getReader().loadBeanDefinitions(
@@ -492,7 +504,7 @@ protected void processAliasRegistration(Element ele) {
 /**
  * 解析 bean 元素
 protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
-    
+
     // BeanDefinitionHolder 是对 BeanDefinition 的进一步封装，持有一个 BeanDefinition 对象 及其对应
     // 的 beanName、aliases别名。对 <Bean> 元素的解析由 BeanDefinitionParserDelegate 实现
     BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
@@ -516,7 +528,9 @@ protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate d
     }
 }
 ```
+
 看一下 BeanDefinitionParserDelegate 中对 bean 元素的详细解析过程。
+
 ```java
 /**
  * 解析 <bean> 元素的入口
@@ -531,13 +545,13 @@ public BeanDefinitionHolder parseBeanDefinitionElement(Element ele) {
 public BeanDefinitionHolder parseBeanDefinitionElement(Element ele, BeanDefinition containingBean) {
     // 获取 <bean> 元素中的 id 属性值
     String id = ele.getAttribute(ID_ATTRIBUTE);
-    
+
     // 获取 <bean> 元素中的 name 属性值
     String nameAttr = ele.getAttribute(NAME_ATTRIBUTE);
 
     // 获取 <bean> 元素中的 alias 属性值
     List<String> aliases = new ArrayList<String>();
-    
+
     // 将 <bean> 元素中的所有 name 属性值存放到别名中
     if (StringUtils.hasLength(nameAttr)) {
         String[] nameArr = StringUtils.tokenizeToStringArray(nameAttr, MULTI_VALUE_ATTRIBUTE_DELIMITERS);
@@ -601,14 +615,14 @@ public BeanDefinitionHolder parseBeanDefinitionElement(Element ele, BeanDefiniti
 
 /**
  * 详细对 <bean> 元素中的其他属性进行解析，上面的方法中已经对 bean 的 id、name 及 alias 属性进行了处理
- */ 
+ */
 public AbstractBeanDefinition parseBeanDefinitionElement(
         Element ele, String beanName, BeanDefinition containingBean) {
 
     // 记录解析的 <bean>
     this.parseState.push(new BeanEntry(beanName));
 
-    // 这里只读取 <bean> 元素中配置的 class 名字，然后载入到 BeanDefinition 中去  
+    // 这里只读取 <bean> 元素中配置的 class 名字，然后载入到 BeanDefinition 中去
     // 只是记录配置的 class 名字，不做实例化，对象的实例化在 getBean() 时发生
     String className = null;
     if (ele.hasAttribute(CLASS_ATTRIBUTE)) {
@@ -621,8 +635,8 @@ public AbstractBeanDefinition parseBeanDefinitionElement(
         if (ele.hasAttribute(PARENT_ATTRIBUTE)) {
             parent = ele.getAttribute(PARENT_ATTRIBUTE);
         }
-        
-        // 根据 <bean> 元素配置的 class 名称和 parent 属性值创建 BeanDefinition  
+
+        // 根据 <bean> 元素配置的 class 名称和 parent 属性值创建 BeanDefinition
         AbstractBeanDefinition bd = createBeanDefinition(className, parent);
 
         // 对当前的 <bean> 元素中配置的一些属性进行解析和设置，如配置的单例 (singleton) 属性等
@@ -666,7 +680,9 @@ public AbstractBeanDefinition parseBeanDefinitionElement(
     return null;
 }
 ```
+
 对 bean 的部分子元素进行解析的具体实现。
+
 ```java
 /**
  * 解析 <bean> 元素中所有的 <property> 子元素
@@ -695,7 +711,7 @@ public void parsePropertyElement(Element ele, BeanDefinition bd) {
     }
     this.parseState.push(new PropertyEntry(propertyName));
     try {
-        // 如果一个 Bean 中已经有同名的 property 存在，则不进行解析，直接返回。  
+        // 如果一个 Bean 中已经有同名的 property 存在，则不进行解析，直接返回。
         // 即如果在同一个 Bean 中配置同名的 property，则只有第一个起作用
         if (bd.getPropertyValues().contains(propertyName)) {
             error("Multiple 'property' definitions for property '" + propertyName + "'", ele);
@@ -743,7 +759,7 @@ public Object parsePropertyValue(Element ele, BeanDefinition bd, String property
         }
     }
 
-    // 判断 property 的属性值是 ref 还是 value，不允许既是 ref 又是 value 
+    // 判断 property 的属性值是 ref 还是 value，不允许既是 ref 又是 value
     boolean hasRefAttribute = ele.hasAttribute(REF_ATTRIBUTE);
     boolean hasValueAttribute = ele.hasAttribute(VALUE_ATTRIBUTE);
     if ((hasRefAttribute && hasValueAttribute) ||
@@ -809,27 +825,27 @@ public Object parsePropertySubElement(Element ele, BeanDefinition bd, String def
     }
     // 如果子元素是 ref，ref 中只能有以下 3 个属性：bean、local、parent
     else if (nodeNameEquals(ele, REF_ELEMENT)) {
-        // 获取 <property> 元素中的 bean 属性值，引用其他解析的 Bean 的名称  
+        // 获取 <property> 元素中的 bean 属性值，引用其他解析的 Bean 的名称
         // 可以不再同一个 Spring 配置文件中，具体请参考 Spring 对 ref 的配置规则
         String refName = ele.getAttribute(BEAN_REF_ATTRIBUTE);
         boolean toParent = false;
         if (!StringUtils.hasLength(refName)) {
-            // 获取 <property> 元素中的 local 属性值，引用同一个 Xml 文件中配置  
+            // 获取 <property> 元素中的 local 属性值，引用同一个 Xml 文件中配置
             // 的 Bean 的 id，local 和 ref 不同，local 只能引用同一个配置文件中的 Bean
             refName = ele.getAttribute(LOCAL_REF_ATTRIBUTE);
             if (!StringUtils.hasLength(refName)) {
                 // 获取 <property> 元素中 parent 属性值，引用父级容器中的 Bean
                 refName = ele.getAttribute(PARENT_REF_ATTRIBUTE);
                 toParent = true;
-                
+
                 if (!StringUtils.hasLength(refName)) {
                     error("'bean', 'local' or 'parent' is required for <ref> element", ele);
                     return null;
                 }
             }
         }
-        
-        // 没有配置 ref 的目标属性值 
+
+        // 没有配置 ref 的目标属性值
         if (!StringUtils.hasText(refName)) {
             error("<ref> element contains empty target attribute", ele);
             return null;
@@ -903,18 +919,19 @@ public List parseListElement(Element collectionEle, BeanDefinition bd) {
 /**
  * 具体解析 <list> 集合元素，<array>、<list> 和 <set> 都使用该方法解析
  */
-protected void parseCollectionElements(NodeList elementNodes, Collection<Object> target, 
+protected void parseCollectionElements(NodeList elementNodes, Collection<Object> target,
         BeanDefinition bd, String defaultElementType) {
-    
+
     // 遍历集合所有节点
     for (int i = 0; i < elementNodes.getLength(); i++) {
         Node node = elementNodes.item(i);
         // 节点不是 description 节点
         if (node instanceof Element && !nodeNameEquals(node, DESCRIPTION_ELEMENT)) {
-            // 将解析的元素加入集合中，递归调用下一个子元素 
+            // 将解析的元素加入集合中，递归调用下一个子元素
             target.add(parsePropertySubElement((Element) node, bd, defaultElementType));
         }
     }
 }
 ```
-经过这样逐层地解析，我们在配置文件中定义的 bean 就被整个解析成了 IoC 容器能够装载和使用的 BeanDefinition对象，这种数据结构可以让 IoC 容器执行索引、查询等操作。经过上述解析，接下来我们就可以将得到的 BeanDefinition对象 注册到 IoC 容器中咯。
+
+经过这样逐层地解析，我们在配置文件中定义的 bean 就被整个解析成了 IoC 容器能够装载和使用的 BeanDefinition 对象，这种数据结构可以让 IoC 容器执行索引、查询等操作。经过上述解析，接下来我们就可以将得到的 BeanDefinition 对象 注册到 IoC 容器中咯。

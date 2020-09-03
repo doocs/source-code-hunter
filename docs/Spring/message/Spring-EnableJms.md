@@ -1,9 +1,11 @@
 # Spring EnableJms 注解
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 - 源码路径: `org.springframework.jms.annotation.EnableJms`
 
 ## 源码分析
+
 ```java
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -14,7 +16,6 @@ public @interface EnableJms {
 ```
 
 - 该类的切入点在`@Import(JmsBootstrapConfiguration.class)` , 直接看`JmsBootstrapConfiguration`就可以了
-
 
 ```java
 @Configuration
@@ -50,14 +51,14 @@ public class JmsBootstrapConfiguration {
 
 ![image-20200304085303580](../../../images/springmessage/image-20200304085303580.png)
 
-
-
-- 主要关注	
+- 主要关注
 
   1. **afterSingletonsInstantiated**
+
 2. **postProcessAfterInitialization**
 
-####  afterSingletonsInstantiated
+#### afterSingletonsInstantiated
+
 ```JAVA
 @Override
     public void afterSingletonsInstantiated() {
@@ -112,7 +113,7 @@ public class JmsBootstrapConfiguration {
   	public void afterPropertiesSet() {
   		registerAllEndpoints();
   	}
-  
+
   	protected void registerAllEndpoints() {
   		Assert.state(this.endpointRegistry != null, "No JmsListenerEndpointRegistry set");
   		synchronized (this.mutex) {
@@ -127,10 +128,6 @@ public class JmsBootstrapConfiguration {
   ```
 
 - 注册监听在下面分析会讲详见下文
-
-
-
-
 
 #### postProcessAfterInitialization
 
@@ -171,8 +168,6 @@ public class JmsBootstrapConfiguration {
     }
 
 ```
-
-
 
 ```JAVA
     protected void processJmsListener(JmsListener jmsListener, Method mostSpecificMethod, Object bean) {
@@ -243,19 +238,17 @@ public class JmsBootstrapConfiguration {
 
 ```
 
-
-
 - `org.springframework.jms.config.JmsListenerEndpointRegistry#registerListenerContainer(org.springframework.jms.config.JmsListenerEndpoint, org.springframework.jms.config.JmsListenerContainerFactory<?>, boolean)`
 
   ```java
   public void registerListenerContainer(JmsListenerEndpoint endpoint, JmsListenerContainerFactory<?> factory,
                                             boolean startImmediately) {
-  
+
           Assert.notNull(endpoint, "Endpoint must not be null");
           Assert.notNull(factory, "Factory must not be null");
           String id = endpoint.getId();
           Assert.hasText(id, "Endpoint id must be set");
-  
+
           synchronized (this.listenerContainers) {
               if (this.listenerContainers.containsKey(id)) {
                   throw new IllegalStateException("Another endpoint is already registered with id '" + id + "'");
@@ -270,8 +263,6 @@ public class JmsBootstrapConfiguration {
           }
       }
   ```
-
-  
 
 - `org.springframework.jms.config.JmsListenerEndpointRegistry#createListenerContainer`
 
@@ -309,15 +300,11 @@ public class JmsBootstrapConfiguration {
 
 ```
 
-
-
-
-
 - 关键接口`JmsListenerContainerFactory<C extends MessageListenerContainer>`
 
   ```JAVA
   public interface JmsListenerContainerFactory<C extends MessageListenerContainer> {
-  
+
   	/**
   	 * Create a {@link MessageListenerContainer} for the given {@link JmsListenerEndpoint}.
   	 * 创建肩痛容器
@@ -325,13 +312,11 @@ public class JmsBootstrapConfiguration {
   	 * @return the created container
   	 */
   	C createListenerContainer(JmsListenerEndpoint endpoint);
-  
+
   }
   ```
 
   ![image-20200304092154712](../../../images/springmessage/image-20200304092154712.png)
-
-
 
 - 注册完成后是否立即启动
 
@@ -341,24 +326,18 @@ public class JmsBootstrapConfiguration {
                   // 启动消息监听容器
                   startIfNecessary(container);
               }
-  
+
       private void startIfNecessary(MessageListenerContainer listenerContainer) {
           if (this.contextRefreshed || listenerContainer.isAutoStartup()) {
               listenerContainer.start();
           }
       }
-  
+
   ```
 
-  - 具体实现: `org.springframework.jms.listener.AbstractJmsListeningContainer#start` 
+  - 具体实现: `org.springframework.jms.listener.AbstractJmsListeningContainer#start`
 
 - 执行完`start`方法就结束了`processJmsListener`的调用链路, `postProcessAfterInitialization` 也结束了
-
-
-
-
-
-
 
 ### JmsListenerEndpointRegistry
 
@@ -408,4 +387,3 @@ public class JmsBootstrapConfiguration {
     }
 
 ```
-

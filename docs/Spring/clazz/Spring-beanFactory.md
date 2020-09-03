@@ -1,18 +1,20 @@
-# Spring BeanFactory 
+# Spring BeanFactory
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 
 ## BeanFactory 概述
+
 - `org.springframework.beans.factory.BeanFactory`
 
 ### 类图
 
 ![beanFactory](/images/spring/BeanFactory.png)
 
-
-
 ### 方法列表
+
 - 贴出部分代码. 仅表示方法作用
+
 ```java
 public interface BeanFactory {
     // 从容器中根据beanname获取
@@ -34,21 +36,15 @@ public interface BeanFactory {
 }
 ```
 
-
-
 ## 解析
 
 ### 用例
 
-bean 的实例化有如下几种方法 
+bean 的实例化有如下几种方法
 
 1. 静态方法
 2. 工厂方法创建
 3. FactoryBean 接口创建
-
-
-
-
 
 ### 代码部分
 
@@ -69,8 +65,6 @@ public class UserBean {
 }
 ```
 
-
-
 ```java
 public interface UserBeanFactory {
   UserBean factory();
@@ -87,10 +81,6 @@ public class UserBeanFactoryImpl implements
 }
 
 ```
-
-
-
-
 
 ```java
 public class UserFactoryBean implements FactoryBean<UserBean> {
@@ -137,8 +127,6 @@ public class UserFactoryBean implements FactoryBean<UserBean> {
 </beans>
 ```
 
-
-
 ```java
 public class SpringBeanInstantiation {
 
@@ -155,10 +143,6 @@ public class SpringBeanInstantiation {
 }
 ```
 
-
-
-
-
 ### 分析
 
 - 对下面代码进行分析
@@ -167,8 +151,6 @@ public class SpringBeanInstantiation {
  UserBean staticMethodBean = context.getBean("static-method-user", UserBean.class);
 ```
 
-
-
 - `org.springframework.context.support.AbstractApplicationContext#getBean(java.lang.String, java.lang.Class<T>)`
 
 ```java
@@ -176,7 +158,7 @@ public class SpringBeanInstantiation {
 	public <T> T getBean(String name, Class<T> requiredType) throws BeansException {
 	    // 判断 beanFactory 是否存活
 		assertBeanFactoryActive();
-		
+
 		// 1. 获取 beanFactory
         // 2. 根据 beanName + class 获取 Bean
 		return getBeanFactory().getBean(name, requiredType);
@@ -186,10 +168,6 @@ public class SpringBeanInstantiation {
 - 从方法参数
   - name: beanName
   - requiredType: 唯一的类型. 对象类型
-
-
-
-
 
 ### assertBeanFactoryActive
 
@@ -210,11 +188,9 @@ protected void assertBeanFactoryActive() {
     }
 ```
 
-
-
 ### getBeanFactory
 
-- 获取beanFactory
+- 获取 beanFactory
 
   - 获取方法是一个抽象方法
 
@@ -248,11 +224,7 @@ protected void assertBeanFactoryActive() {
       }
       ```
 
-
-
 - 获取到的对象是`org.springframework.beans.factory.support.DefaultListableBeanFactory`
-
-  
 
 ![image-20200902102912716](images/image-20200902102912716.png)
 
@@ -260,21 +232,11 @@ protected void assertBeanFactoryActive() {
 
 ![image-20200902103154580](images/image-20200902103154580.png)
 
-
-
-
-
 ### doGetBean
 
 - `org.springframework.beans.factory.support.AbstractBeanFactory#doGetBean`
 
   获取 bean 的核心
-
-  
-
-
-
-
 
 #### transformedBeanName
 
@@ -286,8 +248,6 @@ protected String transformedBeanName(String name) {
     return canonicalName(BeanFactoryUtils.transformedBeanName(name));
 }
 ```
-
-
 
 ```java
 public static String transformedBeanName(String name) {
@@ -341,19 +301,11 @@ aliasMap 和 别名标签的对应关系
 
 ![image-20200902105454958](images/image-20200902105454958.png)
 
-
-
-alias标签的alias值作为别名的key ， alias 标签的 name 值作为 value
-
-
-
-
+alias 标签的 alias 值作为别名的 key ， alias 标签的 name 值作为 value
 
 #### getSingleton
 
 - `org.springframework.beans.factory.support.DefaultSingletonBeanRegistry#getSingleton(java.lang.String)`
-
-
 
 ```java
 @Override
@@ -363,11 +315,7 @@ public Object getSingleton(String beanName) {
 }
 ```
 
-
-
 - `org.springframework.beans.factory.support.DefaultSingletonBeanRegistry#getSingleton(java.lang.String, boolean)`
-
-
 
 ```java
 @Nullable
@@ -400,8 +348,6 @@ protected Object getSingleton(String beanName, boolean allowEarlyReference) {
 
 - 相关属性值
 
-
-
 ```java
 /**
  *  Cache of singleton objects: bean name to bean instance.
@@ -430,17 +376,9 @@ private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256
             Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 ```
 
-
-
-
-
-
-
 #### getObjectForBeanInstance
 
 - `org.springframework.beans.factory.support.AbstractBeanFactory#getObjectForBeanInstance`
-
-
 
 ```java
 protected Object getObjectForBeanInstance(
@@ -494,10 +432,6 @@ protected Object getObjectForBeanInstance(
 		return object;
 	}
 ```
-
-
-
-
 
 #### getObjectFromFactoryBean
 
@@ -573,10 +507,6 @@ protected Object getObjectForBeanInstance(
 
 ```
 
-
-
-
-
 #### beforeSingletonCreation
 
 - `org.springframework.beans.factory.support.DefaultSingletonBeanRegistry#beforeSingletonCreation`
@@ -592,8 +522,6 @@ protected void beforeSingletonCreation(String beanName) {
    }
 }
 ```
-
-
 
 #### postProcessObjectFromFactoryBean
 
@@ -616,12 +544,12 @@ protected void beforeSingletonCreation(String beanName) {
     	protected Object postProcessObjectFromFactoryBean(Object object, String beanName) {
     		return applyBeanPostProcessorsAfterInitialization(object, beanName);
     	}
-    
-    
+
+
     	@Override
     	public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
     			throws BeansException {
-    
+
     		Object result = existingBean;
     		for (BeanPostProcessor processor : getBeanPostProcessors()) {
     			Object current = processor.postProcessAfterInitialization(result, beanName);
@@ -632,14 +560,10 @@ protected void beforeSingletonCreation(String beanName) {
     		}
     		return result;
     	}
-    
+
     ```
 
 - 两个方法军返回 `Bean` 对象 . 一种是直接返回 。 另一种是执行接口 `BeanPostProcessor` 接口返回
-
-
-
-
 
 #### afterSingletonCreation
 
@@ -654,12 +578,6 @@ protected void afterSingletonCreation(String beanName) {
    }
 }
 ```
-
-
-
-
-
-
 
 - 代码现在进入的很深了，回到 doGetBean
 - `org.springframework.beans.factory.support.AbstractBeanFactory#doGetBean`
@@ -688,19 +606,15 @@ protected void afterSingletonCreation(String beanName) {
 			// 实例化bean
 			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
 		}
-     
+
         // 省略后续内容
     }
 ```
 
-
-
 - 目前未知`doGetBean`的第一个`if`分支已经分析完毕. 接下来看下面的代码
 
-
-
 - 下面这段代码就简单说一下就跳过了。
-  - 从 容器中获取，最后还是回到doGetBean方法中. 来进行bean创建 这里不进行展开。
+  - 从 容器中获取，最后还是回到 doGetBean 方法中. 来进行 bean 创建 这里不进行展开。
 
 ```java
 else {
@@ -734,17 +648,11 @@ else {
    }
 ```
 
-
-
-
-
 #### markBeanAsCreated
 
 - `org.springframework.beans.factory.support.AbstractBeanFactory#markBeanAsCreated`
 
-- 方法作用将bean标记为已创建
-
-
+- 方法作用将 bean 标记为已创建
 
 ```
 protected void markBeanAsCreated(String beanName) {
@@ -764,10 +672,6 @@ protected void markBeanAsCreated(String beanName) {
 }
 ```
 
-
-
-
-
 ```java
 protected void clearMergedBeanDefinition(String beanName) {
    RootBeanDefinition bd = this.mergedBeanDefinitions.get(beanName);
@@ -776,8 +680,6 @@ protected void clearMergedBeanDefinition(String beanName) {
    }
 }
 ```
-
-
 
 - stale 的解释
 
@@ -789,30 +691,20 @@ protected void clearMergedBeanDefinition(String beanName) {
   volatile boolean stale;
   ```
 
-- 属性值 已创建的beanName
+- 属性值 已创建的 beanName
 
   ```java
   private final Set<String> alreadyCreated = Collections.newSetFromMap(new ConcurrentHashMap<>(256));
   ```
 
-
-
-
-
-
-
 #### getMergedLocalBeanDefinition
 
 - `org.springframework.beans.factory.support.AbstractBeanFactory#getMergedLocalBeanDefinition`
 
-- 这个方法获取一个`RootBeanDefinition`对象 ， 这个对象也是bean的一种定义。
+- 这个方法获取一个`RootBeanDefinition`对象 ， 这个对象也是 bean 的一种定义。
 - 从目前的几个方法名称来看，暂且认为这是一个合并了多个 `BeanDefinition`的对象吧
 
 ![rootBeanDefinition](/images/spring/RootBeanDefinition.png)
-
-
-
-
 
 ```java
 protected RootBeanDefinition getMergedLocalBeanDefinition(String beanName) throws BeansException {
@@ -834,10 +726,6 @@ protected RootBeanDefinition getMergedLocalBeanDefinition(String beanName) throw
 	}
 
 ```
-
-
-
-
 
 #### getBeanDefinition
 
@@ -873,10 +761,6 @@ public BeanDefinition getBeanDefinition(String beanName) throws NoSuchBeanDefini
   	private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
   ```
 
-
-
-
-
 #### getMergedBeanDefinition
 
 - 获取`RootBeanDefinition`
@@ -884,9 +768,9 @@ public BeanDefinition getBeanDefinition(String beanName) throws NoSuchBeanDefini
 - `org.springframework.beans.factory.support.AbstractBeanFactory#getMergedBeanDefinition(java.lang.String, org.springframework.beans.factory.config.BeanDefinition, org.springframework.beans.factory.config.BeanDefinition)`
 
 - 第一部分代码
-  - map 中获取 RootBeanDefinition 
+  - map 中获取 RootBeanDefinition
   - 是否存在父名称
-  - 类型是否是 `RootBeanDefinition` 
+  - 类型是否是 `RootBeanDefinition`
     - 是: 拷贝
     - 否: 将 `BeanDefinition` 转换成 `RootBeanDefinition`
 
@@ -920,7 +804,7 @@ protected RootBeanDefinition getMergedBeanDefinition(
                mbd = new RootBeanDefinition(bd);
             }
          }
-       
+
           // 省略其他
       }
 ```
@@ -949,17 +833,7 @@ protected RootBeanDefinition getMergedBeanDefinition(
   }
   ```
 
-
-
-
-
 - 第二部分代码
-
-
-
-
-
-
 
 ```java
 {
@@ -1003,21 +877,13 @@ protected RootBeanDefinition getMergedBeanDefinition(
 				}
 ```
 
-
-
 #### overrideFrom
 
 - 覆盖方法
 
 - `org.springframework.beans.factory.support.AbstractBeanDefinition#overrideFrom`
 
-
-
 - 最后一段
-
-
-
-
 
 ```java
    // Set default singleton scope, if not configured before.
@@ -1049,14 +915,6 @@ if (previous != null) {
 return mbd;
 ```
 
-
-
-
-
-
-
-
-
 #### checkMergedBeanDefinition
 
 - `org.springframework.beans.factory.support.AbstractBeanFactory#checkMergedBeanDefinition`
@@ -1064,7 +922,7 @@ return mbd;
   ```java
   protected void checkMergedBeanDefinition(RootBeanDefinition mbd, String beanName, @Nullable Object[] args)
         throws BeanDefinitionStoreException {
-  
+
      if (mbd.isAbstract()) {
         throw new BeanIsAbstractException(beanName);
      }
@@ -1072,12 +930,6 @@ return mbd;
   ```
 
   - 判断是否 abstract 标记的情况
-
-
-
-
-
-
 
 - 继续回到 `doGetBean` 方法
 
@@ -1102,11 +954,6 @@ if (dependsOn != null) {
    }
 }
 ```
-
-
-
-
-
 
 #### isDependent
 
@@ -1142,8 +989,6 @@ private boolean isDependent(String beanName, String dependentBeanName, @Nullable
 }
 ```
 
-
-
 - 相关属性
 
   ```java
@@ -1156,10 +1001,6 @@ private boolean isDependent(String beanName, String dependentBeanName, @Nullable
   private final Map<String, Set<String>> dependentBeanMap = new ConcurrentHashMap<>(64);
   ```
 
-
-
-
-
 - 一个用例
 
 ```xml
@@ -1168,25 +1009,13 @@ private boolean isDependent(String beanName, String dependentBeanName, @Nullable
 </bean>
 ```
 
-
-
 ![image-20200903091759451](images/image-20200903091759451.png)
-
-
-
-
-
-
 
 #### registerDependentBean
 
 - 注册依赖关系
 - `org.springframework.beans.factory.support.DefaultSingletonBeanRegistry#registerDependentBean`
   - 在前文调用 `isDependent` 方法的的时候我们找到了一个依赖映射`dependentBeanMap` ，在这个方法中会将依赖关系放入`dependentBeanMap`
-
-
-
-
 
 ```java
 public void registerDependentBean(String beanName, String dependentBeanName) {
@@ -1210,13 +1039,9 @@ public void registerDependentBean(String beanName, String dependentBeanName) {
 }
 ```
 
+- 再回到 `doGetBean`
 
-
-
-
-- 再回到 `doGetBean` 
-
-- 接下来就是实例化的过程了. 
+- 接下来就是实例化的过程了.
 
 ```java
 if (mbd.isSingleton()) {
@@ -1236,15 +1061,12 @@ if (mbd.isSingleton()) {
 }
 ```
 
-
-
-
-
 #### getSingleton
 
 - `org.springframework.beans.factory.support.DefaultSingletonBeanRegistry#getSingleton(java.lang.String, org.springframework.beans.factory.ObjectFactory<?>)`
 - 获取单例对象
-  1. 从单例对象的map缓存中获取
+
+  1. 从单例对象的 map 缓存中获取
   2. 从 ObjectFactory 中获取
 
 - 周边方法
@@ -1314,10 +1136,6 @@ public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
 }
 ```
 
-
-
-
-
 - 回到 doGetBean 方法中
 
   ```java
@@ -1339,12 +1157,12 @@ public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
   }
   ```
 
-  这里又要给 `createBean`方法， 从 `getSingleton` 的参数看可以知道 ，第二个匿名函数是`ObjectFactory`接口实现. 
+  这里又要给 `createBean`方法， 从 `getSingleton` 的参数看可以知道 ，第二个匿名函数是`ObjectFactory`接口实现.
 
   ```java
   @FunctionalInterface
   public interface ObjectFactory<T> {
-  
+
      /**
       * Return an instance (possibly shared or independent)
       * of the object managed by this factory.
@@ -1353,23 +1171,15 @@ public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
       * @throws BeansException in case of creation errors
       */
      T getObject() throws BeansException;
-  
+
   }
   ```
 
-  - createBean 返回的就是单例bean对象的实例
-
-
-
-
-
-
+  - createBean 返回的就是单例 bean 对象的实例
 
 ##### createBean
 
 - `org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#createBean(java.lang.String, org.springframework.beans.factory.support.RootBeanDefinition, java.lang.Object[])`
-
-
 
 - 两个核心方法
 
@@ -1378,12 +1188,6 @@ public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
 Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 Object beanInstance = doCreateBean(beanName, mbdToUse, args);
 ```
-
-
-
-
-
-
 
 ###### resolveBeforeInstantiation
 
@@ -1420,18 +1224,10 @@ protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition 
 }
 ```
 
-
-
-
-
 ###### doCreateBean
 
-- 创建 bean 
+- 创建 bean
 - `org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#doCreateBean`
-
-
-
-
 
 ```java
 		// Instantiate the bean.
@@ -1446,12 +1242,6 @@ protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition 
 			instanceWrapper = createBeanInstance(beanName, mbd, args);
 		}
 ```
-
-
-
-
-
-
 
 ###### createBeanInstance
 
@@ -1522,20 +1312,10 @@ protected BeanWrapper createBeanInstance(String beanName, RootBeanDefinition mbd
 }
 ```
 
-
-
-
-
-
-
 ###### resolveBeanClass
 
 - `org.springframework.beans.factory.support.AbstractBeanFactory#resolveBeanClass`
-- 获取bean 的class
-
-
-
-
+- 获取 bean 的 class
 
 ```java
 @Nullable
@@ -1570,10 +1350,6 @@ protected Class<?> resolveBeanClass(final RootBeanDefinition mbd, String beanNam
 }
 ```
 
-
-
-
-
 ###### doResolveBeanClass
 
 - `org.springframework.beans.factory.support.AbstractBeanFactory#doResolveBeanClass`
@@ -1584,7 +1360,7 @@ protected Class<?> resolveBeanClass(final RootBeanDefinition mbd, String beanNam
   ClassLoader beanClassLoader = getBeanClassLoader();
   ClassLoader dynamicLoader = beanClassLoader;
   boolean freshResolve = false;
-  
+
   // 判断 typesToMatch 是否为空
   if (!ObjectUtils.isEmpty(typesToMatch)) {
      // When just doing type checks (i.e. not creating an actual instance yet),
@@ -1627,17 +1403,7 @@ protected Class<?> resolveBeanClass(final RootBeanDefinition mbd, String beanNam
      }
   ```
 
-
-
-
-
-
-
-
-
 ###### evaluateBeanDefinitionString
-
-
 
 ```java
 @Nullable
@@ -1661,19 +1427,9 @@ protected Object evaluateBeanDefinitionString(@Nullable String value, @Nullable 
 }
 ```
 
-
-
-
-
 ###### evaluate
 
-
-
 - `org.springframework.context.expression.StandardBeanExpressionResolver#evaluate`
-
-
-
-
 
 ```java
 	@Override
@@ -1722,13 +1478,9 @@ protected Object evaluateBeanDefinitionString(@Nullable String value, @Nullable 
 
 ![](/images/spring/TemplateAwareExpressionParser.png)
 
-
-
 ###### BeanExpressionContext
 
 - 两个属性
-
-
 
 ```java
 private final ConfigurableBeanFactory beanFactory;
@@ -1737,11 +1489,7 @@ private final ConfigurableBeanFactory beanFactory;
 private final Scope scope;
 ```
 
-
-
 - 几个方法
-
-
 
 ```java
 public boolean containsObject(String key) {
@@ -1767,13 +1515,7 @@ beanName 是否存在
 
 根据 beanName 获取 bean 实例
 
-
-
-
-
 - 回到解析方法
-
-
 
 ###### parseExpression
 
@@ -1791,21 +1533,14 @@ public Expression parseExpression(String expressionString, @Nullable ParserConte
 }
 ```
 
-
-
 - doParseExpression
+
   - spring 中的两种解析方式
-    - `org.springframework.expression.spel.standard.InternalSpelExpressionParser#doParseExpression	`
+    - `org.springframework.expression.spel.standard.InternalSpelExpressionParser#doParseExpression `
     - `org.springframework.expression.spel.standard.SpelExpressionParser#doParseExpression`
-
-
 
 - parseTemplate 方法
   - `org.springframework.expression.common.TemplateAwareExpressionParser#parseTemplate`
-
-
-
-
 
 ```java
 private Expression parseTemplate(String expressionString, ParserContext context) throws ParseException {
@@ -1827,25 +1562,14 @@ private Expression parseTemplate(String expressionString, ParserContext context)
 }
 ```
 
-
-
 ![image-20200903111128603](images/image-20200903111128603.png)
 
+- `parseExpressions`
 
-
-- `parseExpressions` 
   - `org.springframework.expression.common.TemplateAwareExpressionParser#parseExpressions`
   - 说简单一些这个地方就是拿出表达式的值
 
-
-
-
-
 - 回到 `evaluate` 方法
-
-
-
-
 
 ```java
 StandardEvaluationContext sec = this.evaluationCache.get(evalContext);
@@ -1869,13 +1593,11 @@ if (sec == null) {
 return expr.getValue(sec);
 ```
 
-
-
 - 最后一句 `getValue`
 
   - `org.springframework.expression.common.LiteralExpression#getValue(org.springframework.expression.EvaluationContext)`
 
-    刚才流程中我们可以看到 `expr` 是`LiteralExpression`  
+    刚才流程中我们可以看到 `expr` 是`LiteralExpression`
 
     ```java
     @Override
@@ -1884,15 +1606,9 @@ return expr.getValue(sec);
     }
     ```
 
-    直接返回字符串. 这个字符串就是刚才放进去的 el表达式
-
-
-
-
+    直接返回字符串. 这个字符串就是刚才放进去的 el 表达式
 
 往外跳 找到方法 `doResolveBeanClass`
-
-
 
 ```java
 if (className != null) {
@@ -1932,17 +1648,11 @@ if (className != null) {
 
 - 目前为止我们解析了 第一句话 `Object evaluated = evaluateBeanDefinitionString(className, mbd);` 接下来往下走看一下具体的 class 返回对象
 
-
-
 1. 类型等于 class 直接返回
 2. 类型等于 String 的两种返回方式
    1. ClassLoader.loadClass 返回
    2. ClassUtils.forName 返回
       1. 底层方法为 `java.lang.Class#forName(java.lang.String, boolean, java.lang.ClassLoader)`
-
-
-
-
 
 ###### resolveBeanClass
 
@@ -1952,8 +1662,6 @@ if (className != null) {
   // Resolve regularly, caching the result in the BeanDefinition...
   return mbd.resolveBeanClass(beanClassLoader);
   ```
-
-  
 
 ```java
 @Nullable
@@ -1971,8 +1679,6 @@ public Class<?> resolveBeanClass(@Nullable ClassLoader classLoader) throws Class
 }
 ```
 
-
-
 - 获取 beanClassName
 
 ```java
@@ -1989,22 +1695,8 @@ public String getBeanClassName() {
 }
 ```
 
-
-
-
-
-
-
-
-
 - 回到`createBeanInstance`
   - `org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#createBeanInstance`
-
-
-
-
-
-
 
 ```java
 // 返回一个用来创建bean实例的回调接口
@@ -2015,11 +1707,7 @@ if (instanceSupplier != null) {
 }
 ```
 
-
-
 ###### obtainFromSupplier
-
-
 
 ```java
 protected BeanWrapper obtainFromSupplier(Supplier<?> instanceSupplier, String beanName) {
@@ -2035,7 +1723,7 @@ protected BeanWrapper obtainFromSupplier(Supplier<?> instanceSupplier, String be
    }
    finally {
       if (outerBean != null) {
-         // 如果 currentlyCreatedBean 取不到设置 
+         // 如果 currentlyCreatedBean 取不到设置
          this.currentlyCreatedBean.set(outerBean);
       }
       else {
@@ -2071,13 +1759,7 @@ public interface Supplier<T> {
 }
 ```
 
-
-
-
-
 ###### initBeanWrapper
-
-
 
 ```java
 protected void initBeanWrapper(BeanWrapper bw) {
@@ -2088,15 +1770,7 @@ protected void initBeanWrapper(BeanWrapper bw) {
 }
 ```
 
-
-
-
-
-
-
 ###### registerCustomEditors
-
-
 
 ```java
 protected void registerCustomEditors(PropertyEditorRegistry registry) {
@@ -2137,13 +1811,9 @@ protected void registerCustomEditors(PropertyEditorRegistry registry) {
 }
 ```
 
-
-
 - 最后调用
 
   `org.springframework.beans.support.ResourceEditorRegistrar#registerCustomEditors`
-
-
 
 ###### registerCustomEditors
 
@@ -2172,11 +1842,7 @@ public void registerCustomEditors(PropertyEditorRegistry registry) {
 }
 ```
 
-
-
 ###### doRegisterEditor
-
-
 
 ```java
 private void doRegisterEditor(PropertyEditorRegistry registry, Class<?> requiredType, PropertyEditor editor) {
@@ -2191,8 +1857,6 @@ private void doRegisterEditor(PropertyEditorRegistry registry, Class<?> required
 }
 ```
 
-
-
 覆盖默认编辑器
 
 ```java
@@ -2203,8 +1867,6 @@ public void overrideDefaultEditor(Class<?> requiredType, PropertyEditor property
    this.overriddenDefaultEditors.put(requiredType, propertyEditor);
 }
 ```
-
-
 
 - `registerCustomEditor`
 
@@ -2231,17 +1893,9 @@ public void registerCustomEditor(@Nullable Class<?> requiredType, @Nullable Stri
 }
 ```
 
-
-
-
-
 到这里 `createBeanInstance` 流程已经完毕
 
 回到`doCreateBean` 方法
-
-
-
-
 
 ```java
 // beanWrapper 是否存在
@@ -2258,13 +1912,7 @@ if (beanType != NullBean.class) {
 }
 ```
 
-紧接着两行代码 获取 bean 实例 和beanType
-
-
-
-
-
-
+紧接着两行代码 获取 bean 实例 和 beanType
 
 ###### applyMergedBeanDefinitionPostProcessors
 
@@ -2272,7 +1920,7 @@ if (beanType != NullBean.class) {
 synchronized (mbd.postProcessingLock) {
    if (!mbd.postProcessed) {
       try {
-         // 后置方法执行 BeanPostProcessor 
+         // 后置方法执行 BeanPostProcessor
          applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);
       }
       catch (Throwable ex) {
@@ -2285,7 +1933,7 @@ synchronized (mbd.postProcessingLock) {
 }
 ```
 
-- `applyMergedBeanDefinitionPostProcessors` 方法会执行所有的后置方法. 
+- `applyMergedBeanDefinitionPostProcessors` 方法会执行所有的后置方法.
 
 ```java
 protected void applyMergedBeanDefinitionPostProcessors(RootBeanDefinition mbd, Class<?> beanType, String beanName) {
@@ -2298,19 +1946,11 @@ protected void applyMergedBeanDefinitionPostProcessors(RootBeanDefinition mbd, C
 }
 ```
 
-
-
-
-
-
-
 ###### addSingletonFactory
 
 - `org.springframework.beans.factory.support.DefaultSingletonBeanRegistry#addSingletonFactory`
 
-- 继续回到 doCreateBean 
-
-
+- 继续回到 doCreateBean
 
 ```java
 // Eagerly cache singletons to be able to resolve circular references
@@ -2348,15 +1988,7 @@ protected void addSingletonFactory(String beanName, ObjectFactory<?> singletonFa
 }
 ```
 
-
-
-
-
-
-
 ###### getEarlyBeanReference
-
-
 
 - `org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator#getEarlyBeanReference`
 
@@ -2372,9 +2004,7 @@ public Object getEarlyBeanReference(Object bean, String beanName) {
 }
 ```
 
-
-
-- wrapIfNecessary 
+- wrapIfNecessary
 
 ```java
 protected Object wrapIfNecessary(Object bean, String beanName, Object cacheKey) {
@@ -2413,8 +2043,6 @@ protected Object wrapIfNecessary(Object bean, String beanName, Object cacheKey) 
 }
 ```
 
-
-
 - 回到下面代码中
 
   ```java
@@ -2428,13 +2056,7 @@ protected Object wrapIfNecessary(Object bean, String beanName, Object cacheKey) 
   }
   ```
 
-  - 上述方法就是将结果bean放入
-
-
-
-
-
-
+  - 上述方法就是将结果 bean 放入
 
 ###### populateBean
 
@@ -2449,10 +2071,6 @@ try {
 
 - `org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#populateBean`
 - 设置属性值
-
-
-
-
 
 - 概述一下方法
 
@@ -2481,7 +2099,7 @@ try {
            return;
         }
      }
-  
+
      // Give any InstantiationAwareBeanPostProcessors the opportunity to modify the
      // state of the bean before properties are set. This can be used, for example,
      // to support styles of field injection.
@@ -2495,7 +2113,7 @@ try {
            }
         }
      }
-  
+
      PropertyValues pvs = (mbd.hasPropertyValues() ? mbd.getPropertyValues() : null);
      // 获取自动注入的值
      int resolvedAutowireMode = mbd.getResolvedAutowireMode();
@@ -2514,10 +2132,10 @@ try {
         }
         pvs = newPvs;
      }
-  
+
      boolean hasInstAwareBpps = hasInstantiationAwareBeanPostProcessors();
      boolean needsDepCheck = (mbd.getDependencyCheck() != AbstractBeanDefinition.DEPENDENCY_CHECK_NONE);
-  
+
      PropertyDescriptor[] filteredPds = null;
      if (hasInstAwareBpps) {
         if (pvs == null) {
@@ -2547,7 +2165,7 @@ try {
         // 以来检查
         checkDependencies(beanName, mbd, filteredPds, pvs);
      }
-  
+
      if (pvs != null) {
         // 应用属性
         applyPropertyValues(beanName, mbd, bw, pvs);
@@ -2555,15 +2173,9 @@ try {
   }
   ```
 
-
-
-
-
 pvs 属性如下
 
 ![image-20200903150738285](images/image-20200903150738285.png)
-
-
 
 ###### applyPropertyValues
 
@@ -2683,12 +2295,6 @@ protected void applyPropertyValues(String beanName, BeanDefinition mbd, BeanWrap
 }
 ```
 
-
-
-
-
-
-
 属性设置后跳出方法回到 `doCreateBean`
 
 ```java
@@ -2700,26 +2306,16 @@ try {
 
 ![image-20200903150930186](images/image-20200903150930186.png)
 
-
-
-
-
-
-
-
-
-######  initializeBean
+###### initializeBean
 
 - `org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#initializeBean(java.lang.String, java.lang.Object, org.springframework.beans.factory.support.RootBeanDefinition)`
-
-
 
 - 我们可以看一下整个代码的流程
   1. aware 接口的执行
   2. BeanPostProcessor 前置方法执行
-  3. bean实例化
+  3. bean 实例化
   4. BeanPostProcessor 后置方法执行
-  5. 返回bean
+  5. 返回 bean
 
 ```java
 protected Object initializeBean(final String beanName, final Object bean, @Nullable RootBeanDefinition mbd) {
@@ -2759,10 +2355,6 @@ protected Object initializeBean(final String beanName, final Object bean, @Nulla
 }
 ```
 
-
-
-
-
 - Aware 接口的执行
 
 ```java
@@ -2784,15 +2376,13 @@ private void invokeAwareMethods(final String beanName, final Object bean) {
 }j
 ```
 
-
-
 - 前置方法执行
 
   ```java
   @Override
   public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName)
         throws BeansException {
-  
+
      Object result = existingBean;
      for (BeanPostProcessor processor : getBeanPostProcessors()) {
         Object current = processor.postProcessBeforeInitialization(result, beanName);
@@ -2811,7 +2401,7 @@ private void invokeAwareMethods(final String beanName, final Object bean) {
   @Override
   public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
         throws BeansException {
-  
+
      Object result = existingBean;
      for (BeanPostProcessor processor : getBeanPostProcessors()) {
         // 执行 spring 容器中 BeanPostProcessor
@@ -2825,26 +2415,16 @@ private void invokeAwareMethods(final String beanName, final Object bean) {
   }
   ```
 
-
-
-
-
-
-
 ###### invokeInitMethods
 
-- `org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#invokeInitMethods` 
+- `org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#invokeInitMethods`
 - 初始化方法重点看一下
-
-
-
-
 
 ```java
 protected void invokeInitMethods(String beanName, final Object bean, @Nullable RootBeanDefinition mbd)
       throws Throwable {
 
-   
+
    // 是否是 InitializingBean
    boolean isInitializingBean = (bean instanceof InitializingBean);
    // 是否存在方法 "afterPropertiesSet"
@@ -2874,20 +2454,16 @@ protected void invokeInitMethods(String beanName, final Object bean, @Nullable R
       if (StringUtils.hasLength(initMethodName) &&
             !(isInitializingBean && "afterPropertiesSet".equals(initMethodName)) &&
             !mbd.isExternallyManagedInitMethod(initMethodName)) {
-         // 自定义的 init method 
+         // 自定义的 init method
          invokeCustomInitMethod(beanName, bean, mbd);
       }
    }
 }
 ```
 
-
-
-
-
 ![image-20200903153057321](images/image-20200903153057321.png)
 
-我们现在的bean不是`InitializingBean` 会走自定义的`init-mthod`方法
+我们现在的 bean 不是`InitializingBean` 会走自定义的`init-mthod`方法
 
 - 做一下改造实体对象
 
@@ -2897,8 +2473,6 @@ protected void invokeInitMethods(String beanName, final Object bean, @Nullable R
      this.age = 10;
   }
   ```
-
-
 
 ```xml
 <bean class="org.source.hot.spring.overview.ioc.bean.init.UserBean"
@@ -2911,10 +2485,6 @@ protected void invokeInitMethods(String beanName, final Object bean, @Nullable R
 
 ![image-20200903153432559](images/image-20200903153432559.png)
 
-
-
-
-
 - 在执行方法前将 bean 的信息先做一次截图
 
   ![image-20200903153533141](images/image-20200903153533141.png)
@@ -2923,18 +2493,10 @@ protected void invokeInitMethods(String beanName, final Object bean, @Nullable R
 
   ![image-20200903153617353](images/image-20200903153617353.png)
 
-
-
-
-
 ###### invokeCustomInitMethod
 
 - `org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#invokeCustomInitMethod`
 - 执行 自定义的`init-method` 方法
-
-
-
-
 
 ```java
 protected void invokeCustomInitMethod(String beanName, final Object bean, RootBeanDefinition mbd)
@@ -2998,15 +2560,7 @@ protected void invokeCustomInitMethod(String beanName, final Object bean, RootBe
 }
 ```
 
-
-
-
-
-
-
 ###### getInterfaceMethodIfPossible
-
-
 
 - `org.springframework.util.ClassUtils#getInterfaceMethodIfPossible`
 
@@ -3039,12 +2593,6 @@ public static Method getInterfaceMethodIfPossible(Method method) {
 }
 ```
 
-
-
-
-
-
-
 - 跳出这个方法`initializeBean` 回到下面代码
 
   ```java
@@ -3056,17 +2604,7 @@ public static Method getInterfaceMethodIfPossible(Method method) {
 
   - `org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#doCreateBean`
 
-    其实到此bean已经创建完成可以直接返回了. 
-
-
-
-
-
-
-
-
-
-
+    其实到此 bean 已经创建完成可以直接返回了.
 
 - 再往外层跳
 
@@ -3091,15 +2629,9 @@ public static Method getInterfaceMethodIfPossible(Method method) {
   }
   ```
 
-  - 单例对象的创建bean已经完成啦...
+  - 单例对象的创建 bean 已经完成啦...
 
-
-
-
-
-
-
-- 其他的两种创建，其本质还是 `createBean` 方法的调用. 
+- 其他的两种创建，其本质还是 `createBean` 方法的调用.
 
 ```java
 // 原型模式创建
@@ -3143,10 +2675,6 @@ else {
 }
 ```
 
+- 再往外面跳一层 回到 getBean 方法.
 
-
-
-
-- 再往外面跳一层 回到 getBean 方法. 
-
-- 终于 getBean 方法底层调用分析结束. 
+- 终于 getBean 方法底层调用分析结束.

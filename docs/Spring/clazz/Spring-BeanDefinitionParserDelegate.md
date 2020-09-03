@@ -1,4 +1,5 @@
 # Spring-BeanDefinitionParserDelegate
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码路径: `org.springframework.beans.factory.xml.BeanDefinitionParserDelegate`
 - 注意: 贴出的代码为当前类(`BeanDefinitionParserDelegate`)没有将其他的调用代码贴出,详细请看[huifer-srping](https://github.com/huifer/spring-framework).
@@ -78,8 +79,6 @@
 
 该类大量的`parseXXX`开头的代码，这些方法都是对标签进行解析转换成具体的实体
 
-
-
 ### 测试用例
 
 ```xml
@@ -89,8 +88,6 @@
     </bean>
 
 ```
-
-
 
 ## parseBeanDefinitionAttributes
 
@@ -174,19 +171,15 @@ public AbstractBeanDefinition parseBeanDefinitionAttributes(Element ele, String 
     }
 ```
 
-
 ![image-20191231162505748](/image/spring/image-20191231162505748.png)
 
 其他的标签也同样的方式**`getAttribute`**获取
 
-思路: 
+思路:
 
 1. 判断是否有这个标签
    1. 有直接获取,设置值
    2. 没有跳过
-
-
-
 
 ## parseMetaElements
 
@@ -216,10 +209,6 @@ public AbstractBeanDefinition parseBeanDefinitionAttributes(Element ele, String 
 ```
 
 ![image-20191231164622063](/image/spring/image-20191231164622063.png)
-
-
-
-
 
 ## parseLookupOverrideSubElements
 
@@ -261,12 +250,6 @@ public AbstractBeanDefinition parseBeanDefinitionAttributes(Element ele, String 
 
 ![image-20191231165638975](/image/spring/image-20191231165638975.png)
 
-
-
-
-
-
-
 ## parseReplacedMethodSubElements
 
 ```java
@@ -304,7 +287,7 @@ public AbstractBeanDefinition parseBeanDefinitionAttributes(Element ele, String 
 
 ### 测试用例
 
-  编写方法`dis`
+编写方法`dis`
 
 ```java
 public class Person {
@@ -318,7 +301,7 @@ public class Person {
 }
 ```
 
-​	编写一个替换`dis`方法的类
+​ 编写一个替换`dis`方法的类
 
 ```java
 public class Rc implements MethodReplacer {
@@ -339,10 +322,6 @@ xml 配置
 ```
 
 ![image-20200101093742238](/image/spring/image-20200101093742238.png)
-
-
-
-
 
 ## parseConstructorArgElements
 
@@ -499,8 +478,6 @@ xml 配置
 
 ```
 
-
-
 ### 测试用例
 
 - 编辑构造函数
@@ -510,28 +487,24 @@ xml 配置
       private String name;
       private Apple apple;
       private Integer age;
-  
+
       public Person() {
       }
-  
+
       public Person(Integer age) {
           this.age = age;
       }
-  
+
   ```
 
 - 添加配置
 
   ```xml
           <constructor-arg name="age" value="10"/>
-  
+
   ```
 
-
-
 ![image-20200101100906778](/image/spring/image-20200101100906778.png)
-
-
 
 ## parsePropertyElements
 
@@ -588,11 +561,7 @@ xml
     </bean>
 ```
 
-
-
 ![image-20200101111755022](/image/spring/image-20200101111755022.png)
-
-
 
 ## parseQualifierElements
 
@@ -661,8 +630,6 @@ public void parseQualifierElements(Element beanEle, AbstractBeanDefinition bd) {
 
 ```
 
-
-
 ### 测试用例
 
 - 编写一个注解
@@ -680,7 +647,7 @@ public @interface PersonQualifier {
     String status();
 
     String quality();
-} 
+}
 ```
 
 ```JAVA
@@ -694,7 +661,7 @@ public class PersonS {
     public void setPersonName(String personName) {
         this.personName = personName;
     }
-} 
+}
 ```
 
 ```JAVA
@@ -714,7 +681,7 @@ public class PersonService {
     public void setPerson(PersonS person) {
         this.personS = person;
     }
-} 
+}
 ```
 
 ```JAVA
@@ -742,7 +709,7 @@ public class Teacher extends PersonS {
     public void setSubject(String subject) {
         this.subject = subject;
     }
-} 
+}
 ```
 
 ```JAVA
@@ -788,17 +755,9 @@ public class QualifierSourceCode {
 
 ![image-20200101155539501](/image/spring/image-20200101155539501.png)
 
-
-
-
-
-### Bean解析结果
+### Bean 解析结果
 
 ![image-20200102083512005](/image/spring/image-20200102083512005.png)
-
-
-
-
 
 ## importBeanDefinitionResource
 
@@ -895,11 +854,6 @@ public class QualifierSourceCode {
 
 ```
 
-
-
 ![image-20200102085031641](/image/spring/image-20200102085031641.png)
 
 ![image-20200102091421516](/image/spring/image-20200102091421516.png)
-
-
-

@@ -1,6 +1,7 @@
-StatementHandler接口是MyBatis的核心接口之一，它完成了MyBatis中最核心的工作，也是Executor 接口实现的基础。
+StatementHandler 接口是 MyBatis 的核心接口之一，它完成了 MyBatis 中最核心的工作，也是 Executor 接口实现的基础。
 
-StatementHandler接口中的功能很多，例如创建Statement对象，为SQL语句绑定实参，执行select、insert、update、delete等多种类型的SQL语句，批量执行SQL语句，将结果集映射成结果对象。
+StatementHandler 接口中的功能很多，例如创建 Statement 对象，为 SQL 语句绑定实参，执行 select、insert、update、delete 等多种类型的 SQL 语句，批量执行 SQL 语句，将结果集映射成结果对象。
+
 ```java
 public interface StatementHandler {
 
@@ -34,8 +35,11 @@ public interface StatementHandler {
 
 }
 ```
+
 ## RoutingStatementHandler
-RoutingStatementHandler使用了策略模式，RoutingStatementHandler是策略类，而SimpleStatementHandler、PreparedStatementHandler、CallableStatementHandler则是实现了具体算法的实现类，RoutingStatementHandler对象会根据MappedStatement对象的StatementType属性值选择使用相应的策略去执行。
+
+RoutingStatementHandler 使用了策略模式，RoutingStatementHandler 是策略类，而 SimpleStatementHandler、PreparedStatementHandler、CallableStatementHandler 则是实现了具体算法的实现类，RoutingStatementHandler 对象会根据 MappedStatement 对象的 StatementType 属性值选择使用相应的策略去执行。
+
 ```java
 public class RoutingStatementHandler implements StatementHandler {
 
@@ -102,8 +106,11 @@ public class RoutingStatementHandler implements StatementHandler {
   }
 }
 ```
+
 ## BaseStatementHandler
-看它以Base开头，就可以猜到 它是一个实现了StatementHandler接口的抽象类，这个类只提供了一些参数绑定相关的方法，并没有实现操作数据库的方法。 
+
+看它以 Base 开头，就可以猜到 它是一个实现了 StatementHandler 接口的抽象类，这个类只提供了一些参数绑定相关的方法，并没有实现操作数据库的方法。
+
 ```java
 public abstract class BaseStatementHandler implements StatementHandler {
 
@@ -225,9 +232,13 @@ public abstract class BaseStatementHandler implements StatementHandler {
 
 }
 ```
-BaseStatementHandler主要实现了StatementHandler接口中的prepare()方法，BaseStatementHandler依赖两个重要的组件，ParameterHandler和ResultSetHandler。
-## ParameterHandler系列组件
-我们要执行的SQL语句中可能包含占位符"?"，而每个"?"都对应了BoundSql中parameterMappings集合中的一个元素，在该ParameterMapping对象中记录了对应的参数名称以及该参数的相关属性。ParameterHandler接口定义了一个非常重要的方法setParameters()，该方法主要负责调用PreparedStatement的set＊()系列方法，为SQL语句绑定实参。MyBatis只为ParameterHandler接口提供了唯一一个实现类DefaultParameterHandler。
+
+BaseStatementHandler 主要实现了 StatementHandler 接口中的 prepare()方法，BaseStatementHandler 依赖两个重要的组件，ParameterHandler 和 ResultSetHandler。
+
+## ParameterHandler 系列组件
+
+我们要执行的 SQL 语句中可能包含占位符"?"，而每个"?"都对应了 BoundSql 中 parameterMappings 集合中的一个元素，在该 ParameterMapping 对象中记录了对应的参数名称以及该参数的相关属性。ParameterHandler 接口定义了一个非常重要的方法 setParameters()，该方法主要负责调用 PreparedStatement 的 set＊()系列方法，为 SQL 语句绑定实参。MyBatis 只为 ParameterHandler 接口提供了唯一一个实现类 DefaultParameterHandler。
+
 ```java
 public interface ParameterHandler {
 
@@ -317,9 +328,13 @@ public class DefaultParameterHandler implements ParameterHandler {
 
 }
 ```
-为SQL语句绑定完实参之后，就可以调用Statement对象 相应的execute方法，将SQL语句交给数据库执行了。
+
+为 SQL 语句绑定完实参之后，就可以调用 Statement 对象 相应的 execute 方法，将 SQL 语句交给数据库执行了。
+
 ## SimpleStatementHandler
-SimpleStatementHandler继承了BaseStatementHandler抽象类。其底层使用java.sql.Statement来完成数据库的相关操作，所以SQL语句中不存在占位符，所以SimpleStatementHandler的parameterize()方法是空实现。SimpleStatementHandler的instantiateStatement()方法直接通过JDBC Connection创建Statement对象。
+
+SimpleStatementHandler 继承了 BaseStatementHandler 抽象类。其底层使用 java.sql.Statement 来完成数据库的相关操作，所以 SQL 语句中不存在占位符，所以 SimpleStatementHandler 的 parameterize()方法是空实现。SimpleStatementHandler 的 instantiateStatement()方法直接通过 JDBC Connection 创建 Statement 对象。
+
 ```java
 public class SimpleStatementHandler extends BaseStatementHandler {
 
@@ -403,8 +418,11 @@ public class SimpleStatementHandler extends BaseStatementHandler {
 
 }
 ```
+
 ## PreparedStatementHandler
-PreparedStatementHandler底层依赖于java.sql.PreparedStatement来完成数据库的相关操作。其中的parameterize()方法中，会调用前面介绍的ParameterHandler的setParameters()方法 完成 SQL语句的参数绑定。instantiateStatement()方法直接调用JDBC Connection的prepareStatement()方法创建PreparedStatement对象。
+
+PreparedStatementHandler 底层依赖于 java.sql.PreparedStatement 来完成数据库的相关操作。其中的 parameterize()方法中，会调用前面介绍的 ParameterHandler 的 setParameters()方法 完成 SQL 语句的参数绑定。instantiateStatement()方法直接调用 JDBC Connection 的 prepareStatement()方法创建 PreparedStatement 对象。
+
 ```java
 public class PreparedStatementHandler extends BaseStatementHandler {
 
@@ -479,6 +497,7 @@ public class PreparedStatementHandler extends BaseStatementHandler {
 
 }
 ```
-另外，StatementHandler接口还有一个CallableStatementHandler的实现。其底层依赖于java.sql.CallableStatement调用指定的存储过程，其parameterize()方法也会调用ParameterHandler的setParameters()方法完成SQL语句的参数绑定，并指定输出参数的索引位置和JDBC类型。其余方法与前面介绍的ResultSetHandler实现类似，唯一区别是会调用ResultSetHandler的handleOutputParameters()方法 处理输出参数。
 
-看到这里，我们可以发现StatementHandler组件依赖ParameterHandler组件 和 ResultSetHandler组件 完成了MyBatis的核心功能，它控制着参数绑定、SQL语句执行、结果集映射等一系列核心流程。
+另外，StatementHandler 接口还有一个 CallableStatementHandler 的实现。其底层依赖于 java.sql.CallableStatement 调用指定的存储过程，其 parameterize()方法也会调用 ParameterHandler 的 setParameters()方法完成 SQL 语句的参数绑定，并指定输出参数的索引位置和 JDBC 类型。其余方法与前面介绍的 ResultSetHandler 实现类似，唯一区别是会调用 ResultSetHandler 的 handleOutputParameters()方法 处理输出参数。
+
+看到这里，我们可以发现 StatementHandler 组件依赖 ParameterHandler 组件 和 ResultSetHandler 组件 完成了 MyBatis 的核心功能，它控制着参数绑定、SQL 语句执行、结果集映射等一系列核心流程。

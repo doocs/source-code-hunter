@@ -1,6 +1,7 @@
-binding模块 主要为了解决一个历史遗留问题，原先查询一个 VO对象 时需要调用 SqlSession.queryForObject(“selectXXVOById”, primaryKey)方法，执行指定的 sql语句，第一个参数 selectXXVOById 指定了执行的 sql语句id，如果我们不小心写错了参数，Mybatis 是无法在初始化时发现这个错误的，只会在实际调用 queryForObject(“selectXXVOById”, primaryKey)方法 时才会抛出异常，这对于工程师来说是非常难受的，就像泛型出来之前，很多类型转换不会在编译期发现错误一样。而 binding模块 就像 Java的泛型机制 一样，将程序的错误提前暴露出来，为开发人员省去不少排查问题的精力。
+binding 模块主要为了解决一个历史遗留问题，原先查询一个 VO 对象 时需要调用 SqlSession.queryForObject(“selectXXVOById”, primaryKey)方法，执行指定的 sql 语句，第一个参数 selectXXVOById 指定了执行的 sql 语句 id，如果我们不小心写错了参数，Mybatis 是无法在初始化时发现这个错误的，只会在实际调用 queryForObject(“selectXXVOById”, primaryKey)方法 时才会抛出异常，这对于工程师来说是非常难受的，就像泛型出来之前，很多类型转换不会在编译期发现错误一样。而 binding 模块 就像 Java 的泛型机制 一样，将程序的错误提前暴露出来，为开发人员省去不少排查问题的精力。
 
-binding模块 的解决方案是，定义一个 Mapper接口，在接口中定义 sql语句 对应的 方法名Id 及 参数，这些方法在 Mybatis 的初始化过程中，会与该 Mapper接口 对应的映射配置文件中的 sql语句 相关联，如果存在无法关联的 sql语句，Mybatis 就会抛出异常，帮助我们及时发现问题。示例代码如下：
+binding 模块 的解决方案是，定义一个 Mapper 接口，在接口中定义 sql 语句 对应的 方法名 Id 及 参数，这些方法在 Mybatis 的初始化过程中，会与该 Mapper 接口 对应的映射配置文件中的 sql 语句 相关联，如果存在无法关联的 sql 语句，Mybatis 就会抛出异常，帮助我们及时发现问题。示例代码如下：
+
 ```java
 public interface HeroMapper {
     // 映射文件中会存在一个 <select>节点，id 为 “selectHeroVOById”
@@ -12,10 +13,13 @@ HeroMapper heroMapper = session.getMapper(HeroMapper.class);
 // 直接调用 HeroMapper接口 中的方法，获取结果集
 HeroVO heroVO = heroMapper.selectHeroVOById("23333");
 ```
-## 1 MapperRegistry和MapperProxyFactory
-MapperRegistry 是 Mapper接口 及其对应的代理对象工厂的注册中心。Configuration 是 Mybatis 中全局性的配置对象，根据 Mybatis 的核心配置文件 mybatis-config.xml 解析而成。Configuration 通过 mapperRegistry属性 持有该对象。
 
-Mybatis 在初始化过程中会读取映射配置文件和 Mapper接口 中的注解信息，并调用 MapperRegistry 的 addMappers()方法 填充 knownMappers集合，在需要执行某 sql语句 时，会先调用 getMapper()方法 获取实现了 Mapper接口 的动态代理对象。
+## 1 MapperRegistry 和 MapperProxyFactory
+
+MapperRegistry 是 Mapper 接口 及其对应的代理对象工厂的注册中心。Configuration 是 Mybatis 中全局性的配置对象，根据 Mybatis 的核心配置文件 mybatis-config.xml 解析而成。Configuration 通过 mapperRegistry 属性 持有该对象。
+
+Mybatis 在初始化过程中会读取映射配置文件和 Mapper 接口 中的注解信息，并调用 MapperRegistry 的 addMappers()方法 填充 knownMappers 集合，在需要执行某 sql 语句 时，会先调用 getMapper()方法 获取实现了 Mapper 接口 的动态代理对象。
+
 ```java
 public class MapperRegistry {
 
@@ -92,7 +96,9 @@ public class MapperRegistry {
   }
 }
 ```
+
 MapperProxyFactory 主要负责创建代理对象。
+
 ```java
 public class MapperProxyFactory<T> {
 
@@ -130,8 +136,11 @@ public class MapperProxyFactory<T> {
   }
 }
 ```
+
 ## 2 MapperProxy
-MapperProxy 实现了 InvocationHandler接口，为 Mapper接口 的方法调用织入了统一处理。
+
+MapperProxy 实现了 InvocationHandler 接口，为 Mapper 接口 的方法调用织入了统一处理。
+
 ```java
 public class MapperProxy<T> implements InvocationHandler, Serializable {
 
@@ -179,10 +188,13 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
   }
 }
 ```
+
 ## 3 MapperMethod
-MapperMethod 中封装了 Mapper接口 中对应方法的信息，和对应 sql语句 的信息，是连接 Mapper接口 及映射配置文件中定义的 sql语句 的桥梁。
+
+MapperMethod 中封装了 Mapper 接口 中对应方法的信息，和对应 sql 语句 的信息，是连接 Mapper 接口 及映射配置文件中定义的 sql 语句 的桥梁。
 
 MapperMethod 中持有两个非常重要的属性，这两个属性对应的类 都是 MapperMethod 中的静态内部类。另外，MapperMethod 在被实例化时就对这两个属性进行了初始化。
+
 ```java
 public class MapperMethod {
 
@@ -196,8 +208,11 @@ public class MapperMethod {
   }
 }
 ```
+
 MapperMethod 中的核心方法 execute() 就主要用到了这两个类，所以我们先看一下 SqlCommand 和 MethodSignature 的源码。
+
 ### 3.1 SqlCommand
+
 ```java
   public static class SqlCommand {
 
@@ -266,7 +281,9 @@ MapperMethod 中的核心方法 execute() 就主要用到了这两个类，所�
     }
   }
 ```
+
 ### 3.2 MethodSignature
+
 ```java
   public static class MethodSignature {
 
@@ -341,8 +358,11 @@ MapperMethod 中的核心方法 execute() 就主要用到了这两个类，所�
     }
   }
 ```
+
 ### 3.3 execute()方法
-execute()方法 会根据 sql语句 的类型(CRUD)调用 SqlSession 对应的方法完成数据库操作，SqlSession 是 Mybatis 的核心组件之一，后面会详细解读。
+
+execute()方法 会根据 sql 语句 的类型(CRUD)调用 SqlSession 对应的方法完成数据库操作，SqlSession 是 Mybatis 的核心组件之一，后面会详细解读。
+
 ```java
 public class MapperMethod {
   public Object execute(SqlSession sqlSession, Object[] args) {

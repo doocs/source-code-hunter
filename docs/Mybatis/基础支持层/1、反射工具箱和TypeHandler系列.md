@@ -1,7 +1,11 @@
-在 Mybatis 的基础支持层主要看一下支撑 ORM实现 的底层代码。
+在 Mybatis 的基础支持层主要看一下支撑 ORM 实现 的底层代码。
+
 ## 1 反射工具包
+
 ### 1.1Reflector
-Reflector类 主要实现了对 JavaBean 的元数据属性的封装，比如：可读属性列表，可写属性列表；及反射操作的封装，如：属性对应的 setter方法，getter方法 的反射调用。源码实现如下：
+
+Reflector 类 主要实现了对 JavaBean 的元数据属性的封装，比如：可读属性列表，可写属性列表；及反射操作的封装，如：属性对应的 setter 方法，getter 方法 的反射调用。源码实现如下：
+
 ```java
 public class Reflector {
 
@@ -55,8 +59,11 @@ public class Reflector {
   }
 }
 ```
+
 ### 1.2 ReflectorFactory
+
 顾名思义，Reflector 的工厂模式，跟大部分工厂类一样，里面肯定有通过标识获取对象的方法。类的设计也遵照了 接口，实现类的模式，虽然本接口只有一个默认实现。
+
 ```java
 public interface ReflectorFactory {
 
@@ -88,7 +95,7 @@ public class DefaultReflectorFactory implements ReflectorFactory {
       return new Reflector(type);
     }
   }
-  
+
   public DefaultReflectorFactory() {
   }
 
@@ -110,8 +117,11 @@ public class CustomReflectorFactory extends DefaultReflectorFactory {
 
 }
 ```
+
 ### 1.3 ObjectFactory
+
 该类也是接口加一个默认实现类，并且支持自定义扩展，Mybatis 中有很多这样的设计方式。
+
 ```java
 /**
  * MyBatis uses an ObjectFactory to create all needed new Objects.
@@ -205,10 +215,15 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
   }
 }
 ```
+
 ## 2 类型转换
-类型转换是实现 ORM 的重要一环，由于数据库中的数据类型与 Java语言 的数据类型并不对等，所以在 PrepareStatement 为 sql语句 绑定参数时，需要从 Java类型 转换成 JDBC类型，而从结果集获取数据时，又要将 JDBC类型 转换成 Java类型，Mybatis 使用 TypeHandler 完成了上述的双向转换。
+
+类型转换是实现 ORM 的重要一环，由于数据库中的数据类型与 Java 语言 的数据类型并不对等，所以在 PrepareStatement 为 sql 语句 绑定参数时，需要从 Java 类型 转换成 JDBC 类型，而从结果集获取数据时，又要将 JDBC 类型 转换成 Java 类型，Mybatis 使用 TypeHandler 完成了上述的双向转换。
+
 ### 2.1 JdbcType
+
 Mybatis 通过 JdbcType 这个枚举类型代表了 JDBC 中的数据类型。
+
 ```java
 /**
  * 该枚举类描述了 JDBC 中的数据类型
@@ -281,8 +296,11 @@ public enum JdbcType {
 
 }
 ```
+
 ### 2.2 TypeHandler
-TypeHandler 是 Mybatis 中所有类型转换器的顶层接口，主要用于实现数据从 Java类型 到 JdbcType类型 的相互转换。
+
+TypeHandler 是 Mybatis 中所有类型转换器的顶层接口，主要用于实现数据从 Java 类型 到 JdbcType 类型 的相互转换。
+
 ```java
 public interface TypeHandler<T> {
 
@@ -377,12 +395,16 @@ public class IntegerTypeHandler extends BaseTypeHandler<Integer> {
   }
 }
 ```
-TypeHandler 主要用于单个参数的类型转换，如果要将多个列的值转换成一个 Java对象，可以在映射文件中定义合适的映射规则 &lt;resultMap&gt;  完成映射。
+
+TypeHandler 主要用于单个参数的类型转换，如果要将多个列的值转换成一个 Java 对象，可以在映射文件中定义合适的映射规则 &lt;resultMap&gt; 完成映射。
+
 ### 2.3 TypeHandlerRegistry
+
 TypeHandlerRegistry 主要负责管理所有已知的 TypeHandler，Mybatis 在初始化过程中会为所有已知的 TypeHandler 创建对象，并注册到 TypeHandlerRegistry。
+
 ```java
   // TypeHandlerRegistry 中的核心字段如下
-  
+
   /** 该集合主要用于从结果集读取数据时，将数据从 JDBC类型 转换成 Java类型 */
   private final Map<JdbcType, TypeHandler<?>>  jdbcTypeHandlerMap = new EnumMap<>(JdbcType.class);
 
@@ -395,8 +417,10 @@ TypeHandlerRegistry 主要负责管理所有已知的 TypeHandler，Mybatis 在�
   /** key：TypeHandler 的类型；value：该 TypeHandler类型 对应的 TypeHandler对象 */
   private final Map<Class<?>, TypeHandler<?>> allTypeHandlersMap = new HashMap<>();
 ```
-**1、注册TypeHandler对象**  
-TypeHandlerRegistry 中的 register()方法 实现了注册 TypeHandler对象 的功能，该方法存在多种重载，但大多数 register()方法 最终都会走 register(Type javaType, JdbcType jdbcType, TypeHandler<?> handler) 的处理逻辑，该重载方法中分别指定了 TypeHandler 能够处理的 Java类型、JDBC类型、TypeHandler对象。
+
+**1、注册 TypeHandler 对象**  
+TypeHandlerRegistry 中的 register()方法 实现了注册 TypeHandler 对象 的功能，该方法存在多种重载，但大多数 register()方法 最终都会走 register(Type javaType, JdbcType jdbcType, TypeHandler<?> handler) 的处理逻辑，该重载方法中分别指定了 TypeHandler 能够处理的 Java 类型、JDBC 类型、TypeHandler 对象。
+
 ```java
   /**
    * TypeHandlerRegistry 中对 register()方法 实现了多种重载，本 register()方法
@@ -414,7 +438,9 @@ TypeHandlerRegistry 中的 register()方法 实现了注册 TypeHandler对象 �
     allTypeHandlersMap.put(handler.getClass(), handler);
   }
 ```
-另外，TypeHandlerRegistry 还提供了扫描并注册指定包目录下 TypeHandler实现类 的 register()方法 重载。
+
+另外，TypeHandlerRegistry 还提供了扫描并注册指定包目录下 TypeHandler 实现类 的 register()方法 重载。
+
 ```java
   /**
    * 从指定 包名packageName 中获取自定义的 TypeHandler实现类
@@ -432,7 +458,9 @@ TypeHandlerRegistry 中的 register()方法 实现了注册 TypeHandler对象 �
     }
   }
 ```
+
 最后看一下 TypeHandlerRegistry 的构造方法，其通过多种 register()方法 重载，完成了所有已知的 TypeHandler 的重载。
+
 ```java
   /**
    * 进行 Java 及 JDBC基本数据类型 的 TypeHandler 注册
@@ -515,8 +543,10 @@ TypeHandlerRegistry 中的 register()方法 实现了注册 TypeHandler对象 �
     register(JapaneseDate.class, new JapaneseDateTypeHandler());
   }
 ```
-**2、查找TypeHandler**  
-TypeHandlerRegistry 其实就是一个容器，前面注册了一堆东西，也就是为了方便获取，其对应的方法为 getTypeHandler()，该方法也存在多种重载，其中最重要的一个重载为 getTypeHandler(Type type, JdbcType jdbcType)，它会根据指定的 Java类型 和 JdbcType类型 查找相应的 TypeHandler对象。
+
+**2、查找 TypeHandler**  
+TypeHandlerRegistry 其实就是一个容器，前面注册了一堆东西，也就是为了方便获取，其对应的方法为 getTypeHandler()，该方法也存在多种重载，其中最重要的一个重载为 getTypeHandler(Type type, JdbcType jdbcType)，它会根据指定的 Java 类型 和 JdbcType 类型 查找相应的 TypeHandler 对象。
+
 ```java
   /**
    * 获取 TypeHandler对象
@@ -545,4 +575,5 @@ TypeHandlerRegistry 其实就是一个容器，前面注册了一堆东西，也
     return (TypeHandler<T>) handler;
   }
 ```
-除了 Mabatis 本身自带的 TypeHandler实现，我们还可以添加自定义的 TypeHandler实现类，在配置文件 mybatis-config.xml 中的 &lt;typeHandler&gt; 标签下配置好 自定义TypeHandler，Mybatis 就会在初始化时解析该标签内容，完成 自定义TypeHandler 的注册。
+
+除了 Mabatis 本身自带的 TypeHandler 实现，我们还可以添加自定义的 TypeHandler 实现类，在配置文件 mybatis-config.xml 中的 &lt;typeHandler&gt; 标签下配置好 自定义 TypeHandler，Mybatis 就会在初始化时解析该标签内容，完成 自定义 TypeHandler 的注册。

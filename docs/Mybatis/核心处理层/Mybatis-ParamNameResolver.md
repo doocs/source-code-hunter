@@ -1,10 +1,13 @@
-#  ParamNameResolver 源码解析
+# ParamNameResolver 源码解析
+
 - Author: [HuiFer](https://github.com/huifer)
 - Description: 该文介绍 mybatis `@Param` 注解和`ParamNameResolver`
 - 源码阅读工程: [SourceHot-Mybatis](https://github.com/SourceHot/mybatis-read.git)
 
 ## 源码
+
 - `org.apache.ibatis.reflection.ParamNameResolver`
+
 ```java
 /**
  * {@link Param} 注解的扫描工具和处理工具
@@ -142,8 +145,11 @@ public class ParamNameResolver {
 }
 
 ```
+
 ## debug 阶段
-- 测试用例为同一个 ， 每次修改mapper方法参数来进行debug
+
+- 测试用例为同一个 ， 每次修改 mapper 方法参数来进行 debug
+
 ```java
 @Test
     void testXmlConfigurationLoad() throws IOException {
@@ -160,13 +166,11 @@ public class ParamNameResolver {
     }
 ```
 
-
-
-
 ```java
     List<HsSell> list( Integer id);
 
 ```
+
 如果不写`@Param`称则返回
 ![image-20191219083223084](assets/image-20191219083223084.png)
 
@@ -180,8 +184,6 @@ public class ParamNameResolver {
 
 ![image-20191219083354873](../../../images/mybatis/image-20191219083354873.png)
 
-
-
 - `org.apache.ibatis.reflection.ParamNameResolver#getNamedParams`
 
   ```java
@@ -190,14 +192,11 @@ public class ParamNameResolver {
 
 ![image-20191219084455292](../../../images/mybatis/image-20191219084455292.png)
 
-  
-
-
 ```java
     List<HsSell> list(@Param("ID") Integer id);
 ```
 
-​	写上`@Param`
+​ 写上`@Param`
 
 ![image-20191219084943102](../../../images/mybatis/image-20191219084943102.png)
 

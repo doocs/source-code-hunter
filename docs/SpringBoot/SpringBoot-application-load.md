@@ -1,16 +1,13 @@
 # Spring Boot application 文件加载
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring-boot](https://github.com/SourceHot/spring-boot-read)
-
-
-
-
 
 ## 如何找到这个加载的过程
 
 1. 创建配置文件`application.yml`
 
-2. 全局搜索yml
+2. 全局搜索 yml
 
    ![image-20200319083048849](../../../images/SpringBoot/image-20200319083048849.png)
 
@@ -20,15 +17,9 @@
 
 4. 我们以`yml`为例打上断点开始源码追踪
 
-
-
-
-
 看到调用堆栈
 
 ![image-20200319083345067](../../../images/SpringBoot/image-20200319083345067.png)
-
-
 
 - 一步一步回上去看如何调用具体方法的
 
@@ -36,15 +27,11 @@
 
 - 配置文件监听器
 
-
-
 ### 调用过程
 
 ![image-20200319082131146](../../../images/SpringBoot/image-20200319082131146.png)
 
 ![image-20200319082544653](../../../images/SpringBoot/image-20200319082544653.png)
-
-
 
 `org.springframework.boot.context.config.ConfigFileApplicationListener#addPropertySources`
 
@@ -56,17 +43,9 @@ protected void addPropertySources(ConfigurableEnvironment environment, ResourceL
 	}
 ```
 
-
-
-
-
-
-
-### Loader 
+### Loader
 
 - 配置资源加载器
-
-
 
 构造方法
 
@@ -85,27 +64,19 @@ protected void addPropertySources(ConfigurableEnvironment environment, ResourceL
 
 ```
 
-
-
-- 熟悉的老朋友`this.propertySourceLoaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class,      getClass().getClassLoader())`， 看看**`spring.factories`**有什么
+- 熟悉的老朋友`this.propertySourceLoaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class, getClass().getClassLoader())`， 看看**`spring.factories`**有什么
 
   - 搜索目标: `org.springframework.boot.env.PropertySourceLoader`
 
     ![image-20200319084141748](../../../images/SpringBoot/image-20200319084141748.png)
 
-
-
 ![image-20200319084151997](../../../images/SpringBoot/image-20200319084151997.png)
 
-观察发现里面有一个`YamlPropertySourceLoader`和我们之前找yml字符串的时候找到的类是一样的。说明搜索方式没有什么问题。
+观察发现里面有一个`YamlPropertySourceLoader`和我们之前找 yml 字符串的时候找到的类是一样的。说明搜索方式没有什么问题。
 
 ![image-20200319084357652](../../../images/SpringBoot/image-20200319084357652.png)
 
 初始化完成，后续进行解析了
-
-
-
-
 
 ### load 方法
 
@@ -141,15 +112,9 @@ protected void addPropertySources(ConfigurableEnvironment environment, ResourceL
 - 初始化`private Deque<Profile> profiles;` 属性
 - ![image-20200319084902957](../../../images/SpringBoot/image-20200319084902957.png)
 
-
-
-
-
 ### load
 
 - `org.springframework.boot.context.config.ConfigFileApplicationListener.Loader#load(org.springframework.boot.context.config.ConfigFileApplicationListener.Profile, org.springframework.boot.context.config.ConfigFileApplicationListener.DocumentFilterFactory, org.springframework.boot.context.config.ConfigFileApplicationListener.DocumentConsumer)`
-
-
 
 ```JAVA
 private void load(Profile profile, DocumentFilterFactory filterFactory, DocumentConsumer consumer) {
@@ -172,11 +137,7 @@ private void load(Profile profile, DocumentFilterFactory filterFactory, Document
 
 ![image-20200319085446640](../../../images/SpringBoot/image-20200319085446640.png)
 
-
-
 该方法采用循环每个路径下面都去尝试一遍
-
-
 
 - 中间过程省略，我们直接看最后的加载行为
   - `org.springframework.boot.context.config.ConfigFileApplicationListener.Loader#loadDocuments`
@@ -201,13 +162,7 @@ private void load(Profile profile, DocumentFilterFactory filterFactory, Document
 
 ```
 
-
-
-此处的`loader.load()`调用具体的loader实现类进行执行方法
-
-
-
-
+此处的`loader.load()`调用具体的 loader 实现类进行执行方法
 
 ### yml 解析
 
@@ -235,17 +190,9 @@ private void load(Profile profile, DocumentFilterFactory filterFactory, Document
 
 ```
 
-
-
 ![image-20200319090446231](../../../images/SpringBoot/image-20200319090446231.png)
 
-
-
-
-
 - `PropertiesPropertySourceLoader`解析同理不在次展开描述了
-
-
 
 ### asDocuments
 
@@ -276,5 +223,4 @@ private void load(Profile profile, DocumentFilterFactory filterFactory, Document
 
 ```
 
------
-
+---

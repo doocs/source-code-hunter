@@ -1,15 +1,16 @@
-HashSet 本身并没有什么特别的东西，它提供的所有集合核心功能，都是基于HashMap来实现的。如果了解HashMap源码的实现，HashSet 源码看起来跟玩一样。我的博客中有专门分析HashMap源码的文章，不熟悉的请自行翻阅。
+HashSet 本身并没有什么特别的东西，它提供的所有集合核心功能，都是基于 HashMap 来实现的。如果了解 HashMap 源码的实现，HashSet 源码看起来跟玩一样。我的博客中有专门分析 HashMap 源码的文章，不熟悉的请自行翻阅。
 
-HashSet 的特点如下：  
-- 内部使用HashMap的key存储元素，以此来保证**元素不重复**；
-- HashSet是无序的，因为HashMap的key是**无序**的；
-- HashSet中允许有一个null元素，因为HashMap允许key为null；
-- HashSet是**非线程安全**的。
+HashSet 的特点如下：
+
+- 内部使用 HashMap 的 key 存储元素，以此来保证**元素不重复**；
+- HashSet 是无序的，因为 HashMap 的 key 是**无序**的；
+- HashSet 中允许有一个 null 元素，因为 HashMap 允许 key 为 null；
+- HashSet 是**非线程安全**的。
 
 ```java
 public class HashSet<E> extends AbstractSet<E> implements Set<E>, Cloneable, java.io.Serializable {
     static final long serialVersionUID = -5024744406713321676L;
-    
+
     // 基于HashMap实现
     private transient HashMap<E,Object> map;
 

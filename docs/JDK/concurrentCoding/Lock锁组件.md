@@ -1,5 +1,6 @@
 ## 类图结构
-J.U.C 的锁组件中 类相对较少，从JDK相应的包中也能看出来，下图标记了其中最主要的几个接口和类，也是本文要分析的重点。
+
+J.U.C 的锁组件中 类相对较少，从 JDK 相应的包中也能看出来，下图标记了其中最主要的几个接口和类，也是本文要分析的重点。
 
 ![avatar](../../../images/JDK1.8/JUC的locks包.png)
 
@@ -8,7 +9,9 @@ J.U.C 的锁组件中 类相对较少，从JDK相应的包中也能看出来，�
 ![avatar](../../../images/JDK1.8/JUC锁组件类图.png)
 
 ## Lock 组件
+
 Lock 组件的结构很简单，只有一个接口和一个实现类，源码如下。
+
 ```java
 public interface Lock {
 
@@ -183,7 +186,9 @@ public class ReentrantLock implements Lock, java.io.Serializable {
 ```
 
 ## ReadWriteLock 组件
-ReadWriteLock 组件的结构也很简单，与上面的 Lock组件 不同的是，它提供了 公平的读锁写锁，以及非公平的读锁写锁。
+
+ReadWriteLock 组件的结构也很简单，与上面的 Lock 组件 不同的是，它提供了 公平的读锁写锁，以及非公平的读锁写锁。
+
 ```java
 public interface ReadWriteLock {
     /**
@@ -402,7 +407,7 @@ public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializab
                 }
             }
         }
-        
+
         final boolean isWriteLocked() {
             return exclusiveCount(getState()) != 0;
         }
@@ -518,7 +523,9 @@ public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializab
 ```
 
 ## AbstractQueuedSynchronizer
-最后看一下抽象类 AbstractQueuedSynchronizer，在同步组件的实现中，AQS是核心部分，同步组件的实现者通过使用 AQS 提供的模板方法实现同步组件语义，AQS 则实现了对同步状态的管理，以及对阻塞线程进行排队，等待通知等等一些底层的实现处理。AQS 的核心包括：同步队列，独占式锁的获取和释放，共享锁的获取和释放以及可中断锁，超时等待锁获取这些特性的实现，而这些实际上则是AQS提供出来的模板方法。源码如下。
+
+最后看一下抽象类 AbstractQueuedSynchronizer，在同步组件的实现中，AQS 是核心部分，同步组件的实现者通过使用 AQS 提供的模板方法实现同步组件语义，AQS 则实现了对同步状态的管理，以及对阻塞线程进行排队，等待通知等等一些底层的实现处理。AQS 的核心包括：同步队列，独占式锁的获取和释放，共享锁的获取和释放以及可中断锁，超时等待锁获取这些特性的实现，而这些实际上则是 AQS 提供出来的模板方法。源码如下。
+
 ```java
 public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchronizer
     implements java.io.Serializable {

@@ -1,9 +1,11 @@
-# sqlCommand 
+# sqlCommand
+
 - Author: [HuiFer](https://github.com/huifer)
-- Description: 该文介绍 mybatis sqlCommand类的源码
+- Description: 该文介绍 mybatis sqlCommand 类的源码
 - 源码阅读工程: [SourceHot-Mybatis](https://github.com/SourceHot/mybatis-read.git)
 
 - `org.apache.ibatis.binding.MapperMethod.SqlCommand`
+
 ```java
     /**
      * 核心内容: sql id , Sql 类型
@@ -92,14 +94,6 @@
 
 ```
 
-
 ![image-20191218191512184](../../../images/mybatis/image-20191218191512184.png)
 
-
-
 ![image-20191218191550550](../../../images/mybatis/image-20191218191550550.png)
-
-
-
-
-

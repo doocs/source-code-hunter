@@ -1,10 +1,11 @@
-Semaphore 信号量，可用于控制一定时间内，并发执行的线程数，基于AQS实现。可应用于网关限流、资源限制 (如 最大可发起连接数)。由于 release() 释放许可时，未对释放许可数做限制，所以可以通过该方法增加总的许可数量。
+Semaphore 信号量，可用于控制一定时间内，并发执行的线程数，基于 AQS 实现。可应用于网关限流、资源限制 (如 最大可发起连接数)。由于 release() 释放许可时，未对释放许可数做限制，所以可以通过该方法增加总的许可数量。
 
 **获取许可** 支持公平和非公平模式，默认非公平模式。公平模式无论是否有许可，都会先判断是否有线程在排队，如果有线程排队，则进入排队，否则尝试获取许可；非公平模式无论许可是否充足，直接尝试获取许可。
 
 不多废话，下面直接看源码。
 
 #### 核心内部类 Sync
+
 ```java
 abstract static class Sync extends AbstractQueuedSynchronizer {
 
@@ -124,7 +125,8 @@ static final class FairSync extends Sync {
 }
 ```
 
-#### 主要API
+#### 主要 API
+
 ```java
 public class Semaphore implements java.io.Serializable {
 
@@ -159,7 +161,7 @@ public class Semaphore implements java.io.Serializable {
     public void acquire() throws InterruptedException {
         sync.acquireSharedInterruptibly(1);
     }
-    
+
     public final void acquireSharedInterruptibly(int arg)
         throws InterruptedException {
         if (Thread.interrupted())
@@ -167,11 +169,11 @@ public class Semaphore implements java.io.Serializable {
         if (tryAcquireShared(arg) < 0) // 获取许可，剩余许可>=0，则获取许可成功，<0获取许可失败，进入排队
             doAcquireSharedInterruptibly(arg);
     }
-    
+
     protected int tryAcquireShared(int acquires) {
         return nonfairTryAcquireShared(acquires);
     }
-    
+
     /**
      * @return 剩余许可数量。非负数，获取许可成功，负数，获取许可失败
      */
@@ -184,7 +186,7 @@ public class Semaphore implements java.io.Serializable {
                 return remaining;
         }
     }
-    
+
     /**
      * 获取许可失败，当前线程进入同步队列，排队阻塞
      */
@@ -224,7 +226,7 @@ public class Semaphore implements java.io.Serializable {
         if (permits < 0) throw new IllegalArgumentException();
         sync.releaseShared(permits);
     }
-    
+
     /* 释放一个许可 */
     public void release() {
         sync.releaseShared(1);
@@ -238,7 +240,7 @@ public class Semaphore implements java.io.Serializable {
         }
         return false;
     }
-    
+
     /**
      * 释放许可
      * 由于未对释放许可数做限制，所以可以通过release动态增加许可数量
@@ -253,7 +255,7 @@ public class Semaphore implements java.io.Serializable {
                 return true;
         }
     }
-    
+
     private void doReleaseShared() {
         // 自旋，唤醒等待的第一个线程(其他线程将由第一个线程向后传递唤醒)
         for (;;) {

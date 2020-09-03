@@ -1,8 +1,12 @@
 # SpringBoot 启动方法
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring-boot](https://github.com/SourceHot/spring-boot-read)
+
 ## 入口
-- 通常一个简单的SpringBoot基础项目我们会有如下代码
+
+- 通常一个简单的 SpringBoot 基础项目我们会有如下代码
+
 ```java
 @SpringBootApplication
 @RestController
@@ -18,7 +22,9 @@ public class Application {
 ```
 
 - 值得关注的有`SpringApplication.run`以及注解`@SpringBootApplication`
-### run方法
+
+### run 方法
+
 ```java
 	public ConfigurableApplicationContext run(String... args) {
 	    // 秒表
@@ -79,8 +85,6 @@ public class Application {
 
 - 获取监听器
 
-
-
 ```java
 	private SpringApplicationRunListeners getRunListeners(String[] args) {
 		Class<?>[] types = new Class<?>[] { SpringApplication.class, String[].class };
@@ -107,34 +111,34 @@ public class Application {
 
 ### createSpringFactoriesInstances
 
- ```java
-	@SuppressWarnings("unchecked")
-	private <T> List<T> createSpringFactoriesInstances(Class<T> type, Class<?>[] parameterTypes,
-			ClassLoader classLoader, Object[] args, Set<String> names) {
-	    // 初始化
-		List<T> instances = new ArrayList<>(names.size());
-		for (String name : names) {
-			try {
-			    // 通过名字创建类的class对象
-				Class<?> instanceClass = ClassUtils.forName(name, classLoader);
-				Assert.isAssignable(type, instanceClass);
-				// 构造器获取
-				Constructor<?> constructor = instanceClass.getDeclaredConstructor(parameterTypes);
-				// 创建具体实例
-				T instance = (T) BeanUtils.instantiateClass(constructor, args);
-				// 加入实例表中
-				instances.add(instance);
-			}
-			catch (Throwable ex) {
-				throw new IllegalArgumentException("Cannot instantiate " + type + " : " + name, ex);
-			}
+```java
+@SuppressWarnings("unchecked")
+private <T> List<T> createSpringFactoriesInstances(Class<T> type, Class<?>[] parameterTypes,
+		ClassLoader classLoader, Object[] args, Set<String> names) {
+    // 初始化
+	List<T> instances = new ArrayList<>(names.size());
+	for (String name : names) {
+		try {
+		    // 通过名字创建类的class对象
+			Class<?> instanceClass = ClassUtils.forName(name, classLoader);
+			Assert.isAssignable(type, instanceClass);
+			// 构造器获取
+			Constructor<?> constructor = instanceClass.getDeclaredConstructor(parameterTypes);
+			// 创建具体实例
+			T instance = (T) BeanUtils.instantiateClass(constructor, args);
+			// 加入实例表中
+			instances.add(instance);
 		}
-		return instances;
+		catch (Throwable ex) {
+			throw new IllegalArgumentException("Cannot instantiate " + type + " : " + name, ex);
+		}
 	}
+	return instances;
+}
 
- ```
+```
 
-- `SpringFactoriesLoader.loadFactoryNames(type, classLoader)` 是spring提供的方法，主要目的是读取`spring.factories`文件
+- `SpringFactoriesLoader.loadFactoryNames(type, classLoader)` 是 spring 提供的方法，主要目的是读取`spring.factories`文件
   - 读取需要创建的内容
 
 ![image-20200318080601725](../../images/SpringBoot/image-20200318080601725.png)
@@ -143,11 +147,9 @@ public class Application {
 
   ![image-20200318080901881](../../images/SpringBoot/image-20200318080901881.png)
 
-
-
 - `AnnotationAwareOrderComparator.sort(instances)`排序
 
-  - 通过spring的源码我们知道这个方法是根据`order`的数字大小进行排序，观察
+  - 通过 spring 的源码我们知道这个方法是根据`order`的数字大小进行排序，观察
 
     `SharedMetadataReaderFactoryContextInitializer`
 
@@ -157,19 +159,15 @@ public class Application {
 
     ![image-20200318081322781](../../images/SpringBoot/image-20200318081322781.png)
 
-- 下图中的所有类都有Order数值返回
+- 下图中的所有类都有 Order 数值返回
 
-  排序前: 
+  排序前:
 
- ![image-20200318081352639](../../images/SpringBoot/image-20200318081352639.png)
+![image-20200318081352639](../../images/SpringBoot/image-20200318081352639.png)
 
- 	排序后：
+排序后：
 
-![image-20200318081458019](../../images/SpringBoot/image-20200318081458019.png) 
-
-
-
-
+![image-20200318081458019](../../images/SpringBoot/image-20200318081458019.png)
 
 ### listeners.starting()
 
@@ -177,27 +175,23 @@ public class Application {
 
   ```
   class SpringApplicationRunListeners {
-  
+
   	private final List<SpringApplicationRunListener> listeners;
   SpringApplicationRunListeners(Log log, Collection<? extends SpringApplicationRunListener> listeners) {
   		this.log = log;
   		this.listeners = new ArrayList<>(listeners);
   	}
-  
+
   	void starting() {
   		for (SpringApplicationRunListener listener : this.listeners) {
   			listener.starting();
   		}
   	}
-  
+
   }
   ```
 
   - 这里主要是启动`org.springframework.boot.SpringApplicationRunListener#starting`方法，只有一个实现`org.springframework.boot.context.event.EventPublishingRunListener#starting`
-
-
-
-
 
 ### prepareEnvironment
 
@@ -224,8 +218,6 @@ public class Application {
 
 ```
 
-
-
 ### configureIgnoreBeanInfo
 
 - 获取`spring.beaninfo.ignore`并且设置到环境信息中
@@ -238,10 +230,6 @@ public class Application {
 		}
 	}
 ```
-
-
-
-
 
 ### printBanner
 
@@ -277,16 +265,16 @@ public class Application {
 
   ```JAVA
   class SpringBootBanner implements Banner {
-  
+
   	private static final String[] BANNER = { "", "  .   ____          _            __ _ _",
   			" /\\\\ / ___'_ __ _ _(_)_ __  __ _ \\ \\ \\ \\", "( ( )\\___ | '_ | '_| | '_ \\/ _` | \\ \\ \\ \\",
   			" \\\\/  ___)| |_)| | | | | || (_| |  ) ) ) )", "  '  |____| .__|_| |_|_| |_\\__, | / / / /",
   			" =========|_|==============|___/=/_/_/_/" };
-  
+
   	private static final String SPRING_BOOT = " :: Spring Boot :: ";
-  
+
   	private static final int STRAP_LINE_SIZE = 42;
-  
+
   	@Override
   	public void printBanner(Environment environment, Class<?> sourceClass, PrintStream printStream) {
   		for (String line : BANNER) {
@@ -298,12 +286,12 @@ public class Application {
   		while (padding.length() < STRAP_LINE_SIZE - (version.length() + SPRING_BOOT.length())) {
   			padding.append(" ");
   		}
-  
+
   		printStream.println(AnsiOutput.toString(AnsiColor.GREEN, SPRING_BOOT, AnsiColor.DEFAULT, padding.toString(),
   				AnsiStyle.FAINT, version));
   		printStream.println();
   	}
-  
+
   }
   ```
 
@@ -336,8 +324,6 @@ public class Application {
 	}
 
 ```
-
-
 
 - `this.applicationContextClass` 初始化方法
 
@@ -372,17 +358,9 @@ public class Application {
 
 ```
 
-
-
-
-
 ### exceptionReporters
 
 ![image-20200318085243888](../../images/SpringBoot/image-20200318085243888.png)
-
-
-
-
 
 ### prepareContext
 
@@ -428,8 +406,6 @@ public class Application {
 
 - `set`方法就不说了
 
-
-
 ### postProcessApplicationContext
 
 ```java
@@ -457,23 +433,15 @@ public class Application {
 
 ```
 
-- 看一下最终设置完成后的context
+- 看一下最终设置完成后的 context
 
   ```java
   context.getBeanFactory().setConversionService(ApplicationConversionService.getSharedInstance());
   ```
 
-  
-
 ![image-20200318090128983](../../images/SpringBoot/image-20200318090128983.png)
 
 ![image-20200318090312626](../../images/SpringBoot/image-20200318090312626.png)
-
-
-
-
-
-
 
 ### applyInitializers
 
@@ -492,27 +460,15 @@ public class Application {
 
 ```
 
+- 初始化 `List<ApplicationListener<?>> listeners`: `setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));`
 
-
-- 初始化 `List<ApplicationListener<?>> listeners`:    `setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));`
-
-
-
-- 获取  `List<ApplicationListener<?>> listeners`: `public Set<ApplicationListener<?>> getListeners() {   return asUnmodifiableOrderedSet(this.listeners);}`
-
-
+- 获取 `List<ApplicationListener<?>> listeners`: `public Set<ApplicationListener<?>> getListeners() { return asUnmodifiableOrderedSet(this.listeners);}`
 
 - 数据结果
 
 ![image-20200318090935285](../../images/SpringBoot/image-20200318090935285.png)
 
 - 子类的具体实现不展开了
-
-
-
-
-
-
 
 ### getAllSources
 
@@ -530,21 +486,13 @@ public class Application {
 
 ```
 
-
-
 - `primarySources` 就是我们的项目启动类，在`SpringApplication`的构造器中有`this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources))`
 
 ![image-20200318091558233](../../images/SpringBoot/image-20200318091558233.png)
 
-
-
-
-
-
-
 ### load
 
-- 加载bean到应用上下文
+- 加载 bean 到应用上下文
 
 ```java
 	protected void load(ApplicationContext context, Object[] sources) {
@@ -571,8 +519,6 @@ public class Application {
 
 ```
 
-
-
 ```java
 	int load() {
 		int count = 0;
@@ -583,8 +529,6 @@ public class Application {
 	}
 
 ```
-
-
 
 ```java
 private int load(Object source) {
@@ -606,11 +550,9 @@ private int load(Object source) {
 
 ```
 
-- 通过前文我们已经知道 `source`就是一个class
+- 通过前文我们已经知道 `source`就是一个 class
 
   ![image-20200318092027020](../../images/SpringBoot/image-20200318092027020.png)
-
-
 
 ```java
 	private int load(Class<?> source) {
@@ -629,25 +571,15 @@ private int load(Object source) {
 
 ```
 
-- 我们的启动类是一个组件，直接注册完成返回1
-
-
-
-
+- 我们的启动类是一个组件，直接注册完成返回 1
 
 ### listeners.contextLoaded(context)
 
 - 监听器行为: 在上下文资源加载后做一些事情
 
-
-
-
-
 ### refreshContext
 
 - 上下文刷新
-
-
 
 ```java
 	private void refreshContext(ConfigurableApplicationContext context) {
@@ -675,13 +607,7 @@ private int load(Object source) {
 	}
 ```
 
-
-
-- 最终来到了`org.springframework.context.support.AbstractApplicationContext#refresh`方法，此方法是spring的一个方法，此处不在阐述
-
-
-
-
+- 最终来到了`org.springframework.context.support.AbstractApplicationContext#refresh`方法，此方法是 spring 的一个方法，此处不在阐述
 
 ### afterRefresh
 
@@ -690,31 +616,20 @@ private int load(Object source) {
   ```
   	protected void afterRefresh(ConfigurableApplicationContext context, ApplicationArguments args) {
   	}
-  
+
   ```
-
-  
-
-
 
 ### stopWatch.stop()
 
 - 秒表结束
 
-
-
 ### listeners.started(context)
 
 - 各类监听器启动
 
-
-
-
 ### callRunners
 
-- 两种runner启动`ApplicationRunner` 和 `CommandLineRunner`
-
-
+- 两种 runner 启动`ApplicationRunner` 和 `CommandLineRunner`
 
 ```JAVA
 	private void callRunners(ApplicationContext context, ApplicationArguments args) {
@@ -734,10 +649,6 @@ private int load(Object source) {
 
 ```
 
-
-
-
-
 ```JAVA
 private void callRunner(ApplicationRunner runner, ApplicationArguments args) {
 		try {
@@ -748,12 +659,6 @@ private void callRunner(ApplicationRunner runner, ApplicationArguments args) {
 		}
 	}
 ```
-
-
-
-
-
-
 
 ### listeners.running(context)
 

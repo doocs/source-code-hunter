@@ -1,14 +1,18 @@
 # Spring5 新特性 - spring.components
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-Spring](https://github.com/SourceHot/spring-framework-read)
 
-
 ## 解析
+
 - 相关类: `org.springframework.context.index.CandidateComponentsIndexLoader`
 - 测试用例: `org.springframework.context.annotation.ClassPathScanningCandidateComponentProviderTests.defaultsWithIndex`,`org.springframework.context.index.CandidateComponentsIndexLoaderTests`
 - `CandidateComponentsIndexLoader`是怎么找出来的,全文搜索`spring.components`
+
 ### 使用介绍
+
 - 下面是从`resources/example/scannable/spring.components`测试用例中复制过来的,从中可以发现等号左侧放的是我们写的组件,等号右边是属于什么组件
+
 ```
 example.scannable.AutowiredQualifierFooService=example.scannable.FooService
 example.scannable.DefaultNamedComponent=org.springframework.stereotype.Component
@@ -23,7 +27,9 @@ example.scannable.sub.BarComponent=org.springframework.stereotype.Component
 ```
 
 ### debug
+
 - 入口 `org.springframework.context.index.CandidateComponentsIndexLoader.loadIndex`
+
 ```java
     @Nullable
     public static CandidateComponentsIndex loadIndex(@Nullable ClassLoader classLoader) {
@@ -35,6 +41,7 @@ example.scannable.sub.BarComponent=org.springframework.stereotype.Component
     }
 
 ```
+
 ```java
     /**
      * 解析  META-INF/spring.components 文件
@@ -99,11 +106,8 @@ example.scannable.sub.BarComponent=org.springframework.stereotype.Component
     }
 ```
 
-
-
-
-
 ![image-20200115105941265](../../../images/spring/image-20200115105941265.png)
+
 - 该类给`org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider.findCandidateComponents`提供了帮助
 
 ```java

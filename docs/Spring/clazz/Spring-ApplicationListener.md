@@ -1,8 +1,7 @@
 # Spring initApplicationEventMulticaster
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-Spring](https://github.com/SourceHot/spring-framework-read)
-
-
 
 ## demo
 
@@ -21,8 +20,6 @@ public class DemoApplicationListener implements ApplicationListener {
 
 ```
 
-
-
 ```XML
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -33,8 +30,6 @@ public class DemoApplicationListener implements ApplicationListener {
 </beans>
 ```
 
-
-
 ```JAVA
 public class ListenerSourceCode {
     public static void main(String[] args) {
@@ -43,12 +38,9 @@ public class ListenerSourceCode {
 }
 ```
 
-
-
 ## 初始化入口
+
 - `org.springframework.context.support.AbstractApplicationContext.refresh`中的`initApplicationEventMulticaster`方法
-
-
 
 ```java
     protected void initApplicationEventMulticaster() {
@@ -73,8 +65,6 @@ public class ListenerSourceCode {
     }
 
 ```
-
-
 
 ## 注册
 
@@ -114,8 +104,6 @@ public class ListenerSourceCode {
 
 ![image-20200119163638222](../../../images/spring/image-20200119163638222.png)
 
-
-
 ## finishRefresh 发布
 
 ```java
@@ -141,10 +129,6 @@ public class ListenerSourceCode {
 
 - `org.springframework.context.support.AbstractApplicationContext#publishEvent(org.springframework.context.ApplicationEvent)`
   - `org.springframework.context.support.AbstractApplicationContext#publishEvent(java.lang.Object, org.springframework.core.ResolvableType)`
-
-
-
-
 
 ```java
 protected void publishEvent(Object event, @Nullable ResolvableType eventType) {
@@ -186,13 +170,9 @@ protected void publishEvent(Object event, @Nullable ResolvableType eventType) {
     }
 ```
 
-
-
 - 执行监听方法
 
 ![image-20200119164149650](../../../images/spring/image-20200119164149650.png)
-
-
 
 ```java
     protected void invokeListener(ApplicationListener<?> listener, ApplicationEvent event) {
@@ -211,8 +191,6 @@ protected void publishEvent(Object event, @Nullable ResolvableType eventType) {
     }
 
 ```
-
-
 
 ```java
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -238,8 +216,6 @@ protected void publishEvent(Object event, @Nullable ResolvableType eventType) {
     }
 
 ```
-
-
 
 ![image-20200119164402137](../../../images/spring/image-20200119164402137.png)
 

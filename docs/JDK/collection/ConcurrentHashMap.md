@@ -1,7 +1,7 @@
 HashMap 源码中主要了解其核心源码及实现逻辑。ConcurrentHashMap 就不再重复那些数据结构相关的内容咯，这里重点看一下它的并发安全实现。源码如下。
 
 ```java
-public class ConcurrentHashMap<K,V> extends AbstractMap<K,V> implements ConcurrentMap<K,V>, 
+public class ConcurrentHashMap<K,V> extends AbstractMap<K,V> implements ConcurrentMap<K,V>,
 		Serializable {
 
     /* --------- 常量及成员变量的设计 几乎与HashMap相差无几 -------- */
@@ -32,12 +32,12 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V> implements Concurre
     private static final float LOAD_FACTOR = 0.75f;
 
     /**
-     * 
+     *
      */
     transient volatile Node<K,V>[] table;
 
     /**
-     * 
+     *
      */
     private transient volatile Node<K,V>[] nextTable;
 
@@ -75,8 +75,8 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V> implements Concurre
         this.sizeCtl = cap;
     }
 
-    /** 
-     * ConcurrentHashMap 的核心就在于其put元素时 利用synchronized局部锁 和 
+    /**
+     * ConcurrentHashMap 的核心就在于其put元素时 利用synchronized局部锁 和
      * CAS乐观锁机制 大大提升了本集合的并发能力，比JDK7的分段锁性能更强
      */
     public V put(K key, V value) {
@@ -161,5 +161,6 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V> implements Concurre
     }
 }
 ```
-**与JDK1.7在同步机制上的区别** 总结如下：  
-JDK1.7 使用的是分段锁机制，其内部类Segment 继承了 ReentrantLock，将 容器内的数组划分成多段区域，每个区域对应一把锁，相比于HashTable确实提升了不少并发能力，但在数据量庞大的情况下，性能依然不容乐观，只能通过不断的增加锁来维持并发性能。而JDK1.8则使用了 CAS乐观锁 + synchronized局部锁 处理并发问题，锁粒度更细，即使数据量很大也能保证良好的并发性。
+
+**与 JDK1.7 在同步机制上的区别** 总结如下：  
+JDK1.7 使用的是分段锁机制，其内部类 Segment 继承了 ReentrantLock，将 容器内的数组划分成多段区域，每个区域对应一把锁，相比于 HashTable 确实提升了不少并发能力，但在数据量庞大的情况下，性能依然不容乐观，只能通过不断的增加锁来维持并发性能。而 JDK1.8 则使用了 CAS 乐观锁 + synchronized 局部锁 处理并发问题，锁粒度更细，即使数据量很大也能保证良好的并发性。

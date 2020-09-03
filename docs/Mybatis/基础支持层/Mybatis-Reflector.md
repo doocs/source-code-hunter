@@ -1,11 +1,13 @@
 # mybatis 反射
+
 - Author: [HuiFer](https://github.com/huifer)
 - Description: 该文介绍 mybatis 反射相关类的源码
 - 源码阅读工程: [SourceHot-Mybatis](https://github.com/SourceHot/mybatis-read.git)
 
 ## addDefaultConstructor
 
--  mybatis 的反射相关内容在`org.apache.ibatis.reflection` 下存放. 本片主要讲解`org.apache.ibatis.reflection.Reflector`类, 先看一下该类的属性
+- mybatis 的反射相关内容在`org.apache.ibatis.reflection` 下存放. 本片主要讲解`org.apache.ibatis.reflection.Reflector`类, 先看一下该类的属性
+
 ```java
 public class Reflector {
 
@@ -41,7 +43,7 @@ public class Reflector {
         * 构造函数
         */
        private Constructor<?> defaultConstructor;
-   
+
        /**
         * 缓存数据, 大写KEY
         */
@@ -51,6 +53,7 @@ public class Reflector {
 ```
 
 - 构造方法, 构造方法传入一个类的字节码,在构造方法中设置相关的属性值
+
 ```java
 public class Reflector {
 
@@ -79,7 +82,9 @@ public Reflector(Class<?> clazz) {
 }
 }
 ```
-- `addDefaultConstructor` 方法 , 下面截图内容为JDK8 mybatis中 的内容
+
+- `addDefaultConstructor` 方法 , 下面截图内容为 JDK8 mybatis 中 的内容
+
 ```java
     private void addDefaultConstructor(Class<?> clazz) {
 
@@ -93,8 +98,10 @@ public Reflector(Class<?> clazz) {
         });
     }
 ```
+
 - 创建一个测试类
-```java 
+
+```java
 public class People {
     private String name;
 
@@ -122,6 +129,7 @@ public class People {
 }
 
 ```
+
 ```java
 import org.junit.jupiter.api.Test;
 
@@ -151,7 +159,7 @@ class HfReflectorTest {
 
   ![1575890475839](../../../images/mybatis/1575890475839.png)
 
-可以发现空参构造的`parameterTypes`长度是0.因此可以确认`org.apache.ibatis.reflection.Reflector#addDefaultConstructor`方法获取了空参构造
+可以发现空参构造的`parameterTypes`长度是 0.因此可以确认`org.apache.ibatis.reflection.Reflector#addDefaultConstructor`方法获取了空参构造
 
 - 继续看`org.apache.ibatis.reflection.Reflector#getDefaultConstructor`方法, 该方法是获取构造函数的方法,如果构造函数没有就抛出异常,这也是为什么我们的实体类需要把空参构造写上去的原因。
 
@@ -165,10 +173,6 @@ class HfReflectorTest {
           }
       }
   ```
-
-  
-
-
 
 ## addGetMethods
 
@@ -186,7 +190,7 @@ class HfReflectorTest {
       }
   ```
 
-- 该方法中依旧使用了JDK8语法通过`m.getParameterTypes().length == 0 && PropertyNamer.isGetter(m.getName())`来判断是否是`get`或·`is`开头的内容
+- 该方法中依旧使用了 JDK8 语法通过`m.getParameterTypes().length == 0 && PropertyNamer.isGetter(m.getName())`来判断是否是`get`或·`is`开头的内容
 
 - 调用`org.apache.ibatis.reflection.property.PropertyNamer`
 
@@ -198,8 +202,6 @@ class HfReflectorTest {
   ```
 
 - `resolveGetterConflicts`方法后续介绍
-
-
 
 ## getClassMethods
 
@@ -213,7 +215,7 @@ class HfReflectorTest {
           while (currentClass != null && currentClass != Object.class) {
               // getDeclaredMethods 获取 public ,private , protcted 方法
               addUniqueMethods(uniqueMethods, currentClass.getDeclaredMethods());
-  
+
               // we also need to look for interface methods -
               // because the class may be abstract
               // 当前类是否继承别的类(实现接口)如果继承则需要进行操作
@@ -222,19 +224,17 @@ class HfReflectorTest {
                   // getMethods 获取本身和父类的 public 方法
                   addUniqueMethods(uniqueMethods, anInterface.getMethods());
               }
-  
+
               // 循环往上一层一层寻找最后回到 Object 类 的上级为null 结束
               currentClass = currentClass.getSuperclass();
           }
-  
+
           Collection<Method> methods = uniqueMethods.values();
-  
+
           return methods.toArray(new Method[0]);
       }
-  
-  ```
 
-  
+  ```
 
 - `org.apache.ibatis.reflection.Reflector#addUniqueMethods`
 
@@ -256,8 +256,6 @@ class HfReflectorTest {
           }
       }
   ```
-
-  
 
 - 唯一标识方法`org.apache.ibatis.reflection.Reflector#getSignature`
 
@@ -283,8 +281,6 @@ class HfReflectorTest {
       }
   ```
 
-  
-
 - 照旧我们进行 debug 当前方法为`toString`方法
 
   ![1575891988804](../../../images/mybatis//1575891988804.png)
@@ -301,7 +297,7 @@ class HfReflectorTest {
 
   方法签名:方法
 
-  目前完成了一部分还有一个继承问题需要debug看一下, 编写一个`Man`继承`People` 还需要实现接口
+  目前完成了一部分还有一个继承问题需要 debug 看一下, 编写一个`Man`继承`People` 还需要实现接口
 
   ```java
   public class Man extends People implements TestManInterface {
@@ -309,12 +305,12 @@ class HfReflectorTest {
       public Integer inte() {
           return 1;
       }
-  
+
       public String hello() {
           return "hello";
       }
   }
-  
+
   ```
 
   ```java
@@ -394,8 +390,6 @@ class HfReflectorTest {
       }
   ```
 
-  
-
 ## addFields
 
 - `org.apache.ibatis.reflection.Reflector#addFields`
@@ -424,8 +418,6 @@ class HfReflectorTest {
           }
       }
   ```
-
-  
 
 ## 属性查看
 

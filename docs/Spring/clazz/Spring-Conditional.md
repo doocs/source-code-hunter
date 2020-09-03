@@ -1,8 +1,7 @@
 # Spring Conditional
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
-
-
 
 ## Conditional
 
@@ -20,8 +19,6 @@ public @interface Conditional {
 }
 ```
 
-
-
 ## Condition
 
 ```
@@ -35,8 +32,6 @@ public interface Condition {
 
 }
 ```
-
-
 
 - ConditionContext 上下文
 - AnnotatedTypeMetadata 注解信息
@@ -78,8 +73,6 @@ public interface ConditionContext {
 
 - 唯一实现 : `org.springframework.context.annotation.ConditionEvaluator.ConditionContextImpl`
 
-
-
 - 构造方法
 
 ```java
@@ -96,13 +89,7 @@ public ConditionContextImpl(@Nullable BeanDefinitionRegistry registry,
 
 - 在构造方法中加载了一些变量, 这些变量是根据一定规则转换后得到. 具体规则不展开.
 
-
-
-
-
-
-
-### AnnotatedTypeMetadata 
+### AnnotatedTypeMetadata
 
 - 元数据接口
 
@@ -131,10 +118,6 @@ public interface AnnotatedTypeMetadata {
 
 }
 ```
-
-
-
-
 
 ## 源码分析
 
@@ -183,25 +166,9 @@ public void conditionalOnMissingBeanMatch() throws Exception {
 
 ```
 
-
-
-
-
-
-
 - `org.springframework.context.annotation.AnnotatedBeanDefinitionReader#doRegisterBean`
 
-
-
-
-
-
-
-
-
 ### shouldSkip
-
-
 
 ```java
 public boolean shouldSkip(@Nullable AnnotatedTypeMetadata metadata, @Nullable ConfigurationPhase phase) {
@@ -246,10 +213,6 @@ public boolean shouldSkip(@Nullable AnnotatedTypeMetadata metadata, @Nullable Co
 }
 ```
 
-
-
-
-
 - 读取注解信息, 并且执行注解对应的类的方法
 
   用例如下. 实例化`BeanTwoConfiguration`对象的时候会去执行`NoBeanOneCondition`方法
@@ -258,16 +221,16 @@ public boolean shouldSkip(@Nullable AnnotatedTypeMetadata metadata, @Nullable Co
   @Configuration
   @Conditional(NoBeanOneCondition.class)
   static class BeanTwoConfiguration {
-  
+
      @Bean
      public ExampleBean bean2() {
         return new ExampleBean();
      }
   }
-  
-  
+
+
   static class NoBeanOneCondition implements Condition {
-  
+
   		@Override
   		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
   			return !context.getBeanFactory().containsBeanDefinition("bean1");
@@ -275,13 +238,7 @@ public boolean shouldSkip(@Nullable AnnotatedTypeMetadata metadata, @Nullable Co
   	}
   ```
 
- 在开发中可以自定义matches规则
-
-
-
-
-
-
+在开发中可以自定义 matches 规则
 
 这也是在注册的时候第一个方法
 
@@ -295,7 +252,7 @@ private <T> void doRegisterBean(Class<T> beanClass, @Nullable String name,
    if (this.conditionEvaluator.shouldSkip(abd.getMetadata())) {
       return;
    }
- 
+
     // 省略其他
 }
 ```

@@ -1,7 +1,7 @@
 # Spring OrderComparator
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-Spring](https://github.com/SourceHot/spring-framework-read)
-
 
 ```java
     private int doCompare(@Nullable Object o1, @Nullable Object o2, @Nullable OrderSourceProvider sourceProvider) {
@@ -50,6 +50,7 @@
 ```
 
 - 测试用例
+
 ```java
     @Test
     public void compareWithSourceProviderArray() {
@@ -61,8 +62,6 @@
 ```
 
 ![image-20200116141838601](../../../images/spring/image-20200116141838601.png)
-
-
 
 ```java
     @Nullable
@@ -93,6 +92,4 @@
 
 ![image-20200116141932486](../../../images/spring/image-20200116141932486.png)
 
-
-
-最终`Integer.compare(i1, i2)`比较返回 OK ! 
+最终`Integer.compare(i1, i2)`比较返回 OK !

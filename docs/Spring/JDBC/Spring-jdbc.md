@@ -1,8 +1,7 @@
 # Spring JDBC
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-Spring](https://github.com/SourceHot/spring-framework-read)
-
-
 
 ## 环境搭建
 
@@ -14,7 +13,7 @@
       compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.47'
   ```
 
-- db配置
+- db 配置
 
   ```properties
   jdbc.url=
@@ -28,80 +27,74 @@
   ```JAVA
   public class HsLog {
       private Integer id;
-  
+
       private String source;
-  
+
       public Integer getId() {
           return id;
       }
-  
+
       public void setId(Integer id) {
           this.id = id;
       }
-  
+
       public String getSource() {
           return source;
       }
-  
+
       public void setSource(String source) {
           this.source = source;
       }
   }
   ```
 
-  
-
 - DAO
 
   ```JAVA
   public interface HsLogDao {
       List<HsLog> findAll();
-  
+
       void save(HsLog hsLog);
   }
-  
-  ```
 
-  
+  ```
 
 - 实现类
 
   ```JAVA
   public class HsLogDaoImpl extends JdbcDaoSupport implements HsLogDao {
-  
-  
+
+
       @Override
       public List<HsLog> findAll() {
           return this.getJdbcTemplate().query("select * from hs_log", new HsLogRowMapper());
-  
+
       }
-  
+
       @Override
       public void save(HsLog hsLog) {
           this.getJdbcTemplate().update("insert into hs_log (SOURCE) values(?)"
                   , new Object[]{
                           hsLog.getSource(),
                         }
-  
+
           );
       }
-  
+
       class HsLogRowMapper implements RowMapper<HsLog> {
-  
+
           public HsLog mapRow(ResultSet rs, int rowNum) throws SQLException {
-  
+
               HsLog log = new HsLog();
               log.setId(rs.getInt("id"));
               log.setSource(rs.getString("source"));
               return log;
           }
-  
+
       }
   }
-  
-  ```
 
-  
+  ```
 
 - xml
 
@@ -114,10 +107,10 @@
           http://www.springframework.org/schema/beans/spring-beans.xsd
       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd"
   >
-  
+
       <context:property-placeholder location="classpath:db.properties"/>
-  
-  
+
+
       <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
           <property name="url"
                     value="${jdbc.url}"/>
@@ -126,25 +119,25 @@
           <property name="password" value="${jdbc.password}"/>
           <!-- 配置监控统计拦截的filters -->
           <property name="filters" value="stat"/>
-  
+
           <!-- 配置初始化大小、最小、最大 -->
           <property name="maxActive" value="20"/>
           <property name="initialSize" value="1"/>
           <property name="minIdle" value="1"/>
-  
+
           <!-- 配置获取连接等待超时的时间 -->
           <property name="maxWait" value="60000"/>
-  
+
           <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
           <property name="timeBetweenEvictionRunsMillis" value="60000"/>
-  
+
           <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
           <property name="minEvictableIdleTimeMillis" value="300000"/>
-  
+
           <property name="testWhileIdle" value="true"/>
           <property name="testOnBorrow" value="false"/>
           <property name="testOnReturn" value="false"/>
-  
+
           <!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
           <property name="poolPreparedStatements" value="true"/>
           <property name="maxOpenPreparedStatements" value="20"/>
@@ -152,7 +145,7 @@
       <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
           <property name="dataSource" ref="dataSource"></property>
       </bean>
-  
+
       <bean id="hsLogDao" class="com.huifer.source.spring.dao.impl.HsLogDaoImpl">
           <property name="jdbcTemplate" ref="jdbcTemplate"/>
       </bean>
@@ -162,7 +155,7 @@
 - 运行方法
 
   ```JAVA
-  
+
   public class SpringJDBCSourceCode {
       public static void main(String[] args) {
           ApplicationContext applicationContext = new ClassPathXmlApplicationContext("JDBC-demo.xml");
@@ -171,17 +164,11 @@
           HsLog hsLog = new HsLog();
           hsLog.setSource("jlkjll");
           bean.save(hsLog);
-  
+
       }
   }
-  
+
   ```
-
-  
-
-
-
-
 
 ## 链接对象构造
 
@@ -258,10 +245,6 @@
 
 ```
 
-
-
-
-
 ## 释放资源
 
 `releaseConnection(con, dataSource);`
@@ -302,10 +285,6 @@ public static void doReleaseConnection(@Nullable Connection con, @Nullable DataS
     }
 ```
 
-
-
-
-
 ### org.springframework.transaction.support.ResourceHolderSupport
 
 链接数
@@ -328,12 +307,6 @@ public static void doReleaseConnection(@Nullable Connection con, @Nullable DataS
     }
 ```
 
-
-
-
-
-
-
 ## 查询解析
 
 ### org.springframework.jdbc.core.JdbcTemplate
@@ -344,16 +317,17 @@ public static void doReleaseConnection(@Nullable Connection con, @Nullable DataS
     </bean>
 
 ```
+
 - 从配置中可以知道 JdbcTemplate 需要 dataSource 属性, 就从这里开始讲起
-- `org.springframework.jdbc.support.JdbcAccessor.setDataSource`, 这段代码就只做了赋值操作(依赖注入) 
+- `org.springframework.jdbc.support.JdbcAccessor.setDataSource`, 这段代码就只做了赋值操作(依赖注入)
+
 ```java
 public void setDataSource(@Nullable DataSource dataSource) {
         this.dataSource = dataSource;
     }
 ```
+
 - 下面`hsLogDao`也是依赖注入本篇不做详细讲述。
-
-
 
 ### org.springframework.jdbc.core.JdbcTemplate#query(java.lang.String, org.springframework.jdbc.core.RowMapper<T>)
 
@@ -416,7 +390,7 @@ public void setDataSource(@Nullable DataSource dataSource) {
         try {
             stmt = con.createStatement();
             applyStatementSettings(stmt);
-            // 执行 
+            // 执行
             T result = action.doInStatement(stmt);
             handleWarnings(stmt);
             return result;
@@ -466,12 +440,6 @@ public void setDataSource(@Nullable DataSource dataSource) {
     }
 ```
 
-
-
-
-
-
-
 ## 插入解析
 
 ```java
@@ -515,8 +483,3 @@ public void setDataSource(@Nullable DataSource dataSource) {
     }
 
 ```
-
-
-
-
-

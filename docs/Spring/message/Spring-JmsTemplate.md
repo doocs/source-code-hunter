@@ -1,10 +1,11 @@
 # Spring JmsTemplate
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 - 源码路径: `org.springframework.jms.core.JmsTemplate`
 
-
 ## 源码分析
+
 ### send 发送消息
 
 ```java
@@ -59,6 +60,7 @@
 ```
 
 - 最后`action.doInJms(sessionToUse)`的操作
+
 ```java
             Destination destination = resolveDestinationName(session, destinationName);
             doSend(session, destination, messageCreator);
@@ -66,6 +68,7 @@
 ```
 
 - `doSend`真正做的发送方法
+
 ```java
     protected void doSend(Session session, Destination destination, MessageCreator messageCreator)
             throws JMSException {
@@ -94,8 +97,10 @@
     }
 
 ```
+
 1. `createProducer`中通过`javax.jms.Session.createProducer`创建`MessageProducer`,第三方消息中间件独立实现
 2. `createMessage`
+
 ```java
 @Override
 public javax.jms.Message createMessage(Session session) throws JMSException {
@@ -107,8 +112,11 @@ public javax.jms.Message createMessage(Session session) throws JMSException {
     }
 }
 ```
+
 - 消息转换后续在更新
+
 3. `doSend` 这里也是第三方消息中间件实现
+
 ```java
 protected void doSend(MessageProducer producer, Message message) throws JMSException {
     if (this.deliveryDelay >= 0) {
@@ -122,7 +130,9 @@ protected void doSend(MessageProducer producer, Message message) throws JMSExcep
     }
 }
 ```
+
 4. `closeMessageProducer` 这个方法特别,直接关闭
+
 ```java
 public static void closeMessageProducer(@Nullable MessageProducer producer) {
     if (producer != null) {
@@ -140,6 +150,7 @@ public static void closeMessageProducer(@Nullable MessageProducer producer) {
 ```
 
 ### receive 接收消息
+
 ```java
     @Override
     @Nullable

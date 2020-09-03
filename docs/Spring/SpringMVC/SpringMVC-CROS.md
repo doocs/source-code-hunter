@@ -1,8 +1,6 @@
 # Spring-MVC 跨域
 
-
-
-## CrossOrigin注解
+## CrossOrigin 注解
 
 - 通过注解设置跨域 demo 如下
 
@@ -28,11 +26,7 @@ public class JSONController {
 
 ```
 
-
-
-
-
-- 切入点: 
+- 切入点:
 
   - `org.springframework.web.servlet.handler.AbstractHandlerMethodMapping#registerHandlerMethod`
 
@@ -55,20 +49,20 @@ public class JSONController {
                     assertUniqueMethodMapping(handlerMethod, mapping);
                     // 设置值
                     this.mappingLookup.put(mapping, handlerMethod);
-    
+
                     // 获取url
                     List<String> directUrls = getDirectUrls(mapping);
                     for (String url : directUrls) {
                         // 设置
                         this.urlLookup.add(url, mapping);
                     }
-    
+
                     String name = null;
                     if (getNamingStrategy() != null) {
                         name = getNamingStrategy().getName(handlerMethod, mapping);
                         addMappingName(name, handlerMethod);
                     }
-    
+
                     /**
                      * 跨域设置
                      * {@link org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping#initCorsConfiguration(Object, Method, RequestMappingInfo)}
@@ -77,7 +71,7 @@ public class JSONController {
                     if (corsConfig != null) {
                         this.corsLookup.put(handlerMethod, corsConfig);
                     }
-    
+
                     this.registry.put(mapping, new MappingRegistration<>(mapping, handlerMethod, directUrls, name));
                 }
                 finally {
@@ -85,7 +79,7 @@ public class JSONController {
                     this.readWriteLock.writeLock().unlock();
                 }
             }
-    
+
     ```
 
 - 着重查看**`CorsConfiguration`**初始化方法
@@ -123,15 +117,11 @@ public class JSONController {
     }
 ```
 
-
-
 信息截图:
 
 ![image-20200123085741347](../../../images/springMVC/clazz/image-20200123085741347.png)
 
 ![image-20200123085756168](../../../images/springMVC/clazz/image-20200123085756168.png)
-
-
 
 ### updateCorsConfig
 
@@ -174,30 +164,18 @@ public class JSONController {
 
 ```
 
-
-
-
-
 最终解析结果
 
 ![image-20200123085946476](../../../images/springMVC/clazz/image-20200123085946476.png)
 
-
-
-- 解析完成后放入	`corsLookup`对象中 类:**`org.springframework.web.servlet.handler.AbstractHandlerMethodMapping`**
+- 解析完成后放入 `corsLookup`对象中 类:**`org.springframework.web.servlet.handler.AbstractHandlerMethodMapping`**
 
   ```java
                   if (corsConfig != null) {
                       this.corsLookup.put(handlerMethod, corsConfig);
                   }
-  
+
   ```
-
-  
-
-
-
-
 
 ## xml 配置方式
 
@@ -215,11 +193,11 @@ public class JSONController {
     </mvc:cors>
 ```
 
-- `mvc`标签解析类: `org.springframework.web.servlet.config.MvcNamespaceHandler`，这个类对Spring配置文件中的`<mvc:xxx>`标签做了解析设定，如这次我们的关注点**`CORS`**
+- `mvc`标签解析类: `org.springframework.web.servlet.config.MvcNamespaceHandler`，这个类对 Spring 配置文件中的`<mvc:xxx>`标签做了解析设定，如这次我们的关注点**`CORS`**
 
   ```java
   public class MvcNamespaceHandler extends NamespaceHandlerSupport {
-  
+
       /**
        * 初始化一些SpringMvc 的解析类
        */
@@ -242,22 +220,18 @@ public class JSONController {
           registerBeanDefinitionParser("view-resolvers", new ViewResolversBeanDefinitionParser());
           // tiles 处理器
           registerBeanDefinitionParser("tiles-configurer", new TilesConfigurerBeanDefinitionParser());
-  
+
           registerBeanDefinitionParser("freemarker-configurer", new FreeMarkerConfigurerBeanDefinitionParser());
           registerBeanDefinitionParser("groovy-configurer", new GroovyMarkupConfigurerBeanDefinitionParser());
-  
+
           registerBeanDefinitionParser("script-template-configurer", new ScriptTemplateConfigurerBeanDefinitionParser());
           // 跨域处理
           registerBeanDefinitionParser("cors", new CorsBeanDefinitionParser());
       }
-  
+
   }
-  
+
   ```
-
-  
-
-
 
 ### CorsBeanDefinitionParser
 
@@ -268,7 +242,7 @@ public class JSONController {
 #### 解析
 
 - 实现**BeanDefinitionParser** 接口的都有一个**parse**方法直接看方法.
-  - 通过查看我们可以知道最终目的获取xml标签中的属性,对 **CorsConfiguration**进行初始化，最后Spring中注册
+  - 通过查看我们可以知道最终目的获取 xml 标签中的属性,对 **CorsConfiguration**进行初始化，最后 Spring 中注册
 
 ```JAVA
 public class CorsBeanDefinitionParser implements BeanDefinitionParser {
@@ -333,8 +307,6 @@ public class CorsBeanDefinitionParser implements BeanDefinitionParser {
 
   - 可以看出这个是我们的第一个跨域配置的信息
 
-
-
 - 注册方法
 
   ```java
@@ -360,14 +332,10 @@ public class CorsBeanDefinitionParser implements BeanDefinitionParser {
           }
           return new RuntimeBeanReference(CORS_CONFIGURATION_BEAN_NAME);
       }
-  
+
   ```
 
 - ![image-20200123091445694](../../../images/springMVC/clazz/image-20200123091445694.png)
-
-
-
-
 
 ## CorsConfiguration
 
@@ -417,10 +385,6 @@ public class CorsBeanDefinitionParser implements BeanDefinitionParser {
     private Long maxAge;
 ```
 
-
-
-
-
 ## 处理请求
 
 - 请求处理的一部分，前置后置都还有其他处理，这里只对跨域请求进行说明
@@ -441,16 +405,16 @@ public class CorsBeanDefinitionParser implements BeanDefinitionParser {
               String handlerName = (String) handler;
               handler = obtainApplicationContext().getBean(handlerName);
           }
-  
+
           HandlerExecutionChain executionChain = getHandlerExecutionChain(handler, request);
-  
+
           if (logger.isTraceEnabled()) {
               logger.trace("Mapped to " + handler);
           }
           else if (logger.isDebugEnabled() && !request.getDispatcherType().equals(DispatcherType.ASYNC)) {
               logger.debug("Mapped to " + executionChain.getHandler());
           }
-  
+
           // 判断是否为跨域请求
           if (CorsUtils.isCorsRequest(request)) {
               CorsConfiguration globalConfig = this.corsConfigurationSource.getCorsConfiguration(request);
@@ -459,10 +423,10 @@ public class CorsBeanDefinitionParser implements BeanDefinitionParser {
               CorsConfiguration config = (globalConfig != null ? globalConfig.combine(handlerConfig) : handlerConfig);
               executionChain = getCorsHandlerExecutionChain(request, executionChain, config);
           }
-  
+
           return executionChain;
       }
-  
+
   ```
 
 ### 判断是否跨域
@@ -491,8 +455,6 @@ public class CorsBeanDefinitionParser implements BeanDefinitionParser {
 
 ```
 
-
-
 ### 跨域拦截器创建
 
 ```java
@@ -511,10 +473,6 @@ public class CorsBeanDefinitionParser implements BeanDefinitionParser {
     }
 
 ```
-
-
-
-
 
 ### 跨域拦截器
 
@@ -547,17 +505,11 @@ public class CorsBeanDefinitionParser implements BeanDefinitionParser {
 
 ```
 
-
-
-
-
 ### DefaultCorsProcessor
 
 - 经过跨域拦截器 **`CorsInterceptor`**之后会调用
 
 ![image-20200123093733129](../../../images/springMVC/clazz/image-20200123093733129.png)
-
-
 
 ```JAVA
     @Override
@@ -599,8 +551,6 @@ public class CorsBeanDefinitionParser implements BeanDefinitionParser {
 
 ```
 
-
-
 ### 模拟请求
 
 ```
@@ -609,7 +559,5 @@ Origin: localhost
 ```
 
 变量截图
-
-
 
 ![image-20200123093032179](../../../images/springMVC/clazz/image-20200123093032179.png)

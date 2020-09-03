@@ -1,8 +1,10 @@
 # Spring 自定义属性解析器
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-Spring](https://github.com/SourceHot/spring-framework-read)
 
 ## 用例
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -68,7 +70,8 @@ public class DatePropertyEditor extends PropertyEditorSupport {
 }
 ```
 
-## PropertyEditorRegistrar解析
+## PropertyEditorRegistrar 解析
+
 - 直接在`DatePropertyRegister`打上断点进行查看注册流程
 
   ![image-20200117104710142](../../../images/spring/image-20200117104710142.png)
@@ -82,8 +85,6 @@ public class DatePropertyEditor extends PropertyEditorSupport {
     }
 
 ```
-
-
 
 ```java
     @Override
@@ -168,8 +169,6 @@ public class DatePropertyEditor extends PropertyEditorSupport {
 
 ![image-20200117110115741](../../../images/spring/image-20200117110115741.png)
 
-
-
 - 为什么最后结果变成`com.huifer.source.spring.bean.DatePropertyEditor`
 
   看配置文件
@@ -181,10 +180,10 @@ public class DatePropertyEditor extends PropertyEditorSupport {
                   </entry>
               </map>
           </property>
-  
+
   ```
 
-  - 对应的set方法
+  - 对应的 set 方法
 
     ```java
         public void setCustomEditors(Map<Class<?>, Class<? extends PropertyEditor>> customEditors) {
@@ -194,34 +193,24 @@ public class DatePropertyEditor extends PropertyEditorSupport {
 
     ![image-20200117110846256](../../../images/spring/image-20200117110846256.png)
 
-
-
-
-
-
-
-
-
 ## applyPropertyValues
 
 - 应用属性值
-
-  
 
   ```java
       protected void applyPropertyValues(String beanName, BeanDefinition mbd, BeanWrapper bw, PropertyValues pvs) {
           if (pvs.isEmpty()) {
               return;
           }
-  
+
           if (System.getSecurityManager() != null && bw instanceof BeanWrapperImpl) {
               ((BeanWrapperImpl) bw).setSecurityContext(getAccessControlContext());
           }
-  
+
           MutablePropertyValues mpvs = null;
           // 没有解析的属性
           List<PropertyValue> original;
-  
+
           if (pvs instanceof MutablePropertyValues) {
               mpvs = (MutablePropertyValues) pvs;
               if (mpvs.isConverted()) {
@@ -248,7 +237,7 @@ public class DatePropertyEditor extends PropertyEditorSupport {
           }
           //  创建BeanDefinitionValueResolver
           BeanDefinitionValueResolver valueResolver = new BeanDefinitionValueResolver(this, beanName, mbd, converter);
-  
+
           // Create a deep copy, resolving any references for values.
           // 解析后的对象集合
           List<PropertyValue> deepCopy = new ArrayList<>(original.size());
@@ -303,7 +292,7 @@ public class DatePropertyEditor extends PropertyEditorSupport {
               // 转换成功的标记方法
               mpvs.setConverted();
           }
-  
+
           // Set our (possibly massaged) deep copy.
           try {
               bw.setPropertyValues(new MutablePropertyValues(deepCopy));
@@ -313,26 +302,14 @@ public class DatePropertyEditor extends PropertyEditorSupport {
                       mbd.getResourceDescription(), beanName, "Error setting property values", ex);
           }
       }
-  
-  ```
 
-  
+  ```
 
   ![image-20200117133325461](../../../images/spring/image-20200117133325461.png)
 
-  
-
-
-
 ![image-20200117141309038](../../../images/spring/image-20200117141309038.png)
 
-
-
 ![image-20200117141519123](../../../images/spring/image-20200117141519123.png)
-
-
-
-
 
 - 属性值解析
 
@@ -342,7 +319,7 @@ public class DatePropertyEditor extends PropertyEditorSupport {
       @Nullable
       private Object convertForProperty(
               @Nullable Object value, String propertyName, BeanWrapper bw, TypeConverter converter) {
-  
+
           if (converter instanceof BeanWrapperImpl) {
               return ((BeanWrapperImpl) converter).convertForProperty(value, propertyName);
           }
@@ -352,10 +329,8 @@ public class DatePropertyEditor extends PropertyEditorSupport {
               return converter.convertIfNecessary(value, pd.getPropertyType(), methodParam);
           }
       }
-  
-  ```
 
-  
+  ```
 
 ```JAVA
     private Object doConvertTextValue(@Nullable Object oldValue, String newTextValue, PropertyEditor editor) {
@@ -375,8 +350,6 @@ public class DatePropertyEditor extends PropertyEditorSupport {
 
 ```
 
-
-
 - 调用用例编写的方法
 
   ```JAVA
@@ -389,15 +362,12 @@ public class DatePropertyEditor extends PropertyEditorSupport {
               this.setValue(date);
           } catch (Exception e) {
               e.printStackTrace();
-  
+
           }
       }
-  
-  ```
 
-  
+  ```
 
 ![image-20200117143022827](../../../images/spring/image-20200117143022827.png)
 
 该值也是这个方法的返回`org.springframework.beans.TypeConverterDelegate#convertIfNecessary(java.lang.String, java.lang.Object, java.lang.Object, java.lang.Class<T>, org.springframework.core.convert.TypeDescriptor)`
-

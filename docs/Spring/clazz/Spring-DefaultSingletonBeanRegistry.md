@@ -1,4 +1,5 @@
 # DefaultSingletonBeanRegistry
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-Spring](https://github.com/SourceHot/spring-framework-read)
 - 源码路径: `org.springframework.beans.factory.support.DefaultSingletonBeanRegistry`
@@ -6,11 +7,11 @@
 
 类图
 ![image-20200110093044672](../../../images/spring/image-20200110093044672.png)
+
 ## 注册方法解析
+
 - 从名字可以看出这是一个单例对象的注册类
 - `org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.registerSingleton`
-
-
 
 - 测试用例出发
 
@@ -18,11 +19,11 @@
       @Test
       public void testSingletons() {
           DefaultSingletonBeanRegistry beanRegistry = new DefaultSingletonBeanRegistry();
-  
+
           TestBean tb = new TestBean();
           beanRegistry.registerSingleton("tb", tb);
           assertSame(tb, beanRegistry.getSingleton("tb"));
-  
+
           TestBean tb2 = (TestBean) beanRegistry.getSingleton("tb2", new ObjectFactory<Object>() {
               @Override
               public Object getObject() throws BeansException {
@@ -30,7 +31,7 @@
               }
           });
           assertSame(tb2, beanRegistry.getSingleton("tb2"));
-  
+
           assertSame(tb, beanRegistry.getSingleton("tb"));
           assertSame(tb2, beanRegistry.getSingleton("tb2"));
           assertEquals(2, beanRegistry.getSingletonCount());
@@ -38,15 +39,13 @@
           assertEquals(2, names.length);
           assertEquals("tb", names[0]);
           assertEquals("tb2", names[1]);
-  
+
           beanRegistry.destroySingletons();
           assertEquals(0, beanRegistry.getSingletonCount());
           assertEquals(0, beanRegistry.getSingletonNames().length);
       }
-  
-  ```
 
-  
+  ```
 
 - 第一个关注的方法`org.springframework.beans.factory.support.DefaultSingletonBeanRegistry#registerSingleton` 注册单例对象
 
@@ -76,6 +75,7 @@
     }
 
 ```
+
 ```java
     /**
      * Add the given singleton object to the singleton cache of this factory.
@@ -95,7 +95,9 @@
         }
     }
 ```
+
 - 这些变量是什么
+
 ```java
     /**
      * 单例对象的缓存: beanName -> Object
@@ -153,7 +155,9 @@
 - 注册方法至此结束
 
 ## 获取方法解析
+
 - `org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(java.lang.String)`
+
 ```java
     @Override
     @Nullable
@@ -190,9 +194,10 @@
 
 ```
 
-- 获取单例对象的本质就是从map中获取 ObjectFactory 进而执行 getObject()
-`ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);`
+- 获取单例对象的本质就是从 map 中获取 ObjectFactory 进而执行 getObject()
+  `ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);`
 - 测试方法
+
 ```java
 
         TestBean tb2 = (TestBean) beanRegistry.getSingleton("tb2", new ObjectFactory<Object>() {

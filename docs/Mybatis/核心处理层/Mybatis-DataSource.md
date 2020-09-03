@@ -1,9 +1,11 @@
 # Mybatis DataSource
+
 - Author: [HuiFer](https://github.com/huifer)
 - Description: 该文介绍 mybatis DataSource 源码
 - 源码阅读工程: [SourceHot-Mybatis](https://github.com/SourceHot/mybatis-read.git)
 
 - `org.apache.ibatis.datasource.DataSourceFactory`
+
 ```java
 /**
  * 数据源工厂
@@ -42,29 +44,14 @@ public interface DataSourceFactory {
       </dataSource>
 ```
 
-
-
-
-
-
-
-
-
 - 在`org.apache.ibatis.session.Configuration`中有配置下面三个信息
+
 ```java
         typeAliasRegistry.registerAlias("JNDI", JndiDataSourceFactory.class);
         typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
         typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
 
 ```
-
-
-
-
-
-
-
-
 
 ## JndiDataSourceFactory
 
@@ -156,8 +143,6 @@ public class JndiDataSourceFactory implements DataSourceFactory {
     protected int poolPingConnectionsNotUsedFor;
 ```
 
-
-
 ## PooledDataSourceFactory
 
 ```java
@@ -175,8 +160,6 @@ public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
         dataSource = new UnpooledDataSource();
     }
 ```
-
-
 
 ## UnpooledDataSourceFactory
 
@@ -208,8 +191,6 @@ public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
 
 ```
 
-
-
 ## UnpooledDataSource
 
 - `org.apache.ibatis.datasource.unpooled.UnpooledDataSource`主要定义数据库连接相关的一些属性,以及与数据库的链接对象创建
@@ -226,8 +207,6 @@ public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
       private Integer defaultTransactionIsolationLevel;
       private Integer defaultNetworkTimeout;
   ```
-
-  
 
 - 初始化连接对象
 
@@ -255,10 +234,8 @@ public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
               }
           }
       }
-  
-  ```
 
-  
+  ```
 
 - 设置连接对象的属性
 
@@ -279,10 +256,8 @@ public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
               conn.setTransactionIsolation(defaultTransactionIsolationLevel);
           }
       }
-  
-  ```
 
-  
+  ```
 
 - 获取连接对象
 
@@ -307,18 +282,12 @@ public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
           }
           return doGetConnection(props);
       }
-  
+
   ```
-
-  
-
-
-
-
 
 ## 解析流程
 
-- 在xml解析的过程中会执行`DataSourceFactory`相关内容
+- 在 xml 解析的过程中会执行`DataSourceFactory`相关内容
 
 ```java
     /**
@@ -357,4 +326,3 @@ public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
 方法直接走完
 
 ![image-20191223083732972](../../../images/mybatis/image-20191223083732972.png)
-

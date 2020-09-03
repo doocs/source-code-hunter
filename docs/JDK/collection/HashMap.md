@@ -1,9 +1,11 @@
 作为工作中最重要、最常用的容器之一，当然还是要自己动手写一篇 HashMap 的源码解析来加深对其的印象咯，而且它的设计与实现 也有很多值得学习的地方。
 
 ## 源码赏析
-JDK1.8 的HashMap 底层使用的是 动态数组，数组中元素存放的是 链表或红黑树。核心源码如下。
+
+JDK1.8 的 HashMap 底层使用的是 动态数组，数组中元素存放的是 链表或红黑树。核心源码如下。
+
 ```java
-public class HashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>, 
+public class HashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>,
 		Cloneable, Serializable {
 
     /**
@@ -25,7 +27,7 @@ public class HashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>,
      * 当前 HashMap 所能容纳键值对数量的最大值，超过这个值，则需扩容
      */
     int threshold;
-    
+
     /**
      * 已使用的容量
      */
@@ -35,12 +37,12 @@ public class HashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>,
      * Node数组，实际存放 键值对 的地方
      */
     transient Node<K,V>[] table;
-    
+
     /**
      * 链表转红黑树的阈值，链表长度达到此值，会进化成红黑树
      */
     static final int TREEIFY_THRESHOLD = 8;
-    
+
     /**
      * 系列构造方法，推荐在初始化时根据实际情况设置好初始容量，用好了可以显著减少 resize，提升效率
      */
@@ -89,7 +91,7 @@ public class HashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>,
             if (p.hash == hash && ((k = p.key) == key || (key != null && key.equals(k))))
                 e = p;
 			// 如果桶中的引用类型为 TreeNode，则调用红黑树的插入方法
-	        else if (p instanceof TreeNode)  
+	        else if (p instanceof TreeNode)
 	            e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
 	        else {
 	            // 对链表进行遍历，并统计链表长度
@@ -103,7 +105,7 @@ public class HashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>,
 	                        treeifyBin(tab, hash);
 	                    break;
 	                }
-	                
+
 	                // 条件为 true，表示当前链表包含要插入的键值对，终止遍历
 	                if (e.hash == hash &&
 	                    ((k = e.key) == key || (key != null && key.equals(k))))
@@ -111,7 +113,7 @@ public class HashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>,
 	                p = e;
 	            }
 	        }
-	        
+
 	        // 判断要插入的键值对是否存在 HashMap 中
 	        if (e != null) { // existing mapping for key
 	            V oldValue = e.value;
@@ -144,7 +146,7 @@ public class HashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>,
 	        if (oldCap >= MAXIMUM_CAPACITY) {
 	            threshold = Integer.MAX_VALUE;
 	            return oldTab;
-	        } 
+	        }
 	        // 按旧容量和阈值的2倍计算新容量和阈值的大小
 	        else if ((newCap = oldCap << 1) < MAXIMUM_CAPACITY &&
 	                 oldCap >= DEFAULT_INITIAL_CAPACITY)
@@ -159,7 +161,7 @@ public class HashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>,
 	        newCap = DEFAULT_INITIAL_CAPACITY;
 	        newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);
 	    }
-	    
+
 	    // newThr 为 0 时，按阈值计算公式进行计算
 	    if (newThr == 0) {
 	        float ft = (float)newCap * loadFactor;
@@ -233,7 +235,7 @@ public class HashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>,
 	    if ((tab = table) != null && (n = tab.length) > 0 &&
 	        (first = tab[(n - 1) & hash]) != null) {
 	        // 如果hash和key都与 第一个元素相同，则第一个元素就是我们要获取的，直接返回
-	        if (first.hash == hash && 
+	        if (first.hash == hash &&
 	        		((k = first.key) == key || (key != null && key.equals(k))))
 	            return first;
 	        if ((e = first.next) != null) {
@@ -312,17 +314,21 @@ public class HashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>,
     }
 }
 ```
+
 源码部分 结合注释还是很容易看懂的，比较复杂的是红黑树这种数据结构，以及红黑树与链表之间的相互转换。下面我们回顾下这个数据结构。
+
 ## 红黑树
+
 红黑树是一种自平衡的二叉查找树，比普通的二叉查找树效率更高，它可在 O(logN) 时间内完成查找、增加、删除等操作。
 
 普通的二叉查找树在极端情况下可退化成链表，导致 增、删、查 效率低下。红黑树通过定义一些性质，将任意节点的左右子树高度差控制在规定范围内，以达到平衡状态，红黑树的性质定义如下。
+
 1. 节点是红色或黑色。
 2. 根是黑色。
-3. 所有叶子都是黑色（叶子是NIL节点）。
+3. 所有叶子都是黑色（叶子是 NIL 节点）。
 4. 每个红色节点必须有两个黑色的子节点。（从每个叶子到根的所有路径上不能有两个连续的红色节点。）
 5. 从任一节点到其每个叶子的所有简单路径都包含相同数目的黑色节点。
 
 红黑树的操作和其他树一样，包括查找、插入、删除等，其查找过程和二叉查找树一样简单，但插入和删除操作要复杂的多，这也是其 为保持平衡性 不会退化成链表 所付出的代价。红黑树为保持平衡性 所进行的操作主要有 旋转（左旋、右旋）和变色。
 
-红黑树的实现 确实比较复杂，光是理解其 插入、删除 的操作原理 就蛮费劲，所以这里先挖个坑，后面单独用一篇博文来分析 HashMap的 内部类TreeNode 对红黑树数据结构的实现。
+红黑树的实现 确实比较复杂，光是理解其 插入、删除 的操作原理 就蛮费劲，所以这里先挖个坑，后面单独用一篇博文来分析 HashMap 的 内部类 TreeNode 对红黑树数据结构的实现。
