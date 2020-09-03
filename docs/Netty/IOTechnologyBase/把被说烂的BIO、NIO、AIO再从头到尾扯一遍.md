@@ -45,17 +45,18 @@ serverSocketChannel.configureBlocking(false);
 
 从图中可以看到，当设置为非阻塞后，我们的socket.read()方法就会立即得到一个返回结果(成功 or 失败)，我们可以根据返回结果执行不同的逻辑，比如在失败时，我们可以做一些其他的事情。但事实上这种方式也是低效的，因为我们不得不使用轮询方法区一直问OS：“我的数据好了没啊”。
 
-**BIO 不会在recvfrom（询问数据是否准备好）时阻塞，但还是会在将数据从内核空间拷贝到用户空间时阻塞。一定要注意这个地方，Non-Blocking还是会阻塞的。**
+**NIO 不会在recvfrom（询问数据是否准备好）时阻塞，但还是会在将数据从内核空间拷贝到用户空间时阻塞。一定要注意这个地方，Non-Blocking还是会阻塞的。**
 ##### 2.3 IO多路复用（I/O Multiplexing）
 
 ![avatar](../../../images/Netty/IO复用模型.png)
 
-传统情况下client与server通信需要一个3个socket(客户端的socket，服务端的serversocket，服务端中用来和客户端通信的socket)，而在IO多路复用中，客户端与服务端通信需要的不是socket，而是3个channel，通过channel可以完成与socket同样的操作，channel的底层还是使用的socket进行通信，但是多个channel只对应一个socket(可能不只是一个，但是socket的数量一定少于channel数量)，这样仅仅通过少量的socket就可以完成更多的连接，提高了client容量。
+传统情况下client与server通信需要3个socket(客户端的socket，服务端的serversocket，服务端中用来和客户端通信的socket)，而在IO多路复用中，客户端与服务端通信需要的不是socket，而是3个channel，通过channel可以完成与socket同样的操作，channel的底层还是使用的socket进行通信，但是多个channel只对应一个socket(可能不只是一个，但是socket的数量一定少于channel数量)，这样仅仅通过少量的socket就可以完成更多的连接，提高了client容量。
 
 其中，不同的操作系统，对此有不同的实现：
-Windows：selector
-Linux：epoll
-Mac：kqueue
+* Windows：selector
+* Linux：epoll
+* Mac：kqueue
+
 其中epoll，kqueue比selector更为高效，这是因为他们监听方式的不同。selector的监听是通过轮询FD_SETSIZE来问每一个socket：“你改变了吗？”，假若监听到事件，那么selector就会调用相应的事件处理器进行处理。但是epoll与kqueue不同，他们把socket与事件绑定在一起，当监听到socket变化时，立即可以调用相应的处理。
 **selector，epoll，kqueue都属于Reactor IO设计。**
 ##### 2.4 信号驱动（Signal driven IO）
