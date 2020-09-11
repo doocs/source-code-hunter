@@ -14,43 +14,43 @@
 
 而后，来看 MpscLinkedQueue 的构造方法。
 
-```Java
-    MpscLinkedQueue() {
-        MpscLinkedQueueNode<E> tombstone = new DefaultNode<E>(null);
-        headRef = new FullyPaddedReference<MpscLinkedQueueNode<E>>();
-        headRef.set(tombstone);
-        setTail(tombstone);
-    }
+```java
+MpscLinkedQueue() {
+    MpscLinkedQueueNode<E> tombstone = new DefaultNode<E>(null);
+    headRef = new FullyPaddedReference<MpscLinkedQueueNode<E>>();
+    headRef.set(tombstone);
+    setTail(tombstone);
+}
 ```
 
 在 MpscLinkedQueue 中，维护着 headRef 头结点字段，其队列内部节点的实现是一个 MpscLinkedQueueNode。MpscLinkedQueueNode 是一个除了存放具体队列元素外只有 next 字段的节点，也就是说，MpscLinkedQueue 的队列是单向的。在构造方法的最后，通过 setTail()方法的，将 MpscLinkedQueue 的尾结点字段 value 也设置为头结点。MpscLinkedQueue 的头结点字段 headRef 的存在可以方便后续直接从头结点开始的队列操作，消费者可以简单判断头尾节点是否相等来确认队列中是否有元素可以消费。
 
 ### MpscLinkedQueue 如何做到线程安全的无锁加入
 
-```Java
-    @Override
-    @SuppressWarnings("unchecked")
-    public boolean offer(E value) {
-        if (value == null) {
-            throw new NullPointerException("value");
-        }
-
-        final MpscLinkedQueueNode<E> newTail;
-        if (value instanceof MpscLinkedQueueNode) {
-            newTail = (MpscLinkedQueueNode<E>) value;
-            newTail.setNext(null);
-        } else {
-            newTail = new DefaultNode<E>(value);
-        }
-
-        MpscLinkedQueueNode<E> oldTail = replaceTail(newTail);
-        oldTail.setNext(newTail);
-        return true;
+```java
+@Override
+@SuppressWarnings("unchecked")
+public boolean offer(E value) {
+    if (value == null) {
+        throw new NullPointerException("value");
     }
 
-    private MpscLinkedQueueNode<E> replaceTail(MpscLinkedQueueNode<E> node) {
-        return getAndSet(node);
+    final MpscLinkedQueueNode<E> newTail;
+    if (value instanceof MpscLinkedQueueNode) {
+        newTail = (MpscLinkedQueueNode<E>) value;
+        newTail.setNext(null);
+    } else {
+        newTail = new DefaultNode<E>(value);
     }
+
+    MpscLinkedQueueNode<E> oldTail = replaceTail(newTail);
+    oldTail.setNext(newTail);
+    return true;
+}
+
+private MpscLinkedQueueNode<E> replaceTail(MpscLinkedQueueNode<E> node) {
+    return getAndSet(node);
+}
 ```
 
 MpscLinkedQueue 的 offer()方法很简短，但是恰恰就是整个添加队列元素加入的流程，当元素被加入的时候，首先判断加入的元素是否是 MpscLinkedQueueNode，如果不是则进行封装。之后便是整个操作的重点：
