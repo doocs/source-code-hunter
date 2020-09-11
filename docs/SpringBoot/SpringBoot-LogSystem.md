@@ -19,7 +19,7 @@ public enum LogLevel {
 
 - `org.springframework.boot.logging.java.JavaLoggingSystem`
 
-![image-20200323144523848](../../../images/SpringBoot/image-20200323144523848.png)
+![image-20200323144523848](../../images/SpringBoot/image-20200323144523848.png)
 
 ```JAVA
 	static {
@@ -128,7 +128,7 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
 ```
 
-![image-20200323151409473](../../../images/SpringBoot/image-20200323151409473.png)
+![image-20200323151409473](../../images/SpringBoot/image-20200323151409473.png)
 
 - 默认日志: `org.springframework.boot.logging.logback.LogbackLoggingSystem`
 
@@ -136,7 +136,7 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
 - 初始化之前
 
-  ![image-20200323154205484](../../../images/SpringBoot/image-20200323154205484.png)
+  ![image-20200323154205484](../../images/SpringBoot/image-20200323154205484.png)
 
   - 链路
     1. `org.springframework.boot.context.logging.LoggingApplicationListener#onApplicationEvent`
@@ -352,9 +352,9 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
 - 添加配置文件
 
-![image-20200323161442058](../../../images/SpringBoot/image-20200323161442058.png)
+![image-20200323161442058](../../images/SpringBoot/image-20200323161442058.png)
 
-![image-20200323161522570](../../../images/SpringBoot/image-20200323161522570.png)
+![image-20200323161522570](../../images/SpringBoot/image-20200323161522570.png)
 
 - 此时配置文件地址出现了
 
