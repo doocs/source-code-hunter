@@ -1,4 +1,10 @@
 # Spring HandlerMapping
+
+- Author: [HuiFer](https://github.com/huifer)
+- 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
+- 源码路径: `org.springframework.jms.annotation.EnableJms`
+
+
 - `org.springframework.web.servlet.HandlerMapping`
 - HandlerMapping 处理映射关系, 通过请求转换成对象`HandlerExecutionChain`
 ```java
