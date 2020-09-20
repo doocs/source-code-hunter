@@ -196,7 +196,8 @@
 * [RPC模块简析](docs/Dubbo/RPC/RPC模块简析.md)
 * [Protocol组件](docs/Dubbo/RPC/Protocol组件.md)
 * [Proxy组件](docs/Dubbo/RPC/Proxy组件.md)
-* [多协议支持](docs/Dubbo/RPC/多协议支持.md)
+* [Dubbo协议](docs/Dubbo/RPC/Dubbo协议.md)
+* [Hessian协议](docs/Dubbo/RPC/Hessian协议.md)
 
 ### 集群
 
