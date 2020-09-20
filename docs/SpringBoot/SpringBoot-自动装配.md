@@ -53,7 +53,7 @@ public @interface EnableAutoConfiguration {
 
 - 类图
 
-![image-20200320150642022](../../../images/SpringBoot/image-20200320150642022.png)
+![image-20200320150642022](../../images/SpringBoot/image-20200320150642022.png)
 
 ## getAutoConfigurationMetadata()
 
@@ -107,7 +107,7 @@ public @interface EnableAutoConfiguration {
 
   ```
 
-  ![image-20200320160423991](../../../images/SpringBoot/image-20200320160423991.png)
+  ![image-20200320160423991](../../images/SpringBoot/image-20200320160423991.png)
 
 - `protected static final String PATH = "META-INF/spring-autoconfigure-metadata.properties";`
 
@@ -131,11 +131,11 @@ public @interface EnableAutoConfiguration {
   org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration,\
   ```
 
-![image-20200320162835665](../../../images/SpringBoot/image-20200320162835665.png)
+![image-20200320162835665](../../images/SpringBoot/image-20200320162835665.png)
 
 同样找一下 redis
 
-![image-20200320163001728](../../../images/SpringBoot/image-20200320163001728.png)
+![image-20200320163001728](../../images/SpringBoot/image-20200320163001728.png)
 
 - 仔细看`org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration`类
 
@@ -213,13 +213,13 @@ public class RedisProperties {
 
 - `org.springframework.boot.autoconfigure.AutoConfigurationImportSelector.AutoConfigurationGroup#process`
 
-  ![image-20200320163806852](../../../images/SpringBoot/image-20200320163806852.png)
+  ![image-20200320163806852](../../images/SpringBoot/image-20200320163806852.png)
 
 再此之前我们看过了`getAutoConfigurationMetadata()`的相关操作
 
 关注 `AnnotationMetadata annotationMetadata` 存储了一些什么
 
-![image-20200320164145286](../../../images/SpringBoot/image-20200320164145286.png)
+![image-20200320164145286](../../images/SpringBoot/image-20200320164145286.png)
 
 这里简单理解
 
@@ -271,7 +271,7 @@ public class RedisProperties {
 
 ```
 
-![image-20200320171138431](../../../images/SpringBoot/image-20200320171138431.png)
+![image-20200320171138431](../../images/SpringBoot/image-20200320171138431.png)
 
 ### getCandidateConfigurations
 
@@ -289,7 +289,7 @@ public class RedisProperties {
 
 ```
 
-![image-20200320171734270](../../../images/SpringBoot/image-20200320171734270.png)
+![image-20200320171734270](../../images/SpringBoot/image-20200320171734270.png)
 
 - 第一个是我自己写的一个测试用
 
@@ -341,7 +341,7 @@ public class RedisProperties {
 
 ```
 
-![image-20200323080611527](../../../images/SpringBoot/image-20200323080611527.png)
+![image-20200323080611527](../../images/SpringBoot/image-20200323080611527.png)
 
 - 修改启动类
 
@@ -350,7 +350,7 @@ public class RedisProperties {
 
   ```
 
-  ![image-20200323081009823](../../../images/SpringBoot/image-20200323081009823.png)
+  ![image-20200323081009823](../../images/SpringBoot/image-20200323081009823.png)
 
 ### checkExcludedClasses
 
@@ -418,7 +418,7 @@ public class RedisProperties {
 
 - `getAutoConfigurationImportFilters()` 从`spring.factories` 获取 `AutoConfigurationImportFilter`的接口
 
-![image-20200323081903145](../../../images/SpringBoot/image-20200323081903145.png)
+![image-20200323081903145](../../images/SpringBoot/image-20200323081903145.png)
 
 - 循环内执行`Aware`系列接口
 
@@ -426,7 +426,7 @@ public class RedisProperties {
 
 - `filter.match(candidates, autoConfigurationMetadata)` 比较判断哪些是需要自动注入的类
 
-![image-20200323082553595](../../../images/SpringBoot/image-20200323082553595.png)
+![image-20200323082553595](../../images/SpringBoot/image-20200323082553595.png)
 
 ### fireAutoConfigurationImportEvents
 
@@ -448,11 +448,11 @@ public class RedisProperties {
 
 ```
 
-![image-20200323083149737](../../../images/SpringBoot/image-20200323083149737.png)
+![image-20200323083149737](../../images/SpringBoot/image-20200323083149737.png)
 
 - `AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this, configurations, exclusions);`
 
-![image-20200323083247061](../../../images/SpringBoot/image-20200323083247061.png)
+![image-20200323083247061](../../images/SpringBoot/image-20200323083247061.png)
 
 - `org.springframework.boot.autoconfigure.AutoConfigurationImportListener#onAutoConfigurationImportEvent` 在执行自动配置时触发 , 实现类只有 **`ConditionEvaluationReportAutoConfigurationImportListener`**
 
@@ -470,7 +470,7 @@ public class RedisProperties {
 
   ```
 
-![image-20200323083656670](../../../images/SpringBoot/image-20200323083656670.png)
+![image-20200323083656670](../../images/SpringBoot/image-20200323083656670.png)
 
 - 初始化完
 
@@ -478,7 +478,7 @@ public class RedisProperties {
 
 - `org.springframework.boot.autoconfigure.AutoConfigurationImportSelector.AutoConfigurationGroup#process`
 
-![image-20200323084922159](../../../images/SpringBoot/image-20200323084922159.png)
+![image-20200323084922159](../../images/SpringBoot/image-20200323084922159.png)
 
 - 后续的一些行为相对简单，直接放个源码了.
 
