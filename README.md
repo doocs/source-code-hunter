@@ -165,6 +165,7 @@
 * [FastThreadLocal源码分析](docs/Netty/Netty技术细节源码分析/FastThreadLocal源码分析.md)
 * [Recycler对象池原理分析](docs/Netty/Netty技术细节源码分析/Recycler对象池原理分析.md)
 * [MpscLinkedQueue队列原理分析](docs/Netty/Netty技术细节源码分析/MpscLinkedQueue队列原理分析.md)
+* [HashedWheelTimer时间轮原理分析](docs/Netty/Netty技术细节源码分析/HashedWheelTimer时间轮原理分析.md)
 
 ## Dubbo
 
