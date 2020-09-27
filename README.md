@@ -75,6 +75,7 @@
 
 * [Spring MultiValueMap](/docs/Spring/clazz/Spring-MultiValueMap.md)
 * [Spring MethodOverride](/docs/Spring/clazz/Spring-MethodOverride.md)
+* [Spring BeanDefinitionReaderUtils](/docs/Spring/clazz/Spring-BeanDefinitionReaderUtils.md)
 
 
 ### Spring5 新特性
