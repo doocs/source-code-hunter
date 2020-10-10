@@ -78,6 +78,10 @@
 * [Spring MultiValueMap](/docs/Spring/clazz/Spring-MultiValueMap.md)
 * [Spring MethodOverride](/docs/Spring/clazz/Spring-MethodOverride.md)
 * [Spring BeanDefinitionReaderUtils](/docs/Spring/clazz/Spring-BeanDefinitionReaderUtils.md)
+* [Spring PropertyPlaceholderHelper](/docs/Spring/clazz/Spring-PropertyPlaceholderHelper.md)
+
+* [Spring PropertySource](/docs/Spring/clazz/PropertySource)
+* [Spring PlaceholderResolver](/docs/Spring/clazz/PlaceholderResolver)
 
 
 ### Spring5 新特性
