@@ -6,9 +6,11 @@
 [![issues](https://badgen.net/github/open-issues/doocs/source-code-hunter)](https://github.com/doocs/source-code-hunter/issues)
 [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](http://makeapullrequest.com)
 
-“技术深度” 与 “技术广度”是对开发者来说最为重要的两个维度，本项目致力于从源码层面，剖析和挖掘互联网行业主流技术的底层实现原理，**为广大开发者“提升技术深度”提供便利**。
+“技术深度” 与 “技术广度”是对开发者来说最为重要的两个维度，本项目致力于从源码层面，剖析和挖掘互联网行业主流技术的底层实现原理，**为广大开发者 “提升技术深度” 提供便利**。
 
-加入我们，一起通读互联网行业主流框架及中间件源码，成为强大的“源码猎人”，目前开放的有 **Spring 全家桶**、**Mybatis 框架**、**Netty 框架**、**Dubbo 框架**，及 **Redis**、**Tomcat** 中间件等，让我们一起开拓新的领地，揭开这些源码的神秘面纱。本项目主要用于记录框架及中间件源码的阅读经验、个人理解及解析，希望能够使阅读源码变成一件简单有趣，且有价值的事情，抽空更新中...(如果本项目对您有帮助，请watch、star、fork 素质三连一波，鼓励一下作者，谢谢）
+加入我们，一起通读互联网行业主流框架及中间件源码，成为强大的 “源码猎人”，目前开放的有 **Spring 全家桶**、**Mybatis**、**Netty**、**Dubbo 框架**，及 **Redis**、**Tomcat** 中间件等，让我们一起开拓新的领地，揭开这些源码的神秘面纱。
+
+本项目主要用于记录框架及中间件源码的阅读经验、个人理解及解析，希望能够使阅读源码变成一件简单有趣，且有价值的事情，抽空更新中... (如果本项目对您有帮助，请watch、star、fork 素质三连一波，鼓励一下作者，谢谢）
 
 * Netlify: https://schunter.netlify.app
 * Gitee Pages: https://doocs.gitee.io/source-code-hunter
@@ -174,6 +176,7 @@
 * [Recycler对象池原理分析](docs/Netty/Netty技术细节源码分析/Recycler对象池原理分析.md)
 * [MpscLinkedQueue队列原理分析](docs/Netty/Netty技术细节源码分析/MpscLinkedQueue队列原理分析.md)
 * [HashedWheelTimer时间轮原理分析](docs/Netty/Netty技术细节源码分析/HashedWheelTimer时间轮原理分析.md)
+* [ByteBuf的内存泄漏原因与检测原理](docs/Netty/Netty技术细节源码分析/ByteBuf的内存泄漏原因与检测原理.md)
 
 ## Dubbo
 
