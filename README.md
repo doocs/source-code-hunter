@@ -38,6 +38,8 @@
 * [IoC容器 在 Web环境 中的启动](/docs/Spring/SpringMVC/IoC容器在Web环境中的启动.md)
 * [SpringMVC 的设计与实现](/docs/Spring/SpringMVC/SpringMVC的设计与实现.md)
 * [SpringMVC 跨域解析](/docs/Spring/SpringMVC/SpringMVC-CROS.md)
+* [Spring-MVC-HandlerMapping](/docs/Spring/mvc/Spring-MVC-HandlerMapping.md)
+* [Spring-mvc-MappingRegistry](/docs/Spring/mvc/Spring-mvc-MappingRegistry.md)
 
 ### SpringJDBC
 
@@ -72,6 +74,14 @@
 * [Spring StopWatch](/docs/Spring/clazz/Spring-StopWatch.md)
 * [Spring 元数据](/docs/Spring/clazz/Spring-Metadata.md)
 * [Spring 条件接口](/docs/Spring/clazz/Spring-Conditional.md)
+
+* [Spring MultiValueMap](/docs/Spring/clazz/Spring-MultiValueMap.md)
+* [Spring MethodOverride](/docs/Spring/clazz/Spring-MethodOverride.md)
+* [Spring BeanDefinitionReaderUtils](/docs/Spring/clazz/Spring-BeanDefinitionReaderUtils.md)
+* [Spring PropertyPlaceholderHelper](/docs/Spring/clazz/Spring-PropertyPlaceholderHelper.md)
+
+* [Spring PropertySource](/docs/Spring/clazz/PropertySource)
+* [Spring PlaceholderResolver](/docs/Spring/clazz/PlaceholderResolver)
 
 
 ### Spring5 新特性
