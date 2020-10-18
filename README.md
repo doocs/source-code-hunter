@@ -171,6 +171,7 @@
 * [MpscLinkedQueue队列原理分析](docs/Netty/Netty技术细节源码分析/MpscLinkedQueue队列原理分析.md)
 * [HashedWheelTimer时间轮原理分析](docs/Netty/Netty技术细节源码分析/HashedWheelTimer时间轮原理分析.md)
 * [ByteBuf的内存泄漏原因与检测原理](docs/Netty/Netty技术细节源码分析/ByteBuf的内存泄漏原因与检测原理.md)
+* [内存池之PoolChunk设计与实现](docs/Netty/Netty技术细节源码分析/内存池之PoolChunk设计与实现.md)
 
 ## Dubbo
 
