@@ -15,7 +15,7 @@ PoolChunk中的page通过一颗完全二叉树来达到快速访达及操作，�
  - ..
  - 高度=d        2^d个节点 (单个节点表示的大小为chunkSize/2^d)
  - ..
- - 高度=maxOrder 2^maxOrder个节点 (单个节点的大小为chunkSize/2^{maxOrder}，也就是pageSize)
+ - 高度=maxOrder 2^maxOrder个节点 (单个节点的大小为chunkSize/2^maxOrder，也就是pageSize)
 
 在这棵树的帮助下，当我们要申请x大小的内存的时候	，得到比x最接近的chunkSize/2^k的大小，也就是说只要从左开始找到k层第一个没有被使用的节点即可开始将其子树的叶子结点的page进行分配。
 
