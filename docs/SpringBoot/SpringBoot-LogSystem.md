@@ -21,17 +21,17 @@ public enum LogLevel {
 
 ![image-20200323144523848](../../images/SpringBoot/image-20200323144523848.png)
 
-```JAVA
-	static {
-	    // KEY :  springBoot 定义的日志级别, value: jdk 定义的日志级别
-		LEVELS.map(LogLevel.TRACE, Level.FINEST);
-		LEVELS.map(LogLevel.DEBUG, Level.FINE);
-		LEVELS.map(LogLevel.INFO, Level.INFO);
-		LEVELS.map(LogLevel.WARN, Level.WARNING);
-		LEVELS.map(LogLevel.ERROR, Level.SEVERE);
-		LEVELS.map(LogLevel.FATAL, Level.SEVERE);
-		LEVELS.map(LogLevel.OFF, Level.OFF);
-	}
+```java
+static {
+	// KEY :  springBoot 定义的日志级别, value: jdk 定义的日志级别
+	LEVELS.map(LogLevel.TRACE, Level.FINEST);
+	LEVELS.map(LogLevel.DEBUG, Level.FINE);
+	LEVELS.map(LogLevel.INFO, Level.INFO);
+	LEVELS.map(LogLevel.WARN, Level.WARNING);
+	LEVELS.map(LogLevel.ERROR, Level.SEVERE);
+	LEVELS.map(LogLevel.FATAL, Level.SEVERE);
+	LEVELS.map(LogLevel.OFF, Level.OFF);
+}
 ```
 
 - LEVELS 对象
@@ -58,20 +58,20 @@ public enum LogLevel {
 
 - 一个 map 对象: `SYSTEMS`
 
-```JAVA
-	/**
-	 * key: 第三方日志框架的类 value: springBoot 中的处理类
-	 */
-	private static final Map<String, String> SYSTEMS;
+```java
+/**
+	* key: 第三方日志框架的类 value: springBoot 中的处理类
+	*/
+private static final Map<String, String> SYSTEMS;
 
-	static {
-		Map<String, String> systems = new LinkedHashMap<>();
-		systems.put("ch.qos.logback.core.Appender", "org.springframework.boot.logging.logback.LogbackLoggingSystem");
-		systems.put("org.apache.logging.log4j.core.impl.Log4jContextFactory",
-				"org.springframework.boot.logging.log4j2.Log4J2LoggingSystem");
-		systems.put("java.util.logging.LogManager", "org.springframework.boot.logging.java.JavaLoggingSystem");
-		SYSTEMS = Collections.unmodifiableMap(systems);
-	}
+static {
+	Map<String, String> systems = new LinkedHashMap<>();
+	systems.put("ch.qos.logback.core.Appender", "org.springframework.boot.logging.logback.LogbackLoggingSystem");
+	systems.put("org.apache.logging.log4j.core.impl.Log4jContextFactory",
+			"org.springframework.boot.logging.log4j2.Log4J2LoggingSystem");
+	systems.put("java.util.logging.LogManager", "org.springframework.boot.logging.java.JavaLoggingSystem");
+	SYSTEMS = Collections.unmodifiableMap(systems);
+}
 
 ```
 
@@ -91,40 +91,40 @@ public enum LogLevel {
 
 ```java
 public static LoggingSystem get(ClassLoader classLoader) {
-	    // 获取系统属性
-		String loggingSystem = System.getProperty(SYSTEM_PROPERTY);
+	// 获取系统属性
+	String loggingSystem = System.getProperty(SYSTEM_PROPERTY);
 
-		if (StringUtils.hasLength(loggingSystem)) {
-		    // 是不是NONE
-			if (NONE.equals(loggingSystem)) {
-			    // 空的日志系统
-				return new NoOpLoggingSystem();
-			}
-			return get(classLoader, loggingSystem);
+	if (StringUtils.hasLength(loggingSystem)) {
+		// 是不是NONE
+		if (NONE.equals(loggingSystem)) {
+			// 空的日志系统
+			return new NoOpLoggingSystem();
 		}
-		// 循环所有日志,
-		return SYSTEMS.entrySet().stream().filter((entry) -> ClassUtils.isPresent(entry.getKey(), classLoader))
-				.map((entry) ->
-				// 实例化具体日志
-				 get(classLoader, entry.getValue())).findFirst()
-				.orElseThrow(() -> new IllegalStateException("No suitable logging system located"));
+		return get(classLoader, loggingSystem);
 	}
+	// 循环所有日志,
+	return SYSTEMS.entrySet().stream().filter((entry) -> ClassUtils.isPresent(entry.getKey(), classLoader))
+			.map((entry) ->
+			// 实例化具体日志
+				get(classLoader, entry.getValue())).findFirst()
+			.orElseThrow(() -> new IllegalStateException("No suitable logging system located"));
+}
 ```
 
 - 实例化日志系统
 
 ```java
-	private static LoggingSystem get(ClassLoader classLoader, String loggingSystemClass) {
-		try {
-			Class<?> systemClass = ClassUtils.forName(loggingSystemClass, classLoader);
-			Constructor<?> constructor = systemClass.getDeclaredConstructor(ClassLoader.class);
-			constructor.setAccessible(true);
-			return (LoggingSystem) constructor.newInstance(classLoader);
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException(ex);
-		}
+private static LoggingSystem get(ClassLoader classLoader, String loggingSystemClass) {
+	try {
+		Class<?> systemClass = ClassUtils.forName(loggingSystemClass, classLoader);
+		Constructor<?> constructor = systemClass.getDeclaredConstructor(ClassLoader.class);
+		constructor.setAccessible(true);
+		return (LoggingSystem) constructor.newInstance(classLoader);
 	}
+	catch (Exception ex) {
+		throw new IllegalStateException(ex);
+	}
+}
 
 ```
 
@@ -145,7 +145,7 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
 - 因为前文中我们已知对象是：`org.springframework.boot.logging.logback.LogbackLoggingSystem` 直接看这个类的**`beforeInitialize`**方法
 
-  ```JAVA
+  ```java
   	@Override
   	public void beforeInitialize() {
   	    // 日志上下文
@@ -168,7 +168,7 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
 - `org.springframework.boot.context.logging.LoggingApplicationListener#onApplicationEnvironmentPreparedEvent`
 
-  ```JAVA
+  ```java
   	private void onApplicationEnvironmentPreparedEvent(ApplicationEnvironmentPreparedEvent event) {
   		if (this.loggingSystem == null) {
   			this.loggingSystem = LoggingSystem.get(event.getSpringApplication().getClassLoader());
@@ -180,7 +180,7 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
 - `org.springframework.boot.context.logging.LoggingApplicationListener#initializeSystem`
 
-  ```JAVA
+  ```java
   	protected void initialize(ConfigurableEnvironment environment, ClassLoader classLoader) {
   		new LoggingSystemProperties(environment).apply();
   		this.logFile = LogFile.get(environment);
@@ -199,7 +199,7 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
   ```
 
-  ```JAVA
+  ```java
   	private void initializeSystem(ConfigurableEnvironment environment, LoggingSystem system, LogFile logFile) {
   		LoggingInitializationContext initializationContext = new LoggingInitializationContext(environment);
   		String logConfig = environment.getProperty(CONFIG_PROPERTY);
@@ -246,7 +246,7 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
 - `org.springframework.boot.logging.AbstractLoggingSystem#initializeWithConventions`
 
-  ```JAVA
+  ```java
   	private void initializeWithConventions(LoggingInitializationContext initializationContext, LogFile logFile) {
   		String config = getSelfInitializationConfig();
   		if (config != null && logFile == null) {
@@ -269,7 +269,7 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
   - `org.springframework.boot.logging.logback.LogbackLoggingSystem#loadDefaults`
 
-    ```JAVA
+    ```java
     	@Override
     	protected void loadDefaults(LoggingInitializationContext initializationContext, LogFile logFile) {
     		LoggerContext context = getLoggerContext();
@@ -293,7 +293,7 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
     ```
 
-```JAVA
+```java
 	@Override
 	public void initialize(LoggingInitializationContext initializationContext, String configLocation, LogFile logFile) {
 		LoggerContext loggerContext = getLoggerContext();
@@ -316,7 +316,7 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
 标记`markAsInitialized`
 
-```JAVA
+```java
 	private void markAsInitialized(LoggerContext loggerContext) {
 		loggerContext.putObject(LoggingSystem.class.getName(), new Object());
 	}
@@ -342,11 +342,11 @@ public static LoggingSystem get(ClassLoader classLoader) {
 - 添加依赖
 
 ```XML
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-logging</artifactId>
-			<version>${revision}</version>
-		</dependency>
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-logging</artifactId>
+	<version>${revision}</version>
+</dependency>
 
 ```
 
@@ -358,7 +358,7 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
 - 此时配置文件地址出现了
 
-```JAVA
+```java
 	protected String getSelfInitializationConfig() {
 	    // 寻找配置文件
 		return findConfig(getStandardConfigLocations());
@@ -366,7 +366,7 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
 ```
 
-```JAVA
+```java
 	@Override
 	protected String[] getStandardConfigLocations() {
 		return new String[] { "logback-test.groovy", "logback-test.xml", "logback.groovy", "logback.xml" };
@@ -374,7 +374,7 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
 ```
 
-```JAVA
+```java
 	private String findConfig(String[] locations) {
 		for (String location : locations) {
 			ClassPathResource resource = new ClassPathResource(location, this.classLoader);
@@ -391,7 +391,7 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
 #### reinitialize
 
-```JAVA
+```java
 	@Override
 	protected void reinitialize(LoggingInitializationContext initializationContext) {
 		// 日志上下文重新设置
@@ -403,7 +403,7 @@ public static LoggingSystem get(ClassLoader classLoader) {
 
 ```
 
-```JAVA
+```java
 	@Override
 	protected void loadConfiguration(LoggingInitializationContext initializationContext, String location,
 			LogFile logFile) {
