@@ -4,9 +4,9 @@
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 - 源码路径: `org.springframework.jms.annotation.EnableJms`
 
-
 - `org.springframework.web.servlet.HandlerMapping`
 - HandlerMapping 处理映射关系, 通过请求转换成对象`HandlerExecutionChain`
+
 ```java
 public interface HandlerMapping {
     HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception;
@@ -14,13 +14,7 @@ public interface HandlerMapping {
 }
 ```
 
-
-
 ![image](/images/springMVC/HandlerMapping.png)
-
-
-
-
 
 ```java
 @Override
@@ -62,8 +56,6 @@ public final HandlerExecutionChain getHandler(HttpServletRequest request) throws
 }
 ```
 
-
-
 - `getHandlerInternal`方法是一个抽象方法
 
   ```JAVA
@@ -75,13 +67,7 @@ public final HandlerExecutionChain getHandler(HttpServletRequest request) throws
 
   ![image-20200915135933146](images/image-20200915135933146.png)
 
-
-
-
-
 - 先看`org.springframework.web.servlet.handler.AbstractHandlerMethodMapping#getHandlerInternal`方法是怎么一回事.
-
-
 
 ```java
 	@Override
@@ -105,13 +91,7 @@ public final HandlerExecutionChain getHandler(HttpServletRequest request) throws
 
 ```
 
-
-
-
-
-
-
-## UrlPathHelper 
+## UrlPathHelper
 
 - 全路径:`org.springframework.web.util.UrlPathHelper`
 
@@ -122,27 +102,21 @@ public final HandlerExecutionChain getHandler(HttpServletRequest request) throws
    * 是否全路径标记
    */
   private boolean alwaysUseFullPath = false;
-  
+
   /**
    * 是否需要 decode
    */
   private boolean urlDecode = true;
-  
+
   private boolean removeSemicolonContent = true;
-  
+
   /**
    * 默认的encoding编码格式
    */
   private String defaultEncoding = WebUtils.DEFAULT_CHARACTER_ENCODING;
   ```
 
-
-
-
-
 ### getPathWithinApplication
-
-
 
 ```java
 public String getPathWithinApplication(HttpServletRequest request) {
@@ -163,18 +137,14 @@ public String getPathWithinApplication(HttpServletRequest request) {
 
 1. 从 request 中获取 context-path
    1. 从属性中直接获取
-   2. 从request中调用 getContextPath 获取
+   2. 从 request 中调用 getContextPath 获取
    3. 判断是否是**`/`**
-   4. decode request string 
+   4. decode request string
 2. 从 request 中虎丘 request-uri
    1. 从属性中获取
    2. 从 request 中调用 getRequestURI 获取
-   3. decode 
+   3. decode
 3. 获取剩余路径
-
-
-
-
 
 ### getContextPath
 
@@ -196,10 +166,6 @@ public String getContextPath(HttpServletRequest request) {
 }
 ```
 
-
-
-
-
 ### decodeRequestString
 
 - 判断是否需要编码, 需要编码就做编码操作，不需要就直接返回
@@ -214,12 +180,6 @@ public String decodeRequestString(HttpServletRequest request, String source) {
    return source;
 }
 ```
-
-
-
-
-
-
 
 ### decodeInternal
 
@@ -245,15 +205,9 @@ private String decodeInternal(HttpServletRequest request, String source) {
 }
 ```
 
-
-
-
-
 ### determineEncoding
 
 - 确认编码
-
-
 
 ```java
 protected String determineEncoding(HttpServletRequest request) {
@@ -266,10 +220,6 @@ protected String determineEncoding(HttpServletRequest request) {
    return enc;
 }
 ```
-
-
-
-
 
 ### getRequestUri
 
@@ -289,10 +239,6 @@ protected String determineEncoding(HttpServletRequest request) {
 
 ```
 
-
-
-
-
 ### decodeAndCleanUriString
 
 - 编码和清理数据
@@ -308,12 +254,6 @@ private String decodeAndCleanUriString(HttpServletRequest request, String uri) {
    return uri;
 }
 ```
-
-
-
-
-
-
 
 ### shouldRemoveTrailingServletPathSlash
 
@@ -359,10 +299,6 @@ private boolean shouldRemoveTrailingServletPathSlash(HttpServletRequest request)
 }
 ```
 
-
-
-
-
 ### decodeMatrixVariables
 
 - 编码修改方法
@@ -391,8 +327,6 @@ public MultiValueMap<String, String> decodeMatrixVariables(
 
 - 与这个方法对应的还有`decodePathVariables`
 
-
-
 ### decodePathVariables
 
 ```java
@@ -403,16 +337,12 @@ public Map<String, String> decodePathVariables(HttpServletRequest request, Map<S
    }
    else {
       Map<String, String> decodedVars = new LinkedHashMap<>(vars.size());
-      // 虚幻 decoding 
+      // 虚幻 decoding
       vars.forEach((key, value) -> decodedVars.put(key, decodeInternal(request, value)));
       return decodedVars;
    }
 }
 ```
-
-
-
-
 
 - 回到`org.springframework.web.servlet.handler.AbstractHandlerMethodMapping#getHandlerInternal`
 
@@ -420,21 +350,13 @@ public Map<String, String> decodePathVariables(HttpServletRequest request, Map<S
 String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
 ```
 
-
-
 - 设置属性上锁开锁就不具体展开了.
-
-
 
 ## lookupHandlerMethod
 
 - `org.springframework.web.servlet.handler.AbstractHandlerMethodMapping#lookupHandlerMethod` 方法
 
-
-
 - 第一部分
-
-
 
 ```java
 @Nullable
@@ -452,14 +374,12 @@ protected HandlerMethod lookupHandlerMethod(String lookupPath, HttpServletReques
       // 添加匹配映射
       addMatchingMappings(this.mappingRegistry.getMappings().keySet(), matches, request);
    }
- 
+
     //...
 }
 ```
 
-
-
-- 创建一个匹配list,将匹配结果放入
+- 创建一个匹配 list,将匹配结果放入
 
   ```
   List<Match> matches = new ArrayList<>();
@@ -478,7 +398,7 @@ protected HandlerMethod lookupHandlerMethod(String lookupPath, HttpServletReques
   }
   ```
 
-  urlLookup 是`MultiValueMap`接口. 
+  urlLookup 是`MultiValueMap`接口.
 
   key:url value:mapping
 
@@ -511,8 +431,6 @@ protected HandlerMethod lookupHandlerMethod(String lookupPath, HttpServletReques
   }
   ```
 
-
-
 - `getMatchingMapping` 方法是一个抽象方法
 
   ```java
@@ -528,15 +446,7 @@ protected HandlerMethod lookupHandlerMethod(String lookupPath, HttpServletReques
   }
   ```
 
-
-
-
-
-
-
 - 第二部分
-
-
 
 ```java
 if (!matches.isEmpty()) {
@@ -573,10 +483,6 @@ else {
 }
 ```
 
-
-
-
-
 - 一行行开始分析
 
 ```java
@@ -603,18 +509,12 @@ protected abstract Comparator<T> getMappingComparator(HttpServletRequest request
 - 执行完成比较方法后创建对象`MatchComparator`
 - 对象创建后进行排序，排序后取出第一个元素作为后续操作的基准对象
 
-
-
 ```java
 // 排序
 matches.sort(comparator);
 // 获取第一个 match 对象
 Match bestMatch = matches.get(0);
 ```
-
-
-
-
 
 ```java
 if (matches.size() > 1) {
@@ -643,11 +543,7 @@ if (matches.size() > 1) {
 
 - 取出第一个元素和第二个元素进行比较. 如果两个 match 相同, 出现异常
 
-
-
 最后两个方法
-
-
 
 ```java
     // 设置属性
@@ -662,8 +558,6 @@ else {
 }
 ```
 
-
-
 - `handleMatch`
 
   ```java
@@ -677,8 +571,6 @@ else {
   这个方法子类会继续实现
 
   - `org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping#handleMatch`
-
-
 
 ```java
 @Override
@@ -722,10 +614,6 @@ protected void handleMatch(RequestMappingInfo info, String lookupPath, HttpServl
    }
 }
 ```
-
-
-
-
 
 - `handleNoMatch` 也是同类型操作
   - `org.springframework.web.servlet.handler.AbstractHandlerMethodMapping#handleNoMatch`
@@ -783,10 +671,3 @@ protected HandlerMethod handleNoMatch(
    return null;
 }
 ```
-
-
-
-
-
-
-

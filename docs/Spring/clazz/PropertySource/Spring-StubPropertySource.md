@@ -3,10 +3,8 @@
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 
-
-
-- 整体代码如下. 
-    - 通过 StubPropertySource 的 getProperty 方法永远返回null
+- 整体代码如下.
+  - 通过 StubPropertySource 的 getProperty 方法永远返回 null
 
 ```java
 	public static class StubPropertySource extends PropertySource<Object> {

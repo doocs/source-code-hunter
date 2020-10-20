@@ -3,34 +3,23 @@
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 
-
 - 相关类
-    - `org.springframework.beans.PropertyValues`
-    - `org.springframework.beans.PropertyValue`
-    - `org.springframework.beans.MutablePropertyValues`
-    
 
-
+  - `org.springframework.beans.PropertyValues`
+  - `org.springframework.beans.PropertyValue`
+  - `org.springframework.beans.MutablePropertyValues`
 
 - 类图如下
 
   ![images](/images/spring/PropertyValues.png)
 
+- 在 Spring IoC 中,**非 Web 工程**,使用 xml 或者注解进行配置主要使用到的是 `PropertyValues` ，`PropertyValue` ，`MutablePropertyValues` 三个
 
+  其中 `PropertyValues` 是继承迭代器，具体实现在`MutablePropertyValues` 他们处理的对象是`PropertyValues`
 
-- 在 Spring IoC 中,**非Web工程**,使用 xml 或者注解进行配置主要使用到的是 `PropertyValues` ，`PropertyValue` ，`MutablePropertyValues` 三个
-
-  其中 `PropertyValues` 是继承迭代器，具体实现在`MutablePropertyValues` 他们处理的对象是`PropertyValues` 
-
-  关系就是这样. 
-
-
+  关系就是这样.
 
 - 开始类的解析了
-
-
-
-
 
 ## PropertyValue
 
@@ -45,13 +34,9 @@
   1. name: 属性名称
   2. value: 属性值
 
-  对应标签`<property name="age" value="30"/>` 
+  对应标签`<property name="age" value="30"/>`
 
-  属性值一一对应填入. 
-
-
-
-
+  属性值一一对应填入.
 
 ## MutablePropertyValues
 
@@ -61,8 +46,6 @@
   1. `propertyValueList`：属性列表, key:参数名称,value:具体数据
   2. `processedProperties`: 已经处理的属性名称
   3. `converted`: 是否转换
-
-
 
 ```java
 public class MutablePropertyValues implements PropertyValues, Serializable {
@@ -83,8 +66,6 @@ public class MutablePropertyValues implements PropertyValues, Serializable {
    private volatile boolean converted = false;
 }
 ```
-
-
 
 ### 构造器
 
@@ -109,15 +90,7 @@ public MutablePropertyValues(@Nullable PropertyValues original) {
 }
 ```
 
-
-
-
-
-
-
 ### PropertyValue 的构造方法
-
-
 
 ```JAVA
 	public PropertyValue(PropertyValue original) {
@@ -135,16 +108,8 @@ public MutablePropertyValues(@Nullable PropertyValues original) {
 
 ```
 
-
-
-- 除了最后一行是一个复杂调用. 前面几行代码都是属性赋值操作. 
-  - 最后一行代码会调用`AttributeAccessor`接口上的方法. 
-
-
-
-
-
-
+- 除了最后一行是一个复杂调用. 前面几行代码都是属性赋值操作.
+  - 最后一行代码会调用`AttributeAccessor`接口上的方法.
 
 ## AttributeAccessor
 
@@ -194,15 +159,7 @@ public interface AttributeAccessor {
 }
 ```
 
-
-
-
-
 - 回到`org.springframework.core.AttributeAccessorSupport#copyAttributesFrom`方法
-
-
-
-
 
 ```java
 protected void copyAttributesFrom(AttributeAccessor source) {
@@ -218,13 +175,9 @@ protected void copyAttributesFrom(AttributeAccessor source) {
 }
 ```
 
-
-
-
-
 ### setAttribute
 
-- 一个map操作
+- 一个 map 操作
 
 ```java
 @Override
@@ -238,8 +191,6 @@ public void setAttribute(String name, @Nullable Object value) {
    }
 }
 ```
-
-
 
 ## addPropertyValue
 
@@ -268,17 +219,11 @@ public void setAttribute(String name, @Nullable Object value) {
 
 ```
 
-
-
-
-
 ## mergeIfRequired
 
 - `org.springframework.beans.MutablePropertyValues#mergeIfRequired`
 
-
-
-- 这段代码会取舍新老数据. 
+- 这段代码会取舍新老数据.
   1. 如果是`Mergeable`类型会做合并操作
   2. 直接返回新数据
 
@@ -299,9 +244,7 @@ public void setAttribute(String name, @Nullable Object value) {
 
 ```
 
-
-
-- 配合测试代码，跟容易看懂. 
+- 配合测试代码，跟容易看懂.
 
   ```java
   @Test
@@ -320,27 +263,11 @@ public void setAttribute(String name, @Nullable Object value) {
   }
   ```
 
-  
-
-
-
-
-
-
-
 ## Mergeable
-
-
 
 新的接口`Mergeable`
 
 - `org.springframework.beans.Mergeable`
-
-
-
-
-
-
 
 ```java
 public interface Mergeable {
@@ -358,15 +285,9 @@ public interface Mergeable {
 }
 ```
 
-
-
 ![](/images/spring/Mergeable.png)
 
-
-
 - 看一下 List 怎么实现`merge`
-
-
 
 ```java
 @Override
@@ -387,7 +308,5 @@ public List<E> merge(@Nullable Object parent) {
    return merged;
 }
 ```
-
-
 
 - 在 list 视线中就是讲两个结果合并. 事实上其他的几个都是这个操作. 这里就不贴所有的代码了

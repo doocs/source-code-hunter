@@ -8,7 +8,7 @@
 - chunk: 一个 chunk 是一组 page 的集合
 - 在 PoolChunk 中，chunkSize 的大小是 `2^maxOrder * pageSize`，其中 2^maxOrder 是 PoolChunk 中的完全二叉树叶子结点的数量，pageSize 则是单个 page 的大小。
 
-综合如上所述，举一个数字上的例子，默认情况下，单个 Page 的大小为 8192，也就是 8kb，maxOrder 默认情况下是 11，因此在这个情况下 PoolChunk 中的二叉树的叶子节点数量是 2048，chunkSize 的大小则是 2048*8kb 为 16M。
+综合如上所述，举一个数字上的例子，默认情况下，单个 Page 的大小为 8192，也就是 8kb，maxOrder 默认情况下是 11，因此在这个情况下 PoolChunk 中的二叉树的叶子节点数量是 2048，chunkSize 的大小则是 2048\*8kb 为 16M。
 
 ## PoolChunk 的内部完全二叉树结构
 

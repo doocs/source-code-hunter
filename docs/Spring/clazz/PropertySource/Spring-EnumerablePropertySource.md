@@ -9,7 +9,9 @@
 ```java
 	public abstract String[] getPropertyNames();
 ```
+
 - 整体代码如下
+
 ```java
 public abstract class EnumerablePropertySource<T> extends PropertySource<T> {
 
@@ -27,7 +29,7 @@ public abstract class EnumerablePropertySource<T> extends PropertySource<T> {
 	 * <p>This implementation checks for the presence of the given name within the
 	 * {@link #getPropertyNames()} array.
 	 *
-	 * 在属性列表中是否存在 properties 
+	 * 在属性列表中是否存在 properties
 	 * @param name the name of the property to find
 	 */
 	@Override

@@ -1,4 +1,5 @@
-# Spring MultiValueMap 
+# Spring MultiValueMap
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 
@@ -53,17 +54,11 @@ public interface MultiValueMap<K, V> extends Map<K, List<V>> {
 }
 ```
 
-- 但从接口定义上可以明确 value 是一个list结构
-
-
+- 但从接口定义上可以明确 value 是一个 list 结构
 
 类图
 
 ![](/images/spring/MultiValueMap.png)
-
-
-
-
 
 ## LinkedMultiValueMap
 
@@ -78,7 +73,7 @@ public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V>, Serializa
        // 获取 list 的第一个
        return (values != null && !values.isEmpty() ? values.get(0) : null);
     }
-    
+
     @Override
     public void add(K key, @Nullable V value) {
        // 从当前内存中获取key对应的list.
@@ -86,7 +81,7 @@ public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V>, Serializa
        // 将value 插入到values中
        values.add(value);
     }
-    
+
     @Override
     public void addAll(K key, List<? extends V> values) {
        // 从当前内存中获取key对应的list.
@@ -94,14 +89,14 @@ public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V>, Serializa
        // 将value 插入到values中
        currentValues.addAll(values);
     }
-    
+
     @Override
     public void addAll(MultiValueMap<K, V> values) {
        for (Entry<K, List<V>> entry : values.entrySet()) {
           addAll(entry.getKey(), entry.getValue());
        }
     }
-    
+
     @Override
     public void set(K key, @Nullable V value) {
        // 构造list
@@ -111,13 +106,13 @@ public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V>, Serializa
        // 添加
        this.targetMap.put(key, values);
     }
-    
+
     @Override
     public void setAll(Map<K, V> values) {
        // 循环执行 set 方法
        values.forEach(this::set);
     }
-    
+
     @Override
     public Map<K, V> toSingleValueMap() {
        // 返回结果定义

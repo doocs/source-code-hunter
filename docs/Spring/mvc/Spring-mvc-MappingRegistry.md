@@ -5,44 +5,42 @@
 - 源码路径: `org.springframework.jms.annotation.EnableJms`
 
 - 类全路径
-  
 - `org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.MappingRegistry`
-  
 - 基本属性
 
   ```java
   class MappingRegistry {
-  
+
      /**
       * key:mapping
       * value: mapping registration
       */
      private final Map<T, MappingRegistration<T>> registry = new HashMap<>();
-  
+
      /**
       * key: mapping
       * value: handlerMethod
       */
      private final Map<T, HandlerMethod> mappingLookup = new LinkedHashMap<>();
-  
+
      /**
       * key: url
       * value: list mapping
       */
      private final MultiValueMap<String, T> urlLookup = new LinkedMultiValueMap<>();
-  
+
      /**
       * key: name
       * value: handler method
       */
      private final Map<String, List<HandlerMethod>> nameLookup = new ConcurrentHashMap<>();
-  
+
      /**
       * key:handler method
       * value: 跨域配置
       */
      private final Map<HandlerMethod, CorsConfiguration> corsLookup = new ConcurrentHashMap<>();
-  
+
      /**
       * 读写锁
       */
@@ -50,11 +48,7 @@
   }
   ```
 
-
-
-
-
-- 写一个简单的controller 来进行解析
+- 写一个简单的 controller 来进行解析
 
 ```java
 @RestController
@@ -66,8 +60,6 @@ public class DemoController {
    }
 }
 ```
-
-
 
 - 前置链路追踪
 
@@ -96,10 +88,6 @@ public class DemoController {
 
 ![image-20200918130340555](/images/springMVC/clazz/image-20200918130340555.png)
 
-
-
-
-
 ## createHandlerMethod
 
 - `org.springframework.web.servlet.handler.AbstractHandlerMethodMapping#createHandlerMethod`
@@ -116,23 +104,15 @@ protected HandlerMethod createHandlerMethod(Object handler, Method method) {
 }
 ```
 
-
-
-
-
 - HandlerMethod 构造函数
 
   ```java
   public HandlerMethod(String beanName, BeanFactory beanFactory, Method method){}
-  
+
   public HandlerMethod(Object bean, Method method) {}
   ```
 
-
-
-
-
-## HandlerMethod 
+## HandlerMethod
 
 - 成员变量
 
@@ -172,10 +152,6 @@ public class HandlerMethod {
 }
 ```
 
-
-
-
-
 ## validateMethodMapping
 
 - `org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.MappingRegistry#validateMethodMapping`
@@ -197,8 +173,6 @@ private void validateMethodMapping(HandlerMethod handlerMethod, T mapping) {
 }
 ```
 
-
-
 ## getDirectUrls
 
 - 找到 mapping 匹配的 url
@@ -219,8 +193,6 @@ private List<String> getDirectUrls(T mapping) {
 }
 ```
 
-
-
 ## handlerMethod 和 name 绑定
 
 ```java
@@ -235,8 +207,6 @@ if (getNamingStrategy() != null) {
 ```
 
 - `org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMethodMappingNamingStrategy#getName`
-
-
 
 ```java
 @Override
@@ -259,15 +229,9 @@ public String getName(HandlerMethod handlerMethod, RequestMappingInfo mapping) {
 }
 ```
 
-
-
-
-
 ## initCorsConfiguration
 
 - `org.springframework.web.servlet.handler.AbstractHandlerMethodMapping#initCorsConfiguration`
-
-
 
 ```java
 @Override
@@ -300,12 +264,6 @@ protected CorsConfiguration initCorsConfiguration(Object handler, Method method,
    return config.applyPermitDefaultValues();
 }
 ```
-
-
-
-
-
-
 
 ## unregister
 

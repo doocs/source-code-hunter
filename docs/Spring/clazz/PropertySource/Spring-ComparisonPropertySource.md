@@ -3,12 +3,11 @@
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 
-
 - 整体代码如下.
-    - 下面几个调用方法会直接抛出异常
-        1. getSource
-        1. containsProperty
-        1. getProperty
+  - 下面几个调用方法会直接抛出异常
+    1. getSource
+    1. containsProperty
+    1. getProperty
 
 ```java
 	static class ComparisonPropertySource extends StubPropertySource {

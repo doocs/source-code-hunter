@@ -1,7 +1,6 @@
-# Spring SystemPropertyPlaceholderResolver 
+# Spring SystemPropertyPlaceholderResolver
 
 - 类全路径: `org.springframework.util.SystemPropertyUtils.SystemPropertyPlaceholderResolver`
-
 
 ```java
 	private static class SystemPropertyPlaceholderResolver implements PropertyPlaceholderHelper.PlaceholderResolver {

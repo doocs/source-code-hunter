@@ -3,13 +3,8 @@
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 
-
 - 类全路径: `org.springframework.core.env.CommandLinePropertySource`
 - 作用: 用来存储命令行参数
-
-
-
-
 
 ```java
 public abstract class CommandLinePropertySource<T> extends EnumerablePropertySource<T> {
@@ -93,10 +88,6 @@ public abstract class CommandLinePropertySource<T> extends EnumerablePropertySou
 }
 ```
 
-
-
-
-
 ## getOptionValues
 
 ```java
@@ -120,8 +111,6 @@ public abstract class CommandLinePropertySource<T> extends EnumerablePropertySou
 protected abstract List<String> getOptionValues(String name);
 ```
 
+阅读注释可以知道该方法可以获取命令行参数的列表.
 
-
-阅读注释可以知道该方法可以获取命令行参数的列表. 
-
-- 如 `--foo`作为开头当输入命令行为 `--foo=bar --foo=baz` 在输入参数名称 `foo` 会得到数据`bar,baz` 
+- 如 `--foo`作为开头当输入命令行为 `--foo=bar --foo=baz` 在输入参数名称 `foo` 会得到数据`bar,baz`

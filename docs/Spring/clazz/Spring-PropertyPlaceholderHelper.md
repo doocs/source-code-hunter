@@ -1,20 +1,10 @@
-# Spring PropertyPlaceholderHelper 
-
-
+# Spring PropertyPlaceholderHelper
 
 - 类全路径: `org.springframework.util.PropertyPlaceholderHelper`
-
-
-
-
-
-
 
 ## parseStringValue
 
 - `org.springframework.util.PropertyPlaceholderHelper#parseStringValue` 这个方法是主要方法
-
-
 
 ```java
 protected String parseStringValue(
@@ -87,11 +77,9 @@ protected String parseStringValue(
 }
 ```
 
-
-
 在这里还需要关注一个接口
 
-- 占位符解析. 
+- 占位符解析.
 
 ```java
 @FunctionalInterface
@@ -107,11 +95,7 @@ public interface PlaceholderResolver {
 }
 ```
 
-
-
 占位符解析请查看: [PlaceholderResolver](PlaceholderResolver)
-
-
 
 ## findPlaceholderEndIndex
 
@@ -145,10 +129,3 @@ private int findPlaceholderEndIndex(CharSequence buf, int startIndex) {
    return -1;
 }
 ```
-
-
-
-
-
-
-

@@ -1,17 +1,11 @@
-# Spring ResourcePropertySource 
+# Spring ResourcePropertySource
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 
-
 - 全路径: `org.springframework.core.io.support.ResourcePropertySource`
 
-- source 依然是map结构
-
-
-
-
-
-
+- source 依然是 map 结构
 
 ## getNameForResource
 
@@ -26,10 +20,6 @@ private static String getNameForResource(Resource resource) {
    return name;
 }
 ```
-
-
-
-
 
 ## withName
 
@@ -56,10 +46,6 @@ public ResourcePropertySource withName(String name) {
 }
 ```
 
-
-
-
-
 ## 构造函数
 
 - 通过 location 字符串读取 resource
@@ -70,8 +56,6 @@ public ResourcePropertySource(String name, String location, ClassLoader classLoa
    this(name, new DefaultResourceLoader(classLoader).getResource(location));
 }
 ```
-
-
 
 - 读取 resource 信息进行存储
 
@@ -84,8 +68,6 @@ public ResourcePropertySource(String name, EncodedResource resource) throws IOEx
    this.resourceName = getNameForResource(resource.getResource());
 }
 ```
-
-
 
 ## 完整代码
 
