@@ -191,6 +191,7 @@
 - [HashedWheelTimer & schedule](docs/Netty/Netty技术细节源码分析/HashedWheelTimer&schedule.md)
 - [ByteBuf 的内存泄漏原因与检测原理](docs/Netty/Netty技术细节源码分析/ByteBuf的内存泄漏原因与检测原理.md)
 - [内存池之 PoolChunk 设计与实现](docs/Netty/Netty技术细节源码分析/内存池之PoolChunk设计与实现.md)
+- [内存池之从内存池申请内存](docs/Netty/Netty技术细节源码分析/内存池之从内存池申请内存.md)
 
 ## Dubbo
 
