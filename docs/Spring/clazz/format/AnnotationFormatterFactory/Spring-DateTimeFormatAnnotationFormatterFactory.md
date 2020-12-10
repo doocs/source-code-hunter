@@ -1,10 +1,9 @@
-# Spring DateTimeFormatAnnotationFormatterFactory 
+# Spring DateTimeFormatAnnotationFormatterFactory
 
 - 类全路径: `org.springframework.format.datetime.DateTimeFormatAnnotationFormatterFactory`
 
 - 类图
-![EmbeddedValueResolutionSupport](/images/spring/DateTimeFormatAnnotationFormatterFactory.png)
-
+  ![EmbeddedValueResolutionSupport](/images/spring/DateTimeFormatAnnotationFormatterFactory.png)
 
 ```java
 public class DateTimeFormatAnnotationFormatterFactory extends EmbeddedValueResolutionSupport

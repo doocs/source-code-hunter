@@ -1,6 +1,6 @@
 # Spring MillisecondInstantPrinter
-- 类全路径: `org.springframework.format.datetime.joda.MillisecondInstantPrinter`
 
+- 类全路径: `org.springframework.format.datetime.joda.MillisecondInstantPrinter`
 
 ```java
 public final class MillisecondInstantPrinter implements Printer<Long> {
@@ -19,7 +19,7 @@ public final class MillisecondInstantPrinter implements Printer<Long> {
 
 	@Override
 	public String print(Long instant, Locale locale) {
-		// DateTimeFormatter .print 
+		// DateTimeFormatter .print
 		return JodaTimeContextHolder.getFormatter(this.formatter, locale).print(instant);
 	}
 

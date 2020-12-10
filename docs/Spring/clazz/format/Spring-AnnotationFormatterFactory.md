@@ -2,7 +2,6 @@
 
 - 类全路径: `org.springframework.format.AnnotationFormatterFactory`
 
-
 ```java
 
 public interface AnnotationFormatterFactory<A extends Annotation> {

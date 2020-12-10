@@ -1,7 +1,7 @@
 # Spring Printer
+
 - 类全路径: `org.springframework.format.Printer`
 - 类作用: 对象转换成字符串
-
 
 ```java
 @FunctionalInterface

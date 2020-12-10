@@ -1,7 +1,7 @@
 # Spring Parser
 
 - 类全路径: `org.springframework.format.Parser`
-- 类作用: 字符串准换成java对象
+- 类作用: 字符串准换成 java 对象
 
 ```java
 
