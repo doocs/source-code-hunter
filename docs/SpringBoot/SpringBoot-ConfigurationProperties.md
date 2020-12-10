@@ -326,7 +326,6 @@ public @interface EnableConfigurationProperties {
 ```yml
 server:
   port: 9999
-
 ```
 
 - 具体方法: `org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor#bind`

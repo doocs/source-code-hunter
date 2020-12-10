@@ -1,9 +1,10 @@
 # Spring PlaceholderResolver
+
 - 类全路径: `org.springframework.util.PropertyPlaceholderHelper.PlaceholderResolver`
 
 - 类作用将占位符中的内容替换成属性值.
-    - 假设现有属性表: user.dir = c:\home
-      传入参数 user.dir 会获得 c:\home 
+  - 假设现有属性表: user.dir = c:\home
+    传入参数 user.dir 会获得 c:\home
 
 ```java
 

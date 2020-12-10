@@ -3,11 +3,9 @@
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 
-
 - 类全路径: `org.springframework.core.env.MapPropertySource`
 - 内部数据结构是一个`Map<String,Object>`
-    这是一个对map的操作.
-      
+  这是一个对 map 的操作.
 - 整体代码如下.
 
 ```java

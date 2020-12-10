@@ -1,14 +1,12 @@
 # Spring PropertiesPropertySource
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 
-
 - 全路径: `org.springframework.core.env.PropertiesPropertySource`
 
-
-
-- Properties 是map结构。可以做类型转换. 
-- getPropertyNames 就转换成了父类MapPropertySource的方法了
+- Properties 是 map 结构。可以做类型转换.
+- getPropertyNames 就转换成了父类 MapPropertySource 的方法了
   - map.keySet()
 
 ```java

@@ -1,19 +1,13 @@
 # Spring MockPropertySource
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 
-
 - 内部 source 是 Properties 类型
-
-
-
-
-
-
 
 ## withProperty
 
-- 设置属性名称和属性值	
+- 设置属性名称和属性值
 
 ```java
 public MockPropertySource withProperty(String name, Object value) {
@@ -21,10 +15,6 @@ public MockPropertySource withProperty(String name, Object value) {
    return this;
 }
 ```
-
-
-
-
 
 ## setProperty
 
@@ -34,13 +24,7 @@ public void setProperty(String name, Object value) {
 }
 ```
 
-
-
-
-
 ## 完整代码
-
-
 
 ```java
 public class MockPropertySource extends PropertiesPropertySource {

@@ -1,7 +1,6 @@
 # Spring SystemPropertyUtils
+
 - spring 中获取系统属性的工具类
-
-
 
 - 内部属性
 
@@ -39,19 +38,13 @@ private static final PropertyPlaceholderHelper nonStrictHelper =
       new PropertyPlaceholderHelper(PLACEHOLDER_PREFIX, PLACEHOLDER_SUFFIX, VALUE_SEPARATOR, true);
 ```
 
-
-
-
-
 ## resolvePlaceholders
 
 - 解析属性
 
 ![SystemPropertyUtils-resolvePlaceholders.png](/images/spring/SystemPropertyUtils-resolvePlaceholders.png)
 
-
-
-时序图因为有递归所以看着有点长, 其核心方法最后会指向 PlaceholderResolver 
+时序图因为有递归所以看着有点长, 其核心方法最后会指向 PlaceholderResolver
 
 通过 PlaceholderResolver 获取属性值
 

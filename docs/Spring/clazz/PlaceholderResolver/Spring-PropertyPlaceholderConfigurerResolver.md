@@ -2,7 +2,6 @@
 
 - 类全路径: `org.springframework.beans.factory.config.PropertyPlaceholderConfigurer.PropertyPlaceholderConfigurerResolver`
 
-
 - 这个类是从 Properties 中获取属性
 
 ```java
@@ -45,14 +44,12 @@
 
 ```
 
-
 ```java
 	@Nullable
 	protected String resolvePlaceholder(String placeholder, Properties props) {
 		return props.getProperty(placeholder);
 	}
 ```
-
 
 ```java
 	@Nullable

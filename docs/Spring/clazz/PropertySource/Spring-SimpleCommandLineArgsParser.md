@@ -1,15 +1,13 @@
 # Spring SimpleCommandLineArgsParser
 
-
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
-
-
 
 - 类全路径: `org.springframework.core.env.SimpleCommandLineArgsParser
 - 类作用: 将命令行参数解析成 `org.springframework.core.env.CommandLineArgs`
 
-- 完整代码如下. 
+- 完整代码如下.
+
 ```java
 
 class SimpleCommandLineArgsParser {
@@ -51,5 +49,5 @@ class SimpleCommandLineArgsParser {
 ```
 
 - 处理流程
-    1. 循环命令行参数列表
-    2. 去掉 `--` 和 `=` 获取参数名称和参数值放入结果集合
+  1. 循环命令行参数列表
+  2. 去掉 `--` 和 `=` 获取参数名称和参数值放入结果集合

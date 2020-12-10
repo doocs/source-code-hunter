@@ -1,4 +1,5 @@
 # GenericTokenParser
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读工程: [SourceHot-Mybatis](https://github.com/SourceHot/mybatis-read.git)
 
@@ -120,9 +121,9 @@ public class GenericTokenParser {
 
 ```
 
-
 - 一个具体的例子`org.apache.ibatis.builder.SqlSourceBuilder.ParameterMappingTokenHandler`
-    - 具体类`org.apache.ibatis.builder.SqlSourceBuilder`
+  - 具体类`org.apache.ibatis.builder.SqlSourceBuilder`
+
 ```java
         /**
          * ? 的来源
@@ -137,6 +138,7 @@ public class GenericTokenParser {
         }
 
 ```
+
 ```java
     /**
      * sql 参数类型 ， 返回值

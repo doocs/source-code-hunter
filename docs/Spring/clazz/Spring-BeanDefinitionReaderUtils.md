@@ -1,13 +1,11 @@
 # Spring BeanDefinitionReaderUtils
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 
-
-
 ## createBeanDefinition
+
 - `org.springframework.beans.factory.support.BeanDefinitionReaderUtils.createBeanDefinition`
-
-
 
 ```java
 public static AbstractBeanDefinition createBeanDefinition(
@@ -30,8 +28,6 @@ public static AbstractBeanDefinition createBeanDefinition(
    return bd;
 }
 ```
-
-
 
 ## generateBeanName
 
@@ -77,8 +73,6 @@ public static AbstractBeanDefinition createBeanDefinition(
 	}
 ```
 
-
-
 ## uniqueBeanName
 
 ```java
@@ -95,10 +89,6 @@ public static String uniqueBeanName(String beanName, BeanDefinitionRegistry regi
    return id;
 }
 ```
-
-
-
-
 
 ## registerBeanDefinition
 
@@ -124,10 +114,6 @@ public static void registerBeanDefinition(
    }
 }
 ```
-
-
-
-
 
 ## registerWithGeneratedName
 

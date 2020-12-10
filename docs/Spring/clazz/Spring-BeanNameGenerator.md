@@ -1,11 +1,10 @@
 # Spring BeanNameGenerator
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 
-
 - `org.springframework.beans.factory.support.BeanNameGenerator`
 - 方法用来生成 beanName
-
 
 ```java
 public interface BeanNameGenerator {
@@ -23,19 +22,11 @@ public interface BeanNameGenerator {
 }
 ```
 
-
-
 ![](/images/spring/BeanNameGenerator.png)
-
-
-
-
 
 ## DefaultBeanNameGenerator
 
 - `org.springframework.beans.factory.support.DefaultBeanNameGenerator`
-
-
 
 - 调用工具类方法进行生成
 
@@ -46,11 +37,9 @@ public String generateBeanName(BeanDefinition definition, BeanDefinitionRegistry
 }
 ```
 
-
-
 1. ClassName + # + 十六进制字符
-2. parentName + $child + # + 十六进制字符
-3. factoryBeanName +$created+# + 十六进制字符
+2. parentName + \$child + # + 十六进制字符
+3. factoryBeanName +\$created+# + 十六进制字符
 4. beanName + # + 序号
 
 ```java
@@ -93,13 +82,9 @@ public static String generateBeanName(
 }
 ```
 
-
-
-
-
 ## AnnotationBeanNameGenerator
 
-1. 获取注解的value作为beanName
+1. 获取注解的 value 作为 beanName
 2. 类名首字母小写
 
 ```java
@@ -121,10 +106,6 @@ public String generateBeanName(BeanDefinition definition, BeanDefinitionRegistry
    return buildDefaultBeanName(definition, registry);
 }
 ```
-
-
-
-
 
 ## FullyQualifiedAnnotationBeanNameGenerator
 

@@ -1,6 +1,5 @@
 # Spring ServletContextPlaceholderResolver
 
-
 - 类全路径: `org.springframework.web.util.ServletContextPropertyUtils.ServletContextPlaceholderResolver`
 
 ```java

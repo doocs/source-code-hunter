@@ -3,18 +3,13 @@
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 
-
-
-
 ## MutablePropertySources
 
-- 全路径:  `org.springframework.core.env.MutablePropertySources`
+- 全路径: `org.springframework.core.env.MutablePropertySources`
 
 - `MutablePropertySources`类内部存储了`List<PropertySource<?>>`对象,主要是针对`List<PropertySource<?>>` 进行的操作.换句话说就是对 list 操作的实现
 
 - 类注解如下
-
-
 
 ```java
 public class MutablePropertySources implements PropertySources {
@@ -238,10 +233,6 @@ public class MutablePropertySources implements PropertySources {
 }
 ```
 
-
-
-
-
 ## PropertySources
 
 - 类路径: `org.springframework.core.env.PropertySources`
@@ -269,7 +260,7 @@ public interface PropertySources extends Iterable<PropertySource<?>> {
 
    /**
     * Return the property source with the given name, {@code null} if not found.
-    * 获取 PropertySource 
+    * 获取 PropertySource
     * @param name the {@linkplain PropertySource#getName() name of the property source} to find
     */
    @Nullable
@@ -278,22 +269,13 @@ public interface PropertySources extends Iterable<PropertySource<?>> {
 }
 ```
 
-
-
-
-
-
-
 ## PropertySource
 
 - 类路径: `org.springframework.core.env.PropertySource`
 
 - 存有两个子类
   1. StubPropertySource
-  2. ComparisonPropertySource
-     3. 调用`getSource`、`containsProperty`、`getProperty` 都会直接异常
-
-
+  2. ComparisonPropertySource 3. 调用`getSource`、`containsProperty`、`getProperty` 都会直接异常
 
 ```java
 public abstract class PropertySource<T> {
@@ -499,10 +481,6 @@ public abstract class PropertySource<T> {
 
 }
 ```
-
-
-
-
 
 类图
 

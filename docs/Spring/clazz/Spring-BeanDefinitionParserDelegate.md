@@ -1,18 +1,17 @@
 # Spring BeanDefinitionParserDelegate
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 
 - 全路径`org.springframework.beans.factory.xml.BeanDefinitionParserDelegate`
 - 解析 xml 中标签的委托类
 
-
-
 - 在这个类中定义常量如下，为后续解析提供帮助
 
 ```java
 	public static final String BEANS_NAMESPACE_URI = "http://www.springframework.org/schema/beans";
 
-	public static final String MULTI_VALUE_ATTRIBUTE_DELIMITERS = ",; ";	
+	public static final String MULTI_VALUE_ATTRIBUTE_DELIMITERS = ",; ";
 
 	public static final String TRUE_VALUE = "true";
 
@@ -147,17 +146,9 @@
 	private static final String SINGLETON_ATTRIBUTE = "singleton";
 ```
 
-
-
-
-
-
-
 ## populateDefaults
 
 - `org.springframework.beans.factory.xml.BeanDefinitionParserDelegate#populateDefaults`方法解析属性赋值给`DocumentDefaultsDefinition`对象
-
-
 
 - 代码逻辑如下
   1. 读取属性
@@ -215,8 +206,6 @@ protected void populateDefaults(DocumentDefaultsDefinition defaults, @Nullable D
 }
 ```
 
-
-
 ### DocumentDefaultsDefinition
 
 - 全路径:`org.springframework.beans.factory.xml.DocumentDefaultsDefinition`
@@ -266,12 +255,6 @@ public class DocumentDefaultsDefinition implements DefaultsDefinition {
 }
 ```
 
-
-
-
-
-
-
 ## checkNameUniqueness
 
 - `org.springframework.beans.factory.xml.BeanDefinitionParserDelegate#checkNameUniqueness`
@@ -309,17 +292,13 @@ protected void checkNameUniqueness(String beanName, List<String> aliases, Elemen
 }
 ```
 
-
-
-
-
 ## createBeanDefinition
 
 - `org.springframework.beans.factory.support.BeanDefinitionReaderUtils#createBeanDefinition`
 - 创建具有基本信息的**BeanDefinition**
-  1. parent bean name 
+  1. parent bean name
   2. bean clsss
-  3. bean class name 
+  3. bean class name
 
 ```java
 public static AbstractBeanDefinition createBeanDefinition(
@@ -343,28 +322,14 @@ public static AbstractBeanDefinition createBeanDefinition(
 }
 ```
 
-
-
-
-
 ## parseBeanDefinitionElement
 
 - `org.springframework.beans.factory.xml.BeanDefinitionParserDelegate#parseBeanDefinitionElement(org.w3c.dom.Element, org.springframework.beans.factory.config.BeanDefinition)`
 - 该方法用来解析 `<bean/>` 标签信息
 
-
-
-
-
-
-
-## 	
+##
 
 - `org.springframework.beans.factory.xml.BeanDefinitionParserDelegate#parseBeanDefinitionElement(org.w3c.dom.Element, java.lang.String, org.springframework.beans.factory.config.BeanDefinition)`
-
-
-
-
 
 ```java
 @Nullable
@@ -432,11 +397,7 @@ public AbstractBeanDefinition parseBeanDefinitionElement(
 
 - `org.springframework.beans.factory.xml.BeanDefinitionParserDelegate#parseBeanDefinitionAttributes`
 
-
-
 - 将 xml 标签的数据读取到内存中设置给`AbstractBeanDefinition`
-
-
 
 ```JAVA
 public AbstractBeanDefinition parseBeanDefinitionAttributes(Element ele, String beanName,
@@ -539,17 +500,11 @@ public AbstractBeanDefinition parseBeanDefinitionAttributes(Element ele, String 
 }
 ```
 
-
-
-
-
 ### parseMetaElements
-
-
 
 - `org.springframework.beans.factory.xml.BeanDefinitionParserDelegate#parseMetaElements`
 
-- 设置元数据. 
+- 设置元数据.
 
   标签`meta`的解析
 
@@ -578,8 +533,6 @@ public void parseMetaElements(Element ele, BeanMetadataAttributeAccessor attribu
 }
 ```
 
-
-
 使用案例
 
 ```xml
@@ -587,8 +540,6 @@ public void parseMetaElements(Element ele, BeanMetadataAttributeAccessor attribu
 		<meta key="meta-key" value="meta-value"/>
 	</bean>
 ```
-
-
 
 ```java
 ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("META-INF/beans/spring-lookup-method.xml");
@@ -599,8 +550,6 @@ Object attribute = apple.getAttribute("meta-key");
 System.out.println(attribute);
 ```
 
-
-
 ### parseLookupOverrideSubElements
 
 - `org.springframework.beans.factory.xml.BeanDefinitionParserDelegate#parseLookupOverrideSubElements`
@@ -608,8 +557,6 @@ System.out.println(attribute);
 - 解析标签
 
   `lookup-method`
-
-
 
 ```java
 public void parseLookupOverrideSubElements(Element beanEle, MethodOverrides overrides) {
@@ -634,8 +581,6 @@ public void parseLookupOverrideSubElements(Element beanEle, MethodOverrides over
 }
 ```
 
-
-
 使用案例
 
 ```xml
@@ -658,10 +603,6 @@ public class LookupMain {
    }
 }
 ```
-
-
-
-
 
 ### parseReplacedMethodSubElements
 
@@ -710,11 +651,7 @@ public void parseReplacedMethodSubElements(Element beanEle, MethodOverrides over
 }
 ```
 
-
-
 - 使用案例
-
-
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -735,8 +672,6 @@ public void parseReplacedMethodSubElements(Element beanEle, MethodOverrides over
 </beans>
 ```
 
-
-
 ```java
 public class MethodReplacerApple implements MethodReplacer {
    @Override
@@ -747,21 +682,13 @@ public class MethodReplacerApple implements MethodReplacer {
 }
 ```
 
-**replacer需要使用MethodReplacer实现类**
-
-
-
-
-
-
+**replacer 需要使用 MethodReplacer 实现类**
 
 ### parseConstructorArgElements
 
 - `org.springframework.beans.factory.xml.BeanDefinitionParserDelegate#parseConstructorArgElements`
 
 - 解析`constructor-arg`标签
-
-
 
 ```
 public void parseConstructorArgElements(Element beanEle, BeanDefinition bd) {
@@ -776,10 +703,6 @@ public void parseConstructorArgElements(Element beanEle, BeanDefinition bd) {
    }
 }
 ```
-
-
-
-
 
 ```java
 public void parseConstructorArgElement(Element ele, BeanDefinition bd) {
@@ -857,8 +780,6 @@ public void parseConstructorArgElement(Element ele, BeanDefinition bd) {
 }
 ```
 
-
-
 ### parseConstructorArgElement
 
 - `org.springframework.beans.factory.xml.BeanDefinitionParserDelegate#parseConstructorArgElement`
@@ -928,10 +849,6 @@ public Object parsePropertyValue(Element ele, BeanDefinition bd, @Nullable Strin
 }
 ```
 
-
-
-
-
 ### parsePropertySubElement
 
 - `org.springframework.beans.factory.xml.BeanDefinitionParserDelegate#parsePropertySubElement(org.w3c.dom.Element, org.springframework.beans.factory.config.BeanDefinition)`
@@ -943,10 +860,6 @@ public Object parsePropertySubElement(Element ele, @Nullable BeanDefinition bd) 
    return parsePropertySubElement(ele, bd, null);
 }
 ```
-
-
-
-
 
 ### parsePropertySubElement
 
@@ -1028,13 +941,9 @@ public Object parsePropertySubElement(Element ele, @Nullable BeanDefinition bd, 
 }
 ```
 
-
-
-
-
 #### parseIdRefElement
-- `org.springframework.beans.factory.xml.BeanDefinitionParserDelegate#parseIdRefElement`
 
+- `org.springframework.beans.factory.xml.BeanDefinitionParserDelegate#parseIdRefElement`
 
 ```java
 @Nullable
@@ -1058,13 +967,9 @@ public Object parseIdRefElement(Element ele) {
 }
 ```
 
-
-
 #### parseValueElement
 
 - `org.springframework.beans.factory.xml.BeanDefinitionParserDelegate#parseValueElement`
-
-
 
 ```JAVA
 	public Object parseValueElement(Element ele, @Nullable String defaultTypeName) {
@@ -1093,10 +998,6 @@ public Object parseIdRefElement(Element ele) {
 
 ```
 
-
-
-
-
 ##### buildTypedStringValue
 
 - `org.springframework.beans.factory.xml.BeanDefinitionParserDelegate#buildTypedStringValue`
@@ -1105,7 +1006,7 @@ public Object parseIdRefElement(Element ele) {
 ```java
 protected TypedStringValue buildTypedStringValue(String value, @Nullable String targetTypeName)
       throws ClassNotFoundException {
-   // class loader 
+   // class loader
    ClassLoader classLoader = this.readerContext.getBeanClassLoader();
    TypedStringValue typedValue;
    if (!StringUtils.hasText(targetTypeName)) {
@@ -1144,8 +1045,6 @@ public Object parseArrayElement(Element arrayEle, @Nullable BeanDefinition bd) {
 }
 ```
 
-
-
 #### parseListElement
 
 ```java
@@ -1176,10 +1075,6 @@ public Set<Object> parseSetElement(Element collectionEle, @Nullable BeanDefiniti
 }
 ```
 
-
-
-
-
 ##### parseCollectionElements
 
 - `parseArrayElement`、`parseListElement`、`parseSetElement` 都围绕者下面这个方法进行数据合并
@@ -1197,8 +1092,6 @@ protected void parseCollectionElements(
    }
 }
 ```
-
-
 
 #### parseMapElement
 
@@ -1342,19 +1235,7 @@ public Map<Object, Object> parseMapElement(Element mapEle, @Nullable BeanDefinit
 }
 ```
 
-
-
-
-
-
-
 #### parsePropsElement
-
-
-
-
-
-
 
 ### parsePropertyElement
 
@@ -1389,12 +1270,6 @@ public void parsePropertyElement(Element ele, BeanDefinition bd) {
 }
 ```
 
-
-
-
-
-
-
 ### parseQualifierElements
 
 - `org.springframework.beans.factory.xml.BeanDefinitionParserDelegate#parseQualifierElements`
@@ -1412,10 +1287,6 @@ public void parseQualifierElements(Element beanEle, AbstractBeanDefinition bd) {
    }
 }
 ```
-
-
-
-
 
 ### parseQualifierElement
 

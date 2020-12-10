@@ -1,15 +1,11 @@
 # Spring ServletContextPropertySource
 
-
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 
-
 - 类全路径: `org.springframework.web.context.support.ServletContextPropertySource`
 - 内部数据结构是 ServletContext 接口
-      
 - 整体代码如下.
-
 
 ```java
 

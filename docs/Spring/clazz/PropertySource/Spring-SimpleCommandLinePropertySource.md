@@ -2,19 +2,11 @@
 
 - 全路径: `org.springframework.core.env.SimpleCommandLinePropertySource`
 
-
-
 ```java
 public class SimpleCommandLinePropertySource extends CommandLinePropertySource<CommandLineArgs> {}
 ```
 
-- SimpleCommandLinePropertySource 的source 类型是 CommandLineArgs 具体解释请看下面分析
-
-
-
-
-
-
+- SimpleCommandLinePropertySource 的 source 类型是 CommandLineArgs 具体解释请看下面分析
 
 ## CommandLineArgs
 
@@ -37,7 +29,7 @@ class CommandLineArgs {
 
 ### addOptionArg
 
-添加 选项参数 
+添加 选项参数
 
 ```java
 public void addOptionArg(String optionName, @Nullable String optionValue) {
@@ -50,8 +42,6 @@ public void addOptionArg(String optionName, @Nullable String optionValue) {
 }
 ```
 
-
-
 ### getOptionNames
 
 - 获取选项参数列表
@@ -62,13 +52,7 @@ public Set<String> getOptionNames() {
 }
 ```
 
-
-
-
-
 - 其他方法不具体描述了，各位可以查看下面的代码
-
-
 
 ```java
 class CommandLineArgs {
@@ -142,13 +126,7 @@ class CommandLineArgs {
 }
 ```
 
-
-
-
-
-在了解 CommandLineArgs 类后再来看 SimpleCommandLinePropertySource 会相对容易. 内部的几个方法就是调用 CommandLineArgs  所提供的方法
-
-
+在了解 CommandLineArgs 类后再来看 SimpleCommandLinePropertySource 会相对容易. 内部的几个方法就是调用 CommandLineArgs 所提供的方法
 
 ```java
 @Override
@@ -172,4 +150,3 @@ protected List<String> getNonOptionArgs() {
    return this.source.getNonOptionArgs();
 }
 ```
-

@@ -1,19 +1,16 @@
 # Spring MethodOverride
+
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读仓库: [SourceHot-spring](https://github.com/SourceHot/spring-framework-read)
 
-
 - `org.springframework.beans.factory.support.MethodOverride`
-    - `org.springframework.beans.factory.support.LookupOverride`
-    - `org.springframework.beans.factory.support.ReplaceOverride`
+  - `org.springframework.beans.factory.support.LookupOverride`
+  - `org.springframework.beans.factory.support.ReplaceOverride`
 - `org.springframework.beans.factory.support.MethodOverrides`
 
-
-
 ## MethodOverride
+
 - MethodOverride 方法重载类
-
-
 
 在`MethodOverride`定义了下面三个属性
 
@@ -48,17 +45,11 @@ public abstract class MethodOverride implements BeanMetadataElement {
 public abstract boolean matches(Method method);
 ```
 
-
-
-
-
 类图
 
 ![MethodOverride](/images/spring/MethodOverride.png)
 
-
-
-- 在Spring中有两种可以重写的机制(XML)
+- 在 Spring 中有两种可以重写的机制(XML)
 
   1. `lookup-method` 标签
 
@@ -66,21 +57,13 @@ public abstract boolean matches(Method method);
      <lookup-method name="" bean=""/>
      ```
 
-     
-
   2. `replaced-method` 标签
 
      ```xml
      <replaced-method name="" replacer=""/>
      ```
 
-     
-
 相对应的两个类如类图所示
-
-
-
-
 
 ## LookupOverride
 
@@ -100,17 +83,15 @@ private final String beanName;
 private Method method;
 ```
 
-
-
 ### matches
 
 比较方法
 
-1. method是否直接相等
- 1. method 名称是否相同
- 2. 是否需要重载
-3. 是不是 ABSTRACT 方法
- 4. 参数列表长度是否等于0
+1. method 是否直接相等
+1. method 名称是否相同
+1. 是否需要重载
+1. 是不是 ABSTRACT 方法
+1. 参数列表长度是否等于 0
 
 ```java
 	@Override
@@ -131,10 +112,6 @@ private Method method;
 
 ```
 
-
-
-
-
 ## ReplaceOverride
 
 - `org.springframework.beans.factory.support.ReplaceOverride`
@@ -151,8 +128,6 @@ private final String methodReplacerBeanName;
  */
 private final List<String> typeIdentifiers = new LinkedList<>();
 ```
-
-
 
 - 一个例子
 
@@ -175,17 +150,11 @@ private final List<String> typeIdentifiers = new LinkedList<>();
 </beans>
 ```
 
-
-
 methodReplacerBeanName 对应`org.springframework.beans.factory.support.MethodReplacer` 的实现类
 
-typeIdentifiers 对应标签 arg-type  的属性值
-
-
+typeIdentifiers 对应标签 arg-type 的属性值
 
 构造方法
-
-
 
 ```java
 public ReplaceOverride(String methodName, String methodReplacerBeanName) {
@@ -195,17 +164,9 @@ public ReplaceOverride(String methodName, String methodReplacerBeanName) {
 }
 ```
 
-
-
 methodName 通过父类进行设置
 
-
-
-
-
 ### matches
-
-
 
 ```java
 @Override
@@ -237,31 +198,19 @@ public boolean matches(Method method) {
 }
 ```
 
-
-
-
-
-
-
 ## MethodOverrides
 
 - `org.springframework.beans.factory.support.MethodOverrides`
 
 - 重载方法对象
 
-- 存储所有重载的方法列表(set结构)
+- 存储所有重载的方法列表(set 结构)
 
 ```java
 	private final Set<MethodOverride> overrides = new CopyOnWriteArraySet<>();
 ```
 
-
-
-
-
 几个方法
-
-
 
 1. 添加 MethodOverride
 
@@ -269,7 +218,7 @@ public boolean matches(Method method) {
    public void addOverride(MethodOverride override) {
       this.overrides.add(override);
    }
-   
+
    public void addOverrides(@Nullable MethodOverrides other) {
    		if (other != null) {
    			this.overrides.addAll(other.overrides);
