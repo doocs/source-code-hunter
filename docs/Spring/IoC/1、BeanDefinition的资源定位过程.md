@@ -261,7 +261,7 @@ AbstractBeanDefinitionReader 中对 loadBeanDefinitions 方法的各种重载及
  */
 public int loadBeanDefinitions(String... locations) throws BeanDefinitionStoreException {
     Assert.notNull(locations, "Location array must not be null");
-    // 计数器，统计加载了多少个配置文件
+    // 计数器，统计加载了多少个BeanDefinition
     int counter = 0;
     for (String location : locations) {
         counter += loadBeanDefinitions(location);
