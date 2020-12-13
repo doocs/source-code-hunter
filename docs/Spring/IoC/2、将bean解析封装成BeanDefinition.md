@@ -354,10 +354,13 @@ protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate d
                 // 如果 ele 定义的 Document 的元素节点使用的是 Spring 默认的 XML 命名空间
                 if (delegate.isDefaultNamespace(ele)) {
                     // 使用 Spring 的 bean解析规则 解析元素节点
+                    // 解析的节点是 <import> <alias> <bean> <beans>
+                    // 其中<beans>标签是递归调用
                     parseDefaultElement(ele, delegate);
                 }
                 else {
                     // 若没有使用 Spring 默认的 XML 命名空间，则使用用户自定义的解析规则解析元素节点
+                    // 解析其他节点 比如<aop> <mvc> <context>等
                     delegate.parseCustomElement(ele);
                 }
             }
@@ -365,6 +368,7 @@ protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate d
     }
     else {
         // 若 Document 的根节点没有使用 Spring 默认的命名空间，则使用用户自定义的解析规则
+        // 解析其他节点 比如<aop> <mvc> <context>等
         // 解析 Document 根节点
         delegate.parseCustomElement(root);
     }
