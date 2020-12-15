@@ -503,6 +503,7 @@ protected void processAliasRegistration(Element ele) {
 
 /**
  * 解析 bean 元素
+ */
 protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
 
     // BeanDefinitionHolder 是对 BeanDefinition 的进一步封装，持有一个 BeanDefinition 对象 及其对应
