@@ -265,10 +265,6 @@ public class ProxyCreatorSupport extends AdvisedSupport {
     public AopProxyFactory getAopProxyFactory() {
         return this.aopProxyFactory;
     }
-
-    public AopProxyFactory getAopProxyFactory() {
-        return this.aopProxyFactory;
-    }
 }
 ```
 
