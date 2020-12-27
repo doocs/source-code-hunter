@@ -260,7 +260,7 @@
 ## Sentinel
 
 - [sentinel 时间窗口实现](docs/Sentinel/Sentinel时间窗口的实现.md)
-- [Sentinel 底层LongAdder的计数实现](docs/Sentinel/Sentinel底层LongAdder的计数实现.md)
+- [Sentinel 底层 LongAdder 的计数实现](docs/Sentinel/Sentinel底层LongAdder的计数实现.md)
 
 ## 番外篇（JDK 1.8）
 
