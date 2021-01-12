@@ -137,4 +137,3 @@ Sentinel 中漏桶算法通过 RateLimiterController 来实现，在漏桶算法
         return Math.min(newValue, maxToken);
     }
 ```
-
