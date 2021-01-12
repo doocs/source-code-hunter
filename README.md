@@ -256,6 +256,7 @@
 
 - [sentinel 时间窗口实现](docs/Sentinel/Sentinel时间窗口的实现.md)
 - [Sentinel 底层LongAdder的计数实现](docs/Sentinel/Sentinel底层LongAdder的计数实现.md)
+- [Sentinel 限流算法的实现](docs/Sentinel/Sentinel限流算法的实现.md)
 
 ## 番外篇（JDK 1.8）
 
