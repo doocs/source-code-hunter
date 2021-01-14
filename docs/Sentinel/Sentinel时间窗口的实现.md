@@ -11,14 +11,14 @@
 4. 当前进入的时间已经远远落后当前的时间，目标时间窗口已经被 reset 更新成更新的时间窗口，那么将不会返回目标时间窗口，而是返回一个新的空的时间窗口进行统计，这个时间窗口不会再被重复利用。  
    其中的第四个情况表明，sentinel 的滑动时间窗口是有时间范围的，这也是为了尽量减少 sentinel 的所占用的内存，默认情况下 sentinel 的采取的时间长度为 1 分钟和 1 秒钟。这里的实现与 LeapArray 类的结构非常有关系。
 
-```Java
-    protected final AtomicReferenceArray<WindowWrap<T>> array;
+```java
+protected final AtomicReferenceArray<WindowWrap<T>> array;
 ```
 
 在 LeapArray 中，时间窗口的存放通过一个由 AtomicReferenceArray 实现的 array 来实现。AtomicReferenceArray 支持原子读取和写入，并支持通过 cas 来为指定位置的成员进行更新。在时间窗口的创建并放回 array 的过程中，也就是上文的第一步，就是通过 AtomicReferenceArray 的 compareAndSet()方法来实现，保证并发下的线程安全。并发情况下，通过 cas 更新失败的线程将会回到就绪态，在下一次婚欢得到已经初始化完成的时间窗口。
 
-```Java
-    private final ReentrantLock updateLock = new ReentrantLock();
+```java
+private final ReentrantLock updateLock = new ReentrantLock();
 ```
 
 此处的 updateLock 是专门在上述的第三个情况来进行加锁的，只有成功得到锁的线程才会对过期的时间窗口进行 reset 操作，其他没有成功获取的线程将不会挂起等待，而是通过 yield()方法回到就绪态在下一次的循环尝试重新获取该位置的时间窗口。在下一次获取该锁的线程可能已经完成了，那么将会执行上述第二步，否则继续回到就绪态等待下一次循环中再次获取该时间窗口。  
