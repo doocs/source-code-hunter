@@ -263,7 +263,7 @@ private <T> List<T> createSpringFactoriesInstances(Class<T> type, Class<?>[] par
 
 - 最终输出内容类：`org.springframework.boot.SpringBootBanner`
 
-  ```JAVA
+  ```java
   class SpringBootBanner implements Banner {
 
   	private static final String[] BANNER = { "", "  .   ____          _            __ _ _",
@@ -297,7 +297,7 @@ private <T> List<T> createSpringFactoriesInstances(Class<T> type, Class<?>[] par
 
 ### createApplicationContext
 
-```JAVA
+```java
 	protected ConfigurableApplicationContext createApplicationContext() {
 	    // 获取上下文类
 		Class<?> contextClass = this.applicationContextClass;
@@ -327,7 +327,7 @@ private <T> List<T> createSpringFactoriesInstances(Class<T> type, Class<?>[] par
 
 - `this.applicationContextClass` 初始化方法
 
-```JAVA
+```java
 	public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
 		this.resourceLoader = resourceLoader;
 		Assert.notNull(primarySources, "PrimarySources must not be null");
@@ -342,7 +342,7 @@ private <T> List<T> createSpringFactoriesInstances(Class<T> type, Class<?>[] par
 
 - `org.springframework.boot.WebApplicationType#deduceFromClasspath`
 
-```JAVA
+```java
 	static WebApplicationType deduceFromClasspath() {
 		if (ClassUtils.isPresent(WEBFLUX_INDICATOR_CLASS, null) && !ClassUtils.isPresent(WEBMVC_INDICATOR_CLASS, null)
 				&& !ClassUtils.isPresent(JERSEY_INDICATOR_CLASS, null)) {
@@ -364,7 +364,7 @@ private <T> List<T> createSpringFactoriesInstances(Class<T> type, Class<?>[] par
 
 ### prepareContext
 
-```JAVA
+```java
 	private void prepareContext(ConfigurableApplicationContext context, ConfigurableEnvironment environment,
 			SpringApplicationRunListeners listeners, ApplicationArguments applicationArguments, Banner printedBanner) {
 	    // 上下文中设置环境
@@ -631,7 +631,7 @@ private int load(Object source) {
 
 - 两种 runner 启动`ApplicationRunner` 和 `CommandLineRunner`
 
-```JAVA
+```java
 	private void callRunners(ApplicationContext context, ApplicationArguments args) {
 		List<Object> runners = new ArrayList<>();
 		runners.addAll(context.getBeansOfType(ApplicationRunner.class).values());
@@ -649,7 +649,7 @@ private int load(Object source) {
 
 ```
 
-```JAVA
+```java
 private void callRunner(ApplicationRunner runner, ApplicationArguments args) {
 		try {
 			(runner).run(args);

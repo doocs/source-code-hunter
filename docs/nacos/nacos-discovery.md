@@ -97,7 +97,7 @@ public static void registerGlobalNacosProperties(AnnotationAttributes attributes
 
 - 贴出注解上的信息
 
-```JAVA
+```java
 	NacosProperties globalProperties() default @NacosProperties(username = USERNAME_PLACEHOLDER, password = PASSWORD_PLACEHOLDER, endpoint = ENDPOINT_PLACEHOLDER, namespace = NAMESPACE_PLACEHOLDER, accessKey = ACCESS_KEY_PLACEHOLDER, secretKey = SECRET_KEY_PLACEHOLDER, serverAddr = SERVER_ADDR_PLACEHOLDER, contextPath = CONTEXT_PATH_PLACEHOLDER, clusterName = CLUSTER_NAME_PLACEHOLDER, encode = ENCODE_PLACEHOLDER);
 
 ```
@@ -527,7 +527,7 @@ public void createServiceIfAbsent(String namespaceId, String serviceName, boolea
 
 - 在了解 map 结构后不难理解下面这个获取 Service 的方法了
 
-```JAVA
+```java
 public Service getService(String namespaceId, String serviceName) {
     if (serviceMap.get(namespaceId) == null) {
         return null;

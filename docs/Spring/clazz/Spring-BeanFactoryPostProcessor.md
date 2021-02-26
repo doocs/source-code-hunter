@@ -80,11 +80,11 @@ public class BeanFactoryPostProcessorSourceCode {
 
 - `org.springframework.context.support.AbstractApplicationContext#refresh`
 
-  ```JAVA
+  ```java
   invokeBeanFactoryPostProcessors(beanFactory);
   ```
 
-  ```JAVA
+  ```java
       protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
           PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
 
@@ -100,7 +100,7 @@ public class BeanFactoryPostProcessorSourceCode {
 
 - `org.springframework.context.support.PostProcessorRegistrationDelegate#invokeBeanFactoryPostProcessors(org.springframework.beans.factory.config.ConfigurableListableBeanFactory, java.util.List<org.springframework.beans.factory.config.BeanFactoryPostProcessor>)`
 
-  ```JAVA
+  ```java
   public static void invokeBeanFactoryPostProcessors(
               ConfigurableListableBeanFactory beanFactory, List<BeanFactoryPostProcessor> beanFactoryPostProcessors) {
 
@@ -373,13 +373,13 @@ public class DemoInstantiationAwareBeanPostProcessor implements InstantiationAwa
 
 在`org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#createBean(java.lang.String, org.springframework.beans.factory.support.RootBeanDefinition, java.lang.Object[])`中有如下代码
 
-```JAVA
+```java
             Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 ```
 
 - `org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#resolveBeforeInstantiation`
 
-```JAVA
+```java
 @Nullable
     protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition mbd) {
         Object bean = null;
@@ -405,7 +405,7 @@ public class DemoInstantiationAwareBeanPostProcessor implements InstantiationAwa
 
 - `org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#applyBeanPostProcessorsBeforeInstantiation`
 
-```JAVA
+```java
     @Nullable
     protected Object applyBeanPostProcessorsBeforeInstantiation(Class<?> beanClass, String beanName) {
         for (BeanPostProcessor bp : getBeanPostProcessors()) {

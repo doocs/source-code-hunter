@@ -30,7 +30,7 @@ public interface BeanNameGenerator {
 
 - 调用工具类方法进行生成
 
-```JAVA
+```java
 @Override
 public String generateBeanName(BeanDefinition definition, BeanDefinitionRegistry registry) {
    return BeanDefinitionReaderUtils.generateBeanName(definition, registry);

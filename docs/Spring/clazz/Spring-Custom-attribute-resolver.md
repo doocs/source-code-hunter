@@ -315,7 +315,7 @@ public class DatePropertyEditor extends PropertyEditorSupport {
 
   ![image-20200117142800671](../../../images/spring/image-20200117142800671.png)
 
-  ```JAVA
+  ```java
       @Nullable
       private Object convertForProperty(
               @Nullable Object value, String propertyName, BeanWrapper bw, TypeConverter converter) {
@@ -332,7 +332,7 @@ public class DatePropertyEditor extends PropertyEditorSupport {
 
   ```
 
-```JAVA
+```java
     private Object doConvertTextValue(@Nullable Object oldValue, String newTextValue, PropertyEditor editor) {
         try {
             editor.setValue(oldValue);
@@ -352,7 +352,7 @@ public class DatePropertyEditor extends PropertyEditorSupport {
 
 - 调用用例编写的方法
 
-  ```JAVA
+  ```java
       @Override
       public void setAsText(String text) throws IllegalArgumentException {
           System.out.println(text);

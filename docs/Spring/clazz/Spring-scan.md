@@ -368,7 +368,7 @@ public class DemoService {
 - `org.springframework.context.annotation.AnnotationBeanNameGenerator#buildDefaultBeanName(org.springframework.beans.factory.config.BeanDefinition, org.springframework.beans.factory.support.BeanDefinitionRegistry)`
   - `org.springframework.context.annotation.AnnotationBeanNameGenerator#buildDefaultBeanName(org.springframework.beans.factory.config.BeanDefinition)`
 
-```JAVA
+```java
     protected String buildDefaultBeanName(BeanDefinition definition) {
         // 获取bean class name
         String beanClassName = definition.getBeanClassName();
@@ -381,7 +381,7 @@ public class DemoService {
 
 ```
 
-```JAVA
+```java
 @Configuration
 public class BeanConfig {
     @Scope(value =ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -496,7 +496,7 @@ static void processCommonDefinitionAnnotations(AnnotatedBeanDefinition abd, Anno
 
 #### org.springframework.context.annotation.AnnotationConfigUtils#applyScopedProxyMode
 
-```JAVA
+```java
     static BeanDefinitionHolder applyScopedProxyMode(
             ScopeMetadata metadata, BeanDefinitionHolder definition, BeanDefinitionRegistry registry) {
 

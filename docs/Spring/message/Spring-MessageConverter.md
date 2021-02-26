@@ -67,7 +67,7 @@
 
 - 真正的转换过程
 
-```JAVA
+```java
 	@Override
 	protected Object convertFromInternal(Message<?> message, Class<?> targetClass, @Nullable Object conversionHint) {
 		Charset charset = getContentTypeCharset(getMimeType(message.getHeaders()));
@@ -79,7 +79,7 @@
 
 ### toMessage
 
-```JAVA
+```java
     @Override
     @Nullable
     public final Message<?> toMessage(Object payload, @Nullable MessageHeaders headers) {
@@ -88,7 +88,7 @@
 
 ```
 
-```JAVA
+```java
     @Override
     @Nullable
     public final Message<?> toMessage(Object payload, @Nullable MessageHeaders headers, @Nullable Object conversionHint) {
@@ -128,7 +128,7 @@
 
 - `org.springframework.messaging.converter.StringMessageConverter#convertToInternal`
 
-  ```JAVA
+  ```java
   	@Override
   	@Nullable
   	protected Object convertToInternal(
@@ -147,7 +147,7 @@
 
 - 创建**Message**对象
 
-  ```JAVA
+  ```java
   	@SuppressWarnings("unchecked")
   	public static <T> Message<T> createMessage(@Nullable T payload, MessageHeaders messageHeaders) {
   		Assert.notNull(payload, "Payload must not be null");
@@ -162,7 +162,7 @@
 
   ```
 
-  ```JAVA
+  ```java
   	@SuppressWarnings("unchecked")
   	public Message<T> build() {
   		if (this.originalMessage != null && !this.headerAccessor.isModified()) {

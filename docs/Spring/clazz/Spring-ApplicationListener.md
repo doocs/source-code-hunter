@@ -30,7 +30,7 @@ public class DemoApplicationListener implements ApplicationListener {
 </beans>
 ```
 
-```JAVA
+```java
 public class ListenerSourceCode {
     public static void main(String[] args) {
         ApplicationContext context = new ClassPathXmlApplicationContext("Listener-demo.xml");
@@ -68,7 +68,7 @@ public class ListenerSourceCode {
 
 ## 注册
 
-```JAVA
+```java
     protected void registerListeners() {
         // Register statically specified listeners first.
         // 读取 ApplicationListener

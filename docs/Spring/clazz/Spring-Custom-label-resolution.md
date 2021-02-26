@@ -271,7 +271,7 @@ public class XSDDemo {
 
 - `org.springframework.beans.factory.xml.DefaultNamespaceHandlerResolver#getHandlerMappings`跟踪这个方法
 
-```JAVA
+```java
     /**
      * Load the specified NamespaceHandler mappings lazily.
      *
@@ -358,7 +358,7 @@ public class XSDDemo {
 
   ![image-20200109090456547](../../../images/spring/image-20200109090456547.png)
 
-  ```JAVA
+  ```java
       public DefaultNamespaceHandlerResolver(@Nullable ClassLoader classLoader) {
           this(classLoader, DEFAULT_HANDLER_MAPPINGS_LOCATION);
       }
@@ -382,7 +382,7 @@ public class XSDDemo {
 
   ```
 
-```JAVA
+```java
     /**
      * Load the specified NamespaceHandler mappings lazily.
      *
@@ -628,7 +628,7 @@ public class UserNamespaceHandler extends NamespaceHandlerSupport {
 
 执行`com.huifer.source.spring.parser.UserBeanDefinitionParser#doParse`
 
-```JAVA
+```java
 @Override
     protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
         // 获取 userName 标签属性值

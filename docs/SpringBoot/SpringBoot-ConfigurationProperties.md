@@ -20,7 +20,7 @@
 
 ## ConfigurationPropertiesScan
 
-```JAVA
+```java
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
@@ -39,7 +39,7 @@ public @interface ConfigurationPropertiesScan {}
 
 ## EnableConfigurationProperties
 
-```JAVA
+```java
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
@@ -88,7 +88,7 @@ public @interface EnableConfigurationProperties {
 
 ### registerInfrastructureBeans
 
-```JAVA
+```java
 	static void registerInfrastructureBeans(BeanDefinitionRegistry registry) {
 	    // 属性绑定后置处理器
 		ConfigurationPropertiesBindingPostProcessor.register(registry);
@@ -102,7 +102,7 @@ public @interface EnableConfigurationProperties {
 
 #### ConfigurationPropertiesBindingPostProcessor.register(registry)
 
-```JAVA
+```java
 	public static void register(BeanDefinitionRegistry registry) {
 		Assert.notNull(registry, "Registry must not be null");
 		// 是否存在
@@ -119,7 +119,7 @@ public @interface EnableConfigurationProperties {
 
 #### ConfigurationPropertiesBeanDefinitionValidator.register(registry)
 
-```JAVA
+```java
 	static void register(BeanDefinitionRegistry registry) {
 		Assert.notNull(registry, "Registry must not be null");
 		if (!registry.containsBeanDefinition(BEAN_NAME)) {
@@ -145,7 +145,7 @@ public @interface EnableConfigurationProperties {
 
 - 源码开始，先找出刚才的对象`org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration`
 
-  ```JAVA
+  ```java
   @Configuration(proxyBeanMethods = false)
   @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
   @ConditionalOnClass(ServletRequest.class)
@@ -158,7 +158,7 @@ public @interface EnableConfigurationProperties {
   public class ServletWebServerFactoryAutoConfiguration {}
   ```
 
-```JAVA
+```java
     /**
      * 找出 {@link EnableConfigurationProperties} 注解标记的中的属性值,并且返回值不是void
      * @param metadata
@@ -196,7 +196,7 @@ public @interface EnableConfigurationProperties {
 
 ### postProcessBeforeInitialization
 
-```JAVA
+```java
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		// 绑定
@@ -272,7 +272,7 @@ public @interface EnableConfigurationProperties {
 
 - `org.springframework.boot.context.properties.ConfigurationPropertiesBean#create`
 
-```JAVA
+```java
 	private static ConfigurationPropertiesBean create(String name, Object instance, Class<?> type, Method factory) {
 		// 找注解
 		ConfigurationProperties annotation = findAnnotation(instance, type, factory, ConfigurationProperties.class);
@@ -365,7 +365,7 @@ BindResult<?> bind(ConfigurationPropertiesBean propertiesBean) {
 
 ##### findProperty
 
-```JAVA
+```java
 	private ConfigurationProperty findProperty(ConfigurationPropertyName name, Context context) {
 		if (name.isEmpty()) {
 			return null;
@@ -384,7 +384,7 @@ BindResult<?> bind(ConfigurationPropertiesBean propertiesBean) {
 
 - `org.springframework.boot.context.properties.source.SpringConfigurationPropertySource#getConfigurationProperty`
 
-  ```JAVA
+  ```java
   	@Override
   	public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
   		PropertyMapping[] mappings = getMapper().map(name);
@@ -393,7 +393,7 @@ BindResult<?> bind(ConfigurationPropertiesBean propertiesBean) {
 
   ```
 
-  ```JAVA
+  ```java
 
   	protected final ConfigurationProperty find(PropertyMapping[] mappings, ConfigurationPropertyName name) {
   		for (PropertyMapping candidate : mappings) {
@@ -409,7 +409,7 @@ BindResult<?> bind(ConfigurationPropertiesBean propertiesBean) {
 
   ```
 
-  ```JAVA
+  ```java
   	private ConfigurationProperty find(PropertyMapping mapping) {
   	    // 需要读取的配置信息的key
   		String propertySourceName = mapping.getPropertySourceName();

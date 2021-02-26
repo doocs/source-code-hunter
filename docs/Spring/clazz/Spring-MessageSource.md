@@ -99,7 +99,7 @@
 
     2. `org.springframework.context.support.AbstractMessageSource#getMessageInternal`
 
-       ```JAVA
+       ```java
            @Nullable
            protected String getMessageInternal(@Nullable String code, @Nullable Object[] args, @Nullable Locale locale) {
                if (code == null) {

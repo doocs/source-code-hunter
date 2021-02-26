@@ -575,7 +575,7 @@ private List<String> filter(List<String> configurations, AutoConfigurationMetada
 
 - 在这里有一个关注点 循环方法`getAutoConfigurationImportFilters()`
 
-```JAVA
+```java
 protected List<AutoConfigurationImportFilter> getAutoConfigurationImportFilters() {
    return SpringFactoriesLoader.loadFactories(AutoConfigurationImportFilter.class, this.beanClassLoader);
 }

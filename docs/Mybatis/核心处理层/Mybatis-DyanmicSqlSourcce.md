@@ -77,10 +77,10 @@ public class StaticTextSqlNode implements SqlNode {
 
 - `org.apache.ibatis.scripting.xmltags.DynamicContext#appendSql`
 
-  ```JAVA
-      public void appendSql(String sql) {
-          sqlBuilder.add(sql);
-      }
+  ```java
+    public void appendSql(String sql) {
+        sqlBuilder.add(sql);
+    }
   ```
 
 - 解析`trim`标签
@@ -102,7 +102,7 @@ public class StaticTextSqlNode implements SqlNode {
 
 ![image-20191219152655746](../../../images/mybatis/image-20191219152655746.png)
 
-```JAVA
+```java
     @Override
     public boolean apply(DynamicContext context) {
         if (evaluator.evaluateBoolean(test, context.getBindings())) {
@@ -116,7 +116,7 @@ public class StaticTextSqlNode implements SqlNode {
 
 - `evaluator.evaluateBoolean(test, context.getBindings())`方法
 
-```JAVA
+```java
     /**
      * @param expression      判断语句,ID != null
      * @param parameterObject 参数列表
@@ -135,7 +135,7 @@ public class StaticTextSqlNode implements SqlNode {
 
 ```
 
-```JAVA
+```java
     /**
      * 取值
      * @param expression  判断语句,ID=NULL

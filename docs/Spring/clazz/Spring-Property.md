@@ -92,7 +92,7 @@ public MutablePropertyValues(@Nullable PropertyValues original) {
 
 ### PropertyValue 的构造方法
 
-```JAVA
+```java
 	public PropertyValue(PropertyValue original) {
 		Assert.notNull(original, "Original must not be null");
 		this.name = original.getName();

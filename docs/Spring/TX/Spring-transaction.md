@@ -505,7 +505,7 @@ public class DeclarativeTransactionTest {
 
 - `tm.getTransaction`
 
-  ```JAVA
+  ```java
   @Override
   public final TransactionStatus getTransaction(@Nullable TransactionDefinition definition)
         throws TransactionException {
@@ -577,7 +577,7 @@ public class DeclarativeTransactionTest {
 
   - `org.springframework.jdbc.datasource.DataSourceTransactionManager#doGetTransaction`
 
-    ```JAVA
+    ```java
     @Override
     protected Object doGetTransaction() {
        DataSourceTransactionObject txObject = new DataSourceTransactionObject();
@@ -594,7 +594,7 @@ public class DeclarativeTransactionTest {
 
   - `org.springframework.transaction.support.AbstractPlatformTransactionManager#suspend`
 
-    ```JAVA
+    ```java
     @Nullable
     protected final SuspendedResourcesHolder suspend(@Nullable Object transaction)
           throws TransactionException {
@@ -642,7 +642,7 @@ public class DeclarativeTransactionTest {
 
 - `prepareTransactionInfo`简单的`new`对象并且绑定线程
 
-  ```JAVA
+  ```java
   protected TransactionInfo prepareTransactionInfo(@Nullable PlatformTransactionManager tm,
         @Nullable TransactionAttribute txAttr, String joinpointIdentification,
         @Nullable TransactionStatus status) {
@@ -1654,7 +1654,7 @@ static Object unwrapResourceIfNecessary(Object resource) {
 
 - `ScopedProxyUnwrapper.unwrapIfNecessary`
 
-  ```JAVA
+  ```java
   private static class ScopedProxyUnwrapper {
 
      public static Object unwrapIfNecessary(Object resource) {

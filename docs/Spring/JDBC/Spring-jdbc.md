@@ -24,7 +24,7 @@
 
 - 实体对象
 
-  ```JAVA
+  ```java
   public class HsLog {
       private Integer id;
 
@@ -50,7 +50,7 @@
 
 - DAO
 
-  ```JAVA
+  ```java
   public interface HsLogDao {
       List<HsLog> findAll();
 
@@ -61,7 +61,7 @@
 
 - 实现类
 
-  ```JAVA
+  ```java
   public class HsLogDaoImpl extends JdbcDaoSupport implements HsLogDao {
 
 
@@ -154,7 +154,7 @@
 
 - 运行方法
 
-  ```JAVA
+  ```java
 
   public class SpringJDBCSourceCode {
       public static void main(String[] args) {
@@ -251,7 +251,7 @@
 
 - `org.springframework.jdbc.datasource.DataSourceUtils#releaseConnection`
 
-```JAVA
+```java
     public static void releaseConnection(@Nullable Connection con, @Nullable DataSource dataSource) {
         try {
             doReleaseConnection(con, dataSource);
@@ -289,7 +289,7 @@ public static void doReleaseConnection(@Nullable Connection con, @Nullable DataS
 
 链接数
 
-```JAVA
+```java
     /**
      * Increase the reference count by one because the holder has been requested
      * (i.e. someone requested the resource held by it).
@@ -412,7 +412,7 @@ public void setDataSource(@Nullable DataSource dataSource) {
     }
 ```
 
-```JAVA
+```java
     @Override
     public List<T> extractData(ResultSet rs) throws SQLException {
         List<T> results = (this.rowsExpected > 0 ? new ArrayList<>(this.rowsExpected) : new ArrayList<>());

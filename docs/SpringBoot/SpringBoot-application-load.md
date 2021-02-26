@@ -116,7 +116,7 @@ protected void addPropertySources(ConfigurableEnvironment environment, ResourceL
 
 - `org.springframework.boot.context.config.ConfigFileApplicationListener.Loader#load(org.springframework.boot.context.config.ConfigFileApplicationListener.Profile, org.springframework.boot.context.config.ConfigFileApplicationListener.DocumentFilterFactory, org.springframework.boot.context.config.ConfigFileApplicationListener.DocumentConsumer)`
 
-```JAVA
+```java
 private void load(Profile profile, DocumentFilterFactory filterFactory, DocumentConsumer consumer) {
 			getSearchLocations().forEach(
 					// 本地路径
@@ -196,7 +196,7 @@ private void load(Profile profile, DocumentFilterFactory filterFactory, Document
 
 ### asDocuments
 
-```JAVA
+```java
 		/**
 		 * 将 {@link PropertySource} 转换成 {@link Document}
 		 * @param loaded

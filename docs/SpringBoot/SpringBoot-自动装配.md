@@ -57,7 +57,7 @@ public @interface EnableAutoConfiguration {
 
 ## getAutoConfigurationMetadata()
 
-```JAVA
+```java
 		@Override
 		public void process(AnnotationMetadata annotationMetadata, DeferredImportSelector deferredImportSelector) {
 			Assert.state(deferredImportSelector instanceof AutoConfigurationImportSelector,
@@ -87,7 +87,7 @@ public @interface EnableAutoConfiguration {
 
 - `org.springframework.boot.autoconfigure.AutoConfigurationMetadataLoader#loadMetadata(java.lang.ClassLoader)`
 
-  ```JAVA
+  ```java
   	static AutoConfigurationMetadata loadMetadata(ClassLoader classLoader, String path) {
   		try {
 
@@ -141,7 +141,7 @@ public @interface EnableAutoConfiguration {
 
 先说注解
 
-```JAVA
+```java
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisOperations.class)
 @EnableConfigurationProperties(RedisProperties.class)
@@ -155,7 +155,7 @@ public @interface EnableAutoConfiguration {
 - `org.springframework.boot.autoconfigure.data.redis.RedisProperties`
 - 部分 redis 配置属性
 
-```JAVA
+```java
 @ConfigurationProperties(prefix = "spring.redis")
 public class RedisProperties {
 
@@ -228,7 +228,7 @@ public class RedisProperties {
 
 ### getAutoConfigurationEntry
 
-```JAVA
+```java
 	protected AutoConfigurationEntry getAutoConfigurationEntry(AutoConfigurationMetadata autoConfigurationMetadata,
 			AnnotationMetadata annotationMetadata) {
 		if (!isEnabled(annotationMetadata)) {
@@ -302,7 +302,7 @@ public class RedisProperties {
 
 - new 两个对象直接做数据转换，去重
 
-```JAVA
+```java
 	protected final <T> List<T> removeDuplicates(List<T> list) {
 		return new ArrayList<>(new LinkedHashSet<>(list));
 	}
@@ -311,7 +311,7 @@ public class RedisProperties {
 
 ### getExclusions
 
-```JAVA
+```java
 	protected Set<String> getExclusions(AnnotationMetadata metadata, AnnotationAttributes attributes) {
 		Set<String> excluded = new LinkedHashSet<>();
 		// 获取属性 exclude 值转换成list
@@ -327,7 +327,7 @@ public class RedisProperties {
 
 ### getExcludeAutoConfigurationsProperty
 
-```JAVA
+```java
 	private List<String> getExcludeAutoConfigurationsProperty() {
 		if (getEnvironment() instanceof ConfigurableEnvironment) {
 			Binder binder = Binder.get(getEnvironment());
@@ -345,7 +345,7 @@ public class RedisProperties {
 
 - 修改启动类
 
-  ```JAVA
+  ```java
   @SpringBootApplication(excludeName =  { "org.sourcehot.service.HelloServiceAutoConfiguration" })
 
   ```
@@ -354,7 +354,7 @@ public class RedisProperties {
 
 ### checkExcludedClasses
 
-```JAVA
+```java
 	private void checkExcludedClasses(List<String> configurations, Set<String> exclusions) {
 		List<String> invalidExcludes = new ArrayList<>(exclusions.size());
 		for (String exclusion : exclusions) {
@@ -377,7 +377,7 @@ public class RedisProperties {
 
 ### filter
 
-```JAVA
+```java
 	private List<String> filter(List<String> configurations, AutoConfigurationMetadata autoConfigurationMetadata) {
 		long startTime = System.nanoTime();
 		String[] candidates = StringUtils.toStringArray(configurations);
@@ -430,7 +430,7 @@ public class RedisProperties {
 
 ### fireAutoConfigurationImportEvents
 
-```JAVA
+```java
 	private void fireAutoConfigurationImportEvents(List<String> configurations, Set<String> exclusions) {
 		// 获取自动配置的监听器列表
 		List<AutoConfigurationImportListener> listeners = getAutoConfigurationImportListeners();
@@ -456,7 +456,7 @@ public class RedisProperties {
 
 - `org.springframework.boot.autoconfigure.AutoConfigurationImportListener#onAutoConfigurationImportEvent` 在执行自动配置时触发 , 实现类只有 **`ConditionEvaluationReportAutoConfigurationImportListener`**
 
-  ```JAVA
+  ```java
   	@Override
   	public void onAutoConfigurationImportEvent(AutoConfigurationImportEvent event) {
   		if (this.beanFactory != null) {
@@ -482,7 +482,7 @@ public class RedisProperties {
 
 - 后续的一些行为相对简单，直接放个源码了.
 
-```JAVA
+```java
 @Override
 		public void process(AnnotationMetadata annotationMetadata, DeferredImportSelector deferredImportSelector) {
 			Assert.state(deferredImportSelector instanceof AutoConfigurationImportSelector,

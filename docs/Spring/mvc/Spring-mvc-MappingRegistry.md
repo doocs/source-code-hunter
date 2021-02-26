@@ -74,7 +74,7 @@ public class DemoController {
 
   - `org.springframework.web.servlet.handler.AbstractHandlerMethodMapping#registerHandlerMethod`
 
-  ```JAVA
+  ```java
   protected void registerHandlerMethod(Object handler, Method method, T mapping) {
       this.mappingRegistry.register(mapping, handler, method);
   }

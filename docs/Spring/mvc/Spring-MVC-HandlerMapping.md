@@ -58,7 +58,7 @@ public final HandlerExecutionChain getHandler(HttpServletRequest request) throws
 
 - `getHandlerInternal`方法是一个抽象方法
 
-  ```JAVA
+  ```java
   @Nullable
   protected abstract Object getHandlerInternal(HttpServletRequest request) throws Exception;
   ```
@@ -346,7 +346,7 @@ public Map<String, String> decodePathVariables(HttpServletRequest request, Map<S
 
 - 回到`org.springframework.web.servlet.handler.AbstractHandlerMethodMapping#getHandlerInternal`
 
-```JAVA
+```java
 String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
 ```
 
@@ -391,7 +391,7 @@ protected HandlerMethod lookupHandlerMethod(String lookupPath, HttpServletReques
   List<T> directPathMatches = this.mappingRegistry.getMappingsByUrl(lookupPath);
   ```
 
-  ```JAVA
+  ```java
   @Nullable
   public List<T> getMappingsByUrl(String urlPath) {
      return this.urlLookup.get(urlPath);

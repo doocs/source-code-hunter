@@ -86,7 +86,7 @@ public class JSONController {
 
   - `org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping#initCorsConfiguration`
 
-```JAVA
+```java
 @Override
     protected CorsConfiguration initCorsConfiguration(Object handler, Method method, RequestMappingInfo mappingInfo) {
         // 重新创建,为什么不作为参数传递: 还有别的实现方法
@@ -244,7 +244,7 @@ public class JSONController {
 - 实现**BeanDefinitionParser** 接口的都有一个**parse**方法直接看方法.
   - 通过查看我们可以知道最终目的获取 xml 标签中的属性,对 **CorsConfiguration**进行初始化，最后 Spring 中注册
 
-```JAVA
+```java
 public class CorsBeanDefinitionParser implements BeanDefinitionParser {
 
     @Override
@@ -341,7 +341,7 @@ public class CorsBeanDefinitionParser implements BeanDefinitionParser {
 
 - 跨域信息
 
-```JAVA
+```java
   /**
      * 允许请求源
      */
@@ -511,7 +511,7 @@ public class CorsBeanDefinitionParser implements BeanDefinitionParser {
 
 ![image-20200123093733129](../../../images/springMVC/clazz/image-20200123093733129.png)
 
-```JAVA
+```java
     @Override
     @SuppressWarnings("resource")
     public boolean processRequest(@Nullable CorsConfiguration config, HttpServletRequest request,

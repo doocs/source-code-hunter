@@ -59,7 +59,7 @@ public class JmsBootstrapConfiguration {
 
 #### afterSingletonsInstantiated
 
-```JAVA
+```java
 @Override
     public void afterSingletonsInstantiated() {
         // Remove resolved singleton classes from cache
@@ -108,7 +108,7 @@ public class JmsBootstrapConfiguration {
 
 - 关注最后一行`this.registrar.afterPropertiesSet()`
 
-  ```JAVA
+  ```java
   	@Override
   	public void afterPropertiesSet() {
   		registerAllEndpoints();
@@ -131,7 +131,7 @@ public class JmsBootstrapConfiguration {
 
 #### postProcessAfterInitialization
 
-```JAVA
+```java
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if (bean instanceof AopInfrastructureBean || bean instanceof JmsListenerContainerFactory ||
@@ -169,7 +169,7 @@ public class JmsBootstrapConfiguration {
 
 ```
 
-```JAVA
+```java
     protected void processJmsListener(JmsListener jmsListener, Method mostSpecificMethod, Object bean) {
         Method invocableMethod = AopUtils.selectInvocableMethod(mostSpecificMethod, bean.getClass());
 
@@ -302,7 +302,7 @@ public class JmsBootstrapConfiguration {
 
 - 关键接口`JmsListenerContainerFactory<C extends MessageListenerContainer>`
 
-  ```JAVA
+  ```java
   public interface JmsListenerContainerFactory<C extends MessageListenerContainer> {
 
   	/**

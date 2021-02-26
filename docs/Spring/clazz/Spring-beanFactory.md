@@ -529,7 +529,7 @@ protected void beforeSingletonCreation(String beanName) {
 
   - `org.springframework.beans.factory.support.FactoryBeanRegistrySupport#postProcessObjectFromFactoryBean`
 
-    ```JAVA
+    ```java
     protected Object postProcessObjectFromFactoryBean(Object object, String beanName) throws BeansException {
        return object;
     }
@@ -582,7 +582,7 @@ protected void afterSingletonCreation(String beanName) {
 - 代码现在进入的很深了，回到 doGetBean
 - `org.springframework.beans.factory.support.AbstractBeanFactory#doGetBean`
 
-```JAVA
+```java
 	protected <T> T doGetBean(final String name, @Nullable final Class<T> requiredType,
 			@Nullable final Object[] args, boolean typeCheckOnly) throws BeansException {
 		// 转换beanName
@@ -1183,7 +1183,7 @@ public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
 
 - 两个核心方法
 
-```JAVA
+```java
 // Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
 Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 Object beanInstance = doCreateBean(beanName, mbdToUse, args);
@@ -1870,7 +1870,7 @@ public void overrideDefaultEditor(Class<?> requiredType, PropertyEditor property
 
 - `registerCustomEditor`
 
-```JAVA
+```java
 @Override
 public void registerCustomEditor(@Nullable Class<?> requiredType, @Nullable String propertyPath, PropertyEditor propertyEditor) {
    if (requiredType == null && propertyPath == null) {

@@ -525,7 +525,7 @@ public class RMIClientSourceCode {
 1. 调用父类的`afterPropertiesSet`方法判断`serviceUrl`是否为空
 2. 执行`prepare()`方法
 
-```JAVA
+```java
     public void prepare() throws RemoteLookupFailureException {
         // Cache RMI stub on initialization?
         if (this.lookupStubOnStartup) {
@@ -553,7 +553,7 @@ public class RMIClientSourceCode {
 
 #### org.springframework.remoting.rmi.RmiClientInterceptor#lookupStub
 
-```JAVA
+```java
 protected Remote lookupStub() throws RemoteLookupFailureException {
         try {
             Remote stub = null;
@@ -625,7 +625,7 @@ protected Remote lookupStub() throws RemoteLookupFailureException {
 
 - 通过类图我们可以知道`RmiProxyFactoryBean`实现了`MethodInterceptor`,具体实现方法在`org.springframework.remoting.rmi.RmiClientInterceptor#invoke`
 
-```JAVA
+```java
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
         // 获取remote
@@ -649,7 +649,7 @@ protected Remote lookupStub() throws RemoteLookupFailureException {
 
 ```
 
-```JAVA
+```java
     protected Remote getStub() throws RemoteLookupFailureException {
         if (!this.cacheStub || (this.lookupStubOnStartup && !this.refreshStubOnConnectFailure)) {
             // 如果缓存stub存在直接获取,否则创建
@@ -668,7 +668,7 @@ protected Remote lookupStub() throws RemoteLookupFailureException {
 
 - `org.springframework.remoting.rmi.RmiClientInterceptor#doInvoke(org.aopalliance.intercept.MethodInvocation, org.springframework.remoting.rmi.RmiInvocationHandler)`
 
-```JAVA
+```java
     @Nullable
     protected Object doInvoke(MethodInvocation methodInvocation, RmiInvocationHandler invocationHandler)
             throws RemoteException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
@@ -693,7 +693,7 @@ protected Remote lookupStub() throws RemoteLookupFailureException {
 
 - `org.springframework.remoting.rmi.RmiInvocationWrapper#invoke`
 
-  ```JAVA
+  ```java
       /**
        * Delegates the actual invocation handling to the RMI exporter.
        *
@@ -712,7 +712,7 @@ protected Remote lookupStub() throws RemoteLookupFailureException {
 
   - 继续跟踪`org.springframework.remoting.rmi.RmiBasedExporter#invoke`
 
-    ```JAVA
+    ```java
         @Override
         protected Object invoke(RemoteInvocation invocation, Object targetObject)
                 throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
@@ -723,7 +723,7 @@ protected Remote lookupStub() throws RemoteLookupFailureException {
 
     - 继续跟踪`org.springframework.remoting.support.RemoteInvocationBasedExporter#invoke`
 
-      ```JAVA
+      ```java
           protected Object invoke(RemoteInvocation invocation, Object targetObject)
                   throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 
@@ -761,7 +761,7 @@ protected Remote lookupStub() throws RemoteLookupFailureException {
 
 ![image-20200226083247784](../../../images/spring/image-20200226083247784.png)
 
-```JAVA
+```java
 public class DefaultRemoteInvocationExecutor implements RemoteInvocationExecutor {
 
     @Override
@@ -776,7 +776,7 @@ public class DefaultRemoteInvocationExecutor implements RemoteInvocationExecutor
 }
 ```
 
-```JAVA
+```java
     public Object invoke(Object targetObject)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 

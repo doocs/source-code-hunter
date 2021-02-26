@@ -399,7 +399,7 @@ public AbstractBeanDefinition parseBeanDefinitionElement(
 
 - 将 xml 标签的数据读取到内存中设置给`AbstractBeanDefinition`
 
-```JAVA
+```java
 public AbstractBeanDefinition parseBeanDefinitionAttributes(Element ele, String beanName,
       @Nullable BeanDefinition containingBean, AbstractBeanDefinition bd) {
 
@@ -971,7 +971,7 @@ public Object parseIdRefElement(Element ele) {
 
 - `org.springframework.beans.factory.xml.BeanDefinitionParserDelegate#parseValueElement`
 
-```JAVA
+```java
 	public Object parseValueElement(Element ele, @Nullable String defaultTypeName) {
 		// It's a literal value.
 		// 获取 xml 中的文本变量
