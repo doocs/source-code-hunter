@@ -71,15 +71,62 @@
         }
       },
       plugins: [
-        function (hook) {
-          var footer = [
-            "<hr/>",
-            "<footer>",
-            '<span>Copyright © 2018-2021 <a href="https://github.com/doocs" target="_blank">Doocs</a>. All rights reserved.',
-            "</footer>",
-          ].join("");
+        function (hook, vm) {
+          hook.beforeEach(function (content) {
+            const en = vm.route.file.indexOf("README_EN") > -1;
+            if (/githubusercontent\.com/.test(vm.route.file)) {
+              url = vm.route.file
+                .replace("raw.githubusercontent.com", "github.com")
+                .replace(/\/main/, "/blob/main");
+            } else {
+              url =
+                "https://github.com/doocs/source-code-hunter/blob/main/" +
+                vm.route.file;
+            }
+
+            const github = `[GitHub](${url})`;
+            const gitee = `[Gitee](${url.replace("github", "gitee")})`;
+
+            const editHtml = en
+              ? `:memo: Edit on ${github} / ${gitee}\n`
+              : `:memo: 在 ${github} / ${gitee} 编辑\n`;
+
+            if (vm.route.path == "/") {
+              return editHtml + content;
+            }
+            const subscription = `
+## 公众号
+
+[Doocs](https://github.com/doocs) 技术社区旗下唯一公众号「**Doocs开源社区**」​，欢迎扫码关注，**专注分享技术领域相关知识及业内最新资讯**。当然，也可以加我个人微信（备注：GitHub），拉你进技术交流群。
+
+关注「**Doocs 开源社区**」公众号，回复 **PDF**，即可获取 [互联网 Java 工程师进阶知识完全扫盲](https://github.com/doocs/advanced-java) 项目离线 PDF 文档（283 页精华），学习更加方便！
+
+<table>
+    <tr>
+      <td align="center" style="width: 200px;">
+        <a href="https://github.com/doocs">
+          <img src="./images/qrcode-for-doocs.jpg" style="width: 400px;"><br>
+          <sub>公众平台</sub>
+        </a><br>
+      </td>
+      <td align="center" style="width: 200px;">
+        <a href="https://github.com/yanglbme">
+          <img src="./images/qrcode-for-yanglbme.jpg" style="width: 400px;"><br>
+          <sub>个人微信</sub>
+        </a><br>
+      </td>
+    </tr>
+</table>
+            `;
+            return editHtml + content + `\n` + subscription;
+          });
 
           hook.afterEach(function (html) {
+            const footer = [
+              "<footer>",
+              '<span>Copyright © 2018-2021 <a href="https://github.com/doocs" target="_blank">Doocs</a>. All rights reserved.',
+              "</footer>",
+            ].join("");
             return html + footer;
           });
         },
