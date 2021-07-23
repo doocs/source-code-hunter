@@ -68,7 +68,8 @@ maxToken = warningToken + (int)(2 * warmUpPeriodInSec * count / (1.0 + coldFacto
 slope = (coldFactor - 1.0) / count / (maxToken - warningToken);
 ```
 
-其中 count 是当前 qps 的阈值。coldFactor 则为冷却因子，warningToken 则为警戒的令牌数量，warningToken 的值为(热身时间长度 _ 每秒令牌的数量) / (冷却因子 - 1)。maxToken 则是最大令牌数量，具体的值为 warningToken 的值加上 (2 _ 热身时间长度 _ 每秒令牌数量) / (冷却因子 + 1)。当当前系统处于热身时间内，其允许通过的最大 qps 为 1 / (超过警戒数的令牌数 _ 斜率 slope + 1 / count)，而斜率的值为(冷却因子 - 1) / count / (最大令牌数 - 警戒令牌数)。  
+其中 count 是当前 qps 的阈值。coldFactor 则为冷却因子，warningToken 则为警戒的令牌数量，warningToken 的值为`(热身时间长度 * 每秒令牌的数量) / (冷却因子 - 1)`。maxToken 则是最大令牌数量，具体的值为 `warningToken + (2 * 热身时间长度 * 每秒令牌数量) / (冷却因子 + 1)`。当当前系统处于热身时间内，其允许通过的最大 qps 为 `1 / (超过警戒数的令牌数 * 斜率 slope + 1 / count)`，而斜率的值为`(冷却因子 - 1) / count / (最大令牌数 - 警戒令牌数)`。
+
 举个例子: count = 3， coldFactor = 3，热身时间为 4 的时候，警戒令牌数为 6，最大令牌数为 12，当剩余令牌处于 6 和 12 之间的时候，其 slope 斜率为 1 / 9。 那么当剩余令牌数为 9 的时候的允许 qps 为 1.5。其 qps 将会随着剩余令牌数的不断减少而直到增加到 count 的值。
 
 ```java
