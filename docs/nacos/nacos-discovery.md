@@ -128,7 +128,7 @@ public static void registerGlobalNacosProperties(AnnotationAttributes attributes
 
   ```
 
-![image-20200821111938485](/images/nacos/image-20200821111938485.png)
+![image-20200821111938485](../../images/nacos/image-20200821111938485.png)
 
 ## registerNacosCommonBeans
 
@@ -168,7 +168,7 @@ public static void registerInfrastructureBean(BeanDefinitionRegistry registry,
 
 属性读取，从 application 配置文件中读取数据转换成 java 对象。
 
-![image-20200821132413628](/images/nacos/image-20200821132413628.png)
+![image-20200821132413628](../../images/nacos/image-20200821132413628.png)
 
 ## NacosDiscoveryAutoRegister
 
@@ -228,11 +228,11 @@ public void onApplicationEvent(WebServerInitializedEvent event) {
 
 - 注册的参数
 
-  ![image-20200821133350982](/images/nacos/image-20200821133350982.png)
+  ![image-20200821133350982](../../images/nacos/image-20200821133350982.png)
 
 ## 服务注册
 
-![image-20200821133445090](/images/nacos/image-20200821133445090.png)
+![image-20200821133445090](../../images/nacos/image-20200821133445090.png)
 
 - 注册一个实例
   1. 将 instance 对象转换成 BeatInfo 对象
