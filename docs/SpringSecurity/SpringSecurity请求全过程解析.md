@@ -34,7 +34,7 @@ public class HelloController {
 
 这时候我们直接启动项目，访问***http://localhost:8080/hello***，可以看到页面跳转到一个登陆页面：
 
-![image-20210811091508157](D:\ronaldoc\workspace\source-code-hunter\images\SpringSecurity\image-20210811091508157.png)
+![image-20210811091508157](../../images/SpringSecurity/image-20210811091508157.png)
 
 默认的用户名为user，密码由Sping Security自动生成，回到IDEA的控制台，可以找到密码信息：
 
@@ -50,11 +50,11 @@ Spring Security默认为我们开启了一个简单的安全配置，下面让�
 
 当Spring Boot项目配置了Spring Security后，Spring Security的整个加载过程如下图所示：
 
-![image-20210811091633434](D:\ronaldoc\workspace\source-code-hunter\images\SpringSecurity\image-20210811091633434.png)
+![image-20210811091633434](../../images/SpringSecurity/image-20210811091633434.png)
 
 而当我们访问***http://localhost:8080/hello***时，代码的整个执行过程如下图所示：
 
-![image-20210811091659121](D:\ronaldoc\workspace\source-code-hunter\images\SpringSecurity\image-20210811091659121.png)
+![image-20210811091659121](../../images/SpringSecurity/image-20210811091659121.png)
 
 如上图所示，Spring Security包含了众多的过滤器，这些过滤器形成了一条链，所有请求都必须通过这些过滤器后才能成功访问到资源。
 
@@ -62,69 +62,69 @@ Spring Security默认为我们开启了一个简单的安全配置，下面让�
 
 首先，通过前面可以知道，当有请求来到时，最先由***DelegatingFilterProxy***负责接收，因此在***DelegatingFilterProxy***的***doFilter()***的首行打上断点：
 
-![image-20210811091719470](D:\ronaldoc\workspace\source-code-hunter\images\SpringSecurity\image-20210811091719470.png)
+![image-20210811091719470](../../images/SpringSecurity/image-20210811091719470.png)
 
 接着***DelegatingFilterProxy***会将请求委派给***FilterChainProxy***进行处理，在***FilterChainProxy***的首行打上断点：
 
-![img](D:\ronaldoc\workspace\source-code-hunter\images\SpringSecurity\56ac5128-eab7-4b92-912f-ff50bac68a4f.png)
+![img](../../images/SpringSecurity/56ac5128-eab7-4b92-912f-ff50bac68a4f.png)
 
 ***FilterChainProxy***会在***doFilterInternal()***中生成一个内部类***VirtualFilterChain***的实例，以此来调用Spring Security的整条过滤器链，在***VirtualFilterChain***的***doFilter()***首行打上断点：
 
-![image-20210811091755498](D:\ronaldoc\workspace\source-code-hunter\images\SpringSecurity\image-20210811091755498.png)
+![image-20210811091755498](../../images/SpringSecurity/image-20210811091755498.png)
 
 接下来***VirtualFilterChain***会通过***currentPosition***依次调用存在***additionalFilters***中的过滤器，其中比较重要的几个过滤器有：***UsernamePasswordAuthenticationFilter***、***DefaultLoginPageGeneratingFilter***、***AnonymousAuthenticationFilter***、***ExceptionTranslationFilter***、***FilterSecurityInterceptor***，我们依次在这些过滤器的***doFilter()***的首行打上断点：
 
-![image-20210811091815473](D:\ronaldoc\workspace\source-code-hunter\images\SpringSecurity\image-20210811091815473.png)
+![image-20210811091815473](../../images/SpringSecurity/image-20210811091815473.png)
 
 准备完毕后，我们启动项目，然后访问***http://localhost:8080/hello***，程序首先跳转到***DelegatingFilterProxy***的断点上：
 
-![image-20210811091833065](D:\ronaldoc\workspace\source-code-hunter\images\SpringSecurity\image-20210811091833065.png)
+![image-20210811091833065](../../images/SpringSecurity/image-20210811091833065.png)
 
 此时***delegate***还是null的，接下来依次执行代码，可以看到***delegate***最终被赋值一个***FilterChainProxy***的实例：
 
-![img](D:\ronaldoc\workspace\source-code-hunter\images\SpringSecurity\f045b025-bd97-4222-8a02-51634be6745b.png)
+![img](../../images/SpringSecurity/f045b025-bd97-4222-8a02-51634be6745b.png)
 
 接下来程序依次跳转到***FilterChainProxy***的***doFilter()***和***VirtualFilterChain***的***doFilter()***中：
 
-![img](D:\ronaldoc\workspace\source-code-hunter\images\SpringSecurity\90d3e369-510f-45cb-982d-241d2eedb55c.png)
+![img](../../images/SpringSecurity/90d3e369-510f-45cb-982d-241d2eedb55c.png)
 
-![image-20210811092048784](D:\ronaldoc\workspace\source-code-hunter\images\SpringSecurity\image-20210811092048784.png)
+![image-20210811092048784](../../images/SpringSecurity/image-20210811092048784.png)
 
 接着程序跳转到***AbstractAuthenticationProcessingFilter***（***UsernamePasswordAuthenticationFilter***的父类）的***doFilter()***中，通过***requiresAuthentication()***判定为false（是否是POST请求）：
 
-![img](D:\ronaldoc\workspace\source-code-hunter\images\SpringSecurity\2e5440bc-9488-4213-a030-0d25153bb2ea.png)
+![img](../../images/SpringSecurity/2e5440bc-9488-4213-a030-0d25153bb2ea.png)
 
 接着程序跳转到***DefaultLoginPageGeneratingFilter***的***doFilter()***中，通过***isLoginUrlRequest()***判定为false（请求路径是否是***/login***）：
 
-![img](D:\ronaldoc\workspace\source-code-hunter\images\SpringSecurity\47a7bca4-d858-4cb1-b126-347805b74053.png)
+![img](../../images/SpringSecurity/47a7bca4-d858-4cb1-b126-347805b74053.png)
 
 接着程序跳转到***AnonymousAuthenticationFilter***的***doFilter()***中，由于是首次请求，此时***SecurityContextHolder.getContext().getAuthentication()***为null，因此会生成一个***AnonymousAuthenticationToken***的实例：
 
-![img](D:\ronaldoc\workspace\source-code-hunter\images\SpringSecurity\6b1aded6-5229-47ba-b192-78a7c2622b8c.png)
+![img](../../images/SpringSecurity/6b1aded6-5229-47ba-b192-78a7c2622b8c.png)
 
 接着程序跳转到***ExceptionTranslationFilter***的***doFilter()***中，***ExceptionTranslationFilter***负责处理***FilterSecurityInterceptor***抛出的异常，我们在catch代码块的首行打上断点：
 
-**![img](D:\ronaldoc\workspace\source-code-hunter\images\SpringSecurity\8efa0b1c-2b32-4d5b-9655-985374326e10.png)**
+**![img](../../images/SpringSecurity/8efa0b1c-2b32-4d5b-9655-985374326e10.png)**
 
 接着程序跳转到***FilterSecurityInterceptor***的***doFilter()***中，依次执行代码后程序停留在其父类(***AbstractSecurityInterceptor***)的***attemptAuthorization()***中：
 
-![img](D:\ronaldoc\workspace\source-code-hunter\images\SpringSecurity\d6e99143-6207-43a5-8d04-f0c81baa11b4.png)
+![img](../../images/SpringSecurity/d6e99143-6207-43a5-8d04-f0c81baa11b4.png)
 
 ***accessDecisionManager***是***AccessDecisionManager***(访问决策器)的实例，***AccessDecisionManager***主要有3个实现类：***AffirmativeBased***(一票通过)，**ConsensusBased**(少数服从多数)、UnanimousBased(一票否决)，此时***AccessDecisionManager***的的实现类是***AffirmativeBased***，我们可以看到程序进入***AffirmativeBased***的***decide()***中：
 
-![img](D:\ronaldoc\workspace\source-code-hunter\images\SpringSecurity\6724647c-34ee-4a57-8cfa-b46f57400d14.png)
+![img](../../images/SpringSecurity/6724647c-34ee-4a57-8cfa-b46f57400d14.png)
 
 从上图可以看出，决策的关键在***voter.vote(authentication, object, configAttributes)***这句代码上，通过跟踪调试，程序最终进入***AuthenticationTrustResolverImpl***的***isAnonymous()***中：
 
-![img](D:\ronaldoc\workspace\source-code-hunter\images\SpringSecurity\4beaa02f-a93d-4d95-9ad1-0d7213cb0e46.png)
+![img](../../images/SpringSecurity/4beaa02f-a93d-4d95-9ad1-0d7213cb0e46.png)
 
 ***isAssignableFrom()***判断前者是否是后者的父类，而***anonymousClass***被固定为***AnonymousAuthenticationToken.class***，参数***authentication***由前面***AnonymousAuthenticationFilter***可以知道是***AnonymousAuthenticationToken***的实例，因此***isAnonymous()***返回true，***FilterSecurityInterceptor***抛出***AccessDeniedException***异常，程序返回***ExceptionTranslationFilter***的catch块中：
 
-![img](D:\ronaldoc\workspace\source-code-hunter\images\SpringSecurity\8e1ac9db-5987-484d-abf4-4c6535c60cc6.png)
+![img](../../images/SpringSecurity/8e1ac9db-5987-484d-abf4-4c6535c60cc6.png)
 
 接着程序会依次进入***DelegatingAuthenticationEntryPoint***、***LoginUrlAuthenticationEntryPoint***中，最后由***LoginUrlAuthenticationEntryPoint***的***commence()***决定重定向到***/login***：
 
-![img](D:\ronaldoc\workspace\source-code-hunter\images\SpringSecurity\1b03bdd4-6773-4b39-a664-fdf65d104403.png)
+![img](../../images/SpringSecurity/1b03bdd4-6773-4b39-a664-fdf65d104403.png)
 
 后续对***/login***的请求同样会经过之前的执行流程，在***DefaultLoginPageGeneratingFilter***的***doFilter()***中，通过***isLoginUrlRequest()***判定为true（请求路径是否是***/login***）,直接返回***login.html***，也就是我们开头看到的登录页面。
 
