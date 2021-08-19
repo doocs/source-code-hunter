@@ -36,7 +36,7 @@ struct sdshdr {
 
 那么接下来，我们就来看看最新的 Redis 是**如何根据字符串的长度，使用不同的数据结构进行存储的**。
 
-## Redis SDS 最新实现
+## Redis SDS [v6.0]
 
 在 Redis 3.2 版本之后（v3.2 - v6.0），Redis 将 SDS 划分为 5 种类型：
 
@@ -111,7 +111,11 @@ sds sdsnewlen(const void *init, size_t initlen) {
     // 指向flags的指针
     unsigned char *fp;
 
+    // 检查长度是否溢出
+    assert(initlen + hdrlen + 1 > initlen); 
+
     // 创建字符串，+1是因为 `\0` 结束符
+    // sh指向header首字节
     sh = s_malloc(hdrlen+initlen+1);
     if (sh == NULL) return NULL;
     if (init==SDS_NOINIT)
@@ -125,7 +129,13 @@ sds sdsnewlen(const void *init, size_t initlen) {
     // s减1得到flags
     fp = ((unsigned char*)s)-1;
 
+    // 赋值len, alloc, flags
     ...
+     
+
+    // 赋值buf[]
+    if (initlen && init)
+        memcpy(s, init, initlen);
 
     // 在s末尾添加\0结束符
     s[initlen] = '\0';
@@ -135,13 +145,14 @@ sds sdsnewlen(const void *init, size_t initlen) {
 }
 ```
 
-创建 SDS 的大致流程是这样的：首先根据字符串长度计算得到 type，根据 type 计算头部所需长度，然后动态分配内存空间。
+创建 SDS 的大致流程是这样的：首先根据字符串长度计算得到 type，根据 type 计算头部所需长度，然后动态分配内存空间。通过计算出指向header的指针sh，指向buf的指针s，对结构体各字段进行赋值。
 
 注意：
 
 1. 创建空字符串时，`SDS_TYPE_5` 被强制转换为 `SDS_TYPE_8`（原因是创建空字符串后，内容可能会频繁更新而引发扩容操作，故直接创建为 sdshdr8）
 2. 长度计算有 `+1` 操作，因为结束符 `\0` 会占用一个长度的空间。
 3. 返回的是指向 buf 的指针 s。
+4. 创建时分配到字节数 initlen+initlen+1，基本等于结构体头部长度+字符数组长度，没有预留多余空间。
 
 ### 2. 清空字符串
 
@@ -169,7 +180,19 @@ void sdsclear(sds s) {
 }
 ```
 
-### 3. 拼接字符串
+### 3. 更新len
+
+因为sdsnewlen函数返回的是char* 类型的buf，所以兼容了c语言操作字符串的函数，
+那么当 `s = ['a', 'b', 'c', '\0']` 时， 再操作`s[2] = '\0'`, 这个时候`sdslen(s)`得到的结果是3，因为len字段没有更新，如果直接更新`'\0'`，需要调用以下函数更新len
+    
+```c
+void sdsupdatelen(sds s) {
+    size_t reallen = strlen(s);
+    sdssetlen(s, reallen);
+}
+```
+
+### 4. 拼接字符串
 
 SDS 拼接字符串的实现如下：
 
@@ -232,6 +255,9 @@ sds sdsMakeRoomFor(sds s, size_t addlen) {
     // 计算新长度
     newlen = (len+addlen);
 
+    // 检查长度是否溢出
+    assert(newlen > len); 
+
     // 新长度<1MB，按新长度的2倍扩容
     if (newlen < SDS_MAX_PREALLOC)
         newlen *= 2;
@@ -246,6 +272,10 @@ sds sdsMakeRoomFor(sds s, size_t addlen) {
     if (type == SDS_TYPE_5) type = SDS_TYPE_8;
 
     hdrlen = sdsHdrSize(type);
+
+    // 检查长度是否溢出
+    assert(hdrlen + newlen + 1 > len); 
+
     if (oldtype==type) {
         // 类型没变，直接通过realloc扩大动态数组即可。
         newsh = s_realloc(sh, hdrlen+newlen+1);
@@ -278,6 +308,6 @@ sds sdsMakeRoomFor(sds s, size_t addlen) {
 
 ## 总结
 
-1. SDS 返回的是指向 buf 的指针，兼容了 C 语言操作字符串的函数，读取内容时，通过 len 属性来限制读取的长度，不受 `\0` 影响，从而保证二进制安全；
+1. SDS 返回的是指向 buf 的指针，同时以`\0`结尾，所以兼容了 C 语言操作字符串的函数，读取内容时，通过 len 属性来限制读取的长度，不受 `\0` 影响，从而保证二进制安全；
 2. Redis 根据字符串长度的不同，定义了多种数据结构，包括：sdshdr5/sdshdr8/sdshdr16/sdshdr32/sdshdr64。
 3. SDS 在设计字符串修改出会调用 `sdsMakeRoomFor` 函数进行检查，根据不同情况进行扩容。
