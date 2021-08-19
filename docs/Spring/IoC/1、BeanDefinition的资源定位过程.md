@@ -51,7 +51,7 @@ public FileSystemXmlApplicationContext(String[] configLocations, boolean refresh
 
     // 动态地确定用哪个加载器去加载我们的配置文件
     super(parent);
-    // 告诉读取器 配置文件放在哪里，该方法继承于爷类 AbstractRefreshableApplicationContext
+    // 告诉读取器 配置文件放在哪里，该方法继承于爷类 AbstractRefreshableConfigApplicationContext
     setConfigLocations(configLocations);
     if (refresh) {
         // 容器初始化
