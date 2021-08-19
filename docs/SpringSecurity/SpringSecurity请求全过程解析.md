@@ -110,7 +110,7 @@ Spring Security默认为我们开启了一个简单的安全配置，下面让�
 
 ![img](../../images/SpringSecurity/d6e99143-6207-43a5-8d04-f0c81baa11b4.png)
 
-***accessDecisionManager***是***AccessDecisionManager***(访问决策器)的实例，***AccessDecisionManager***主要有3个实现类：***AffirmativeBased***(一票通过)，**ConsensusBased**(少数服从多数)、UnanimousBased(一票否决)，此时***AccessDecisionManager***的的实现类是***AffirmativeBased***，我们可以看到程序进入***AffirmativeBased***的***decide()***中：
+***accessDecisionManager***是***AccessDecisionManager***(访问决策器)的实例，***AccessDecisionManager***主要有3个实现类：***AffirmativeBased***(一票通过)，**ConsensusBased**(少数服从多数)、UnanimousBased(一票否决)，此时***AccessDecisionManager***的的实现类是***AffirmativeBased***，我们可以看到程序进入***AffirmativeBased***的<strong><i>decide()</i></strong>中：
 
 ![img](../../images/SpringSecurity/6724647c-34ee-4a57-8cfa-b46f57400d14.png)
 
