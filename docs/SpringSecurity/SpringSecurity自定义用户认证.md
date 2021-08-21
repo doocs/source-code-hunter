@@ -51,6 +51,23 @@ public class BrowserConfig extends WebSecurityConfigurerAdapter {
 这时候启动系统，访问<strong><i>http://localhost:8080/hello</strong></i>，会看到页面已经被重定向到了<strong><i>http://localhost:8080/login.html</strong></i>： 
 
 ![img](../../images/SpringSecurity/d6bd19a2-08d3-4ba6-921c-5b5f57370a16.jpg)
+## 配置用户信息的获取逻辑
+
+Spring Security默认会为我们生成一个用户名为user，密码随机的用户实例，当然我们也可以定义自己用户信息的获取逻辑，只需要实现Spring Security提供的***UserDetailService***接口即可，该接口只有一个抽象方法***loadUserByUsername***，具体实现如下：
+
+```
+@Service
+public class UserDetailService implements UserDetailsService {
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return new User(username, passwordEncoder.encode("123456"), AuthorityUtils.createAuthorityList("admin"));
+    }
+}
+```
+
+通过以上配置，我们定义了一个用户名随机，密码统一为123456的用户信息的获取逻辑。这样，当我们启动项目，访问<strong><i>http://localhost:8080/login</strong></i>，只需要输入任意用户名以及123456作为密码即可登录系统。
 
 ## 源码解析
 
@@ -138,7 +155,7 @@ public class BrowserConfig extends WebSecurityConfigurerAdapter {
 
 ![img](../../images/SpringSecurity/cd7aee86-66f8-4197-99d1-1c9275e33bee.png)
 
-<strong><i>resourceHandlerMapping:</strong></i>
+<strong><i>weclomePageHandlerMapping:</strong></i>
 
 ![img](../../images/SpringSecurity/ef28372b-de89-46ff-8679-8b8feca04a7a.png)
 
@@ -226,7 +243,75 @@ public class BrowserConfig extends WebSecurityConfigurerAdapter {
 
 最终，类加载器会在如上两个路径下找到登录页并返回。
 
+### UserDetailService配置解析
+
+我们定义的用户信息的获取逻辑是如何被Spring Security应用的呢？让我们通过阅读源码来了解一下。
+
+还记得前面我们讲***BrowserConfig配置***被加载的过程吗？***UserDetailService***也是在这个过程中被一起加载完成的，回到**BrowserConfig配置解析**的第一幅图中，如下：
+
+![img](../../images/SpringSecurity/68490740-e03c-4353-b5fc-ac99c0cf0435.png)
+
+在断点处位置，<strong><i>authenticationManager()</strong></i>会返回一个***AuthenticationManager***实例，我们进入<strong><i>authenticationManager()</strong></i>中:
+
+![img](../../images/SpringSecurity/e7a1a684-64db-41d0-a5c0-d9a841d86cc1.png)
+
+在<strong><i>authenticationManager()</strong></i>中，***AuthenticationManager***转由***AuthenticationConfiguration***中获取，我们进入<strong><i>getAuthenticationManager()</strong></i>中：
+
+![img](../../images/SpringSecurity/d9ae84ae-d60c-4d9c-a7fd-cddeb1142f95.png)
+
+程序来到***AuthenticationConfiguration***的<strong><i>getAuthenticationManager()</strong></i>中，***AuthenticationManager***转由***AuthenticationManagerBuilder***中获取，我们进入<strong><i>build()</strong></i>中：
+
+![img](../../images/SpringSecurity/19f71152-f456-4db7-a1d5-f79aaa37253b.png)
+
+程序来到***AbstractConfiguredSecurityBuilder***的<strong><i>doBuild()</strong></i>中，这里在构建***AuthenticationManager***实例时，需要初始化3个配置类，我们重点关注第3个配置类：***org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer***，这个配置类是在***AuthenticationConfiguration***中引入的：
+
+![img](../../images/SpringSecurity/9f06c823-645d-413b-8bb6-1d81b8f329ea.png)
+
+我们来到***InitializeUserDetailsBeanManagerConfigurer***的<strong><i>init()</strong></i>中：
+
+![img](../../images/SpringSecurity/cd7d6cb9-c6e7-4570-aab8-309adcb15e16.png)
+
+这里会新建一个***InitializeUserDetailsManagerConfigurer***实例添加到***AuthenticationManagerBuilder***中。我们回到<strong><i>doBuild()</strong></i>中：
+
+![img](../../images/SpringSecurity/3ea76980-417d-4c0c-9330-e0bb241c6a47.png)
+
+可以看到配置类变成了5个，其中就有刚刚新建的***InitializeUserDetailsManagerConfigurer***，程序接下来会调用各个配置类的<strong><i>configure()</strong></i>进行配置，我们来到***InitializeUserDetailsManagerConfigurer***的<strong><i>configure()</strong></i>中：
+
+![img](../../images/SpringSecurity/ec39a9f6-c97d-4b7d-8843-d20358c1d194.png)
+
+可以看到在<strong><i>configure()</strong></i>中，就会去bean工厂中寻找***UserDetailsService***类型的bean，若是我们没有自定义***UserDetailsService***的实现类的话，Spring Security默认会生成一个***InMemoryUserDetailsManager***的实例：
+
+![img](../../images/SpringSecurity/c6a7370c-4afb-4c5d-aa35-ba9c3406b1ed.png)
+
+***InMemoryUserDetailsManager***是在***UserDetailsServiceAutoConfiguration***类中配置的：
+
+![img](../../images/SpringSecurity/476f8954-abe3-4e26-bfe1-8c5b4abbf0e0.png)
+
+解决完***UserDetailsService***的加载问题，现在我们来看看Spring Security是如何通过***UserDetailsService***获取用户信息的。
+
+通过**Spring Boot中开启Spring Security**一节的学习我们知道，登录判断的逻辑是在***UsernamePasswordAuthenticationFilter***中进行的，因此我们在***UsernamePasswordAuthenticationFilter***的<strong><i>attemptAuthenticatio()</strong></i>中打上断点，然后启动项目，访问登录页，输入用户名和密码点击登录后，程序来到***UsernamePasswordAuthenticationFilter***中：
+
+![img](../../images/SpringSecurity/1282014b-fc29-4c2b-9316-9fdd638653c9.png)
+
+这里将验证的逻辑交由***AuthenticationManager***进行，我们进入<strong><i>authenticate()</strong></i>中：
+
+![img](../../images/SpringSecurity/5d511c93-3614-40e0-b3c9-9673c573d60f.png)
+
+程序来到***ProviderManager***的<strong><i>authenticate()</strong></i>中，这里将验证的逻辑委托给其父类进行，再次点击进入<strong><i>authenticate()</strong></i>中：
+
+![img](../../images/SpringSecurity/8dddd63e-c567-4b41-a9d9-8ef8aa6f2a92.png)
+
+这里将验证的逻辑交由***AuthenticationProvider***进行，我们进入<strong><i>authenticate()</strong></i>中：
+
+![img](../../images/SpringSecurity/ec796a9b-7c65-49a2-9f9f-7685af7bd57b.png)
+
+程序来到***AbstractUserDetailsAuthenticationProvider***的<strong><i>authenticate()</strong></i>中，这里会根据用户名去寻找对应的用户实例，我们进入<strong><i>retrieveUser()</strong></i>中：
+
+![img](../../images/SpringSecurity/3980e264-c073-456a-b808-715edd85633a.png)
+
+程序来到***DaoAuthenticationProvider***的<strong><i>retrieveUser()</strong></i>中，可以看到正是在这里，会从***UserDetailsService***的<strong><i>loadUserByUsername()</strong></i>中寻找对应的用户信息。
+
+
 ## 参考
 
 1. [Spring Security自定义用户认证](https://mrbird.cc/Spring-Security-Authentication.html)
-
