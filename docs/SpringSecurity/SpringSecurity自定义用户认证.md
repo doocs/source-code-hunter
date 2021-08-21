@@ -1,10 +1,10 @@
-# Spring Security自定义用户认证
+# Spring Security 自定义用户认证
 
-在**Spring Boot中开启Spring Security**一节中我们简单地搭建了一个Spring Boot + Spring Security的项目，其中登录页、用户名和密码都是由Spring Security自动生成的。Spring Security支持我们自定义认证的过程，如使用自定义的登录页替换默认的登录页，用户信息的获取逻辑、登录成功或失败后的处理逻辑等。这里将在上一节的源码基础上进行改造。
+在**Spring Boot 中开启 Spring Security**一节中我们简单地搭建了一个 Spring Boot + Spring Security 的项目，其中登录页、用户名和密码都是由 Spring Security 自动生成的。Spring Security 支持我们自定义认证的过程，如使用自定义的登录页替换默认的登录页，用户信息的获取逻辑、登录成功或失败后的处理逻辑等。这里将在上一节的源码基础上进行改造。
 
 ## 配置自定义登录页
 
-为了方便起见，我们直接在<strong><i>src/main/resources/resources</strong></i>目录下创建一个<strong><i>login.html</strong></i>（不需要Controller跳转）：
+为了方便起见，我们直接在<strong><i>src/main/resources/resources</strong></i>目录下创建一个<strong><i>login.html</strong></i>（不需要 Controller 跳转）：
 
 ```
 <!DOCTYPE html>
@@ -27,7 +27,7 @@
 </html>
 ```
 
-要怎么做才能让Spring Security跳转到我们自己定义的登录页面呢？很简单，只需要在<strong><i>BrowserSecurityConfig</strong></i>的<strong><i>configure</strong></i>中添加一些配置：
+要怎么做才能让 Spring Security 跳转到我们自己定义的登录页面呢？很简单，只需要在<strong><i>BrowserSecurityConfig</strong></i>的<strong><i>configure</strong></i>中添加一些配置：
 
 ```
 @Configuration
@@ -46,14 +46,15 @@ public class BrowserConfig extends WebSecurityConfigurerAdapter {
 }
 ```
 
-上面代码中<strong><i>.loginPage("/login.html")</strong></i>指定了跳转到登录页面的请求URL，<strong><i>.loginProcessingUrl("/login")</strong></i>对应登录页面form表单的<strong><i>action="/login"</strong></i>，<strong><i>.antMatchers("/login.html", "/css/", "/error").permitAll()</strong></i>表示跳转到登录页面的请求不被拦截。
+上面代码中<strong><i>.loginPage("/login.html")</strong></i>指定了跳转到登录页面的请求 URL，<strong><i>.loginProcessingUrl("/login")</strong></i>对应登录页面 form 表单的<strong><i>action="/login"</strong></i>，<strong><i>.antMatchers("/login.html", "/css/", "/error").permitAll()</strong></i>表示跳转到登录页面的请求不被拦截。
 
-这时候启动系统，访问<strong><i>http://localhost:8080/hello</strong></i>，会看到页面已经被重定向到了<strong><i>http://localhost:8080/login.html</strong></i>： 
+这时候启动系统，访问<strong><i>http://localhost:8080/hello</strong></i>，会看到页面已经被重定向到了<strong><i>http://localhost:8080/login.html</strong></i>：
 
 ![img](../../images/SpringSecurity/d6bd19a2-08d3-4ba6-921c-5b5f57370a16.jpg)
+
 ## 配置用户信息的获取逻辑
 
-Spring Security默认会为我们生成一个用户名为user，密码随机的用户实例，当然我们也可以定义自己用户信息的获取逻辑，只需要实现Spring Security提供的***UserDetailService***接口即可，该接口只有一个抽象方法***loadUserByUsername***，具体实现如下：
+Spring Security 默认会为我们生成一个用户名为 user，密码随机的用户实例，当然我们也可以定义自己用户信息的获取逻辑，只需要实现 Spring Security 提供的**_UserDetailService_**接口即可，该接口只有一个抽象方法**_loadUserByUsername_**，具体实现如下：
 
 ```
 @Service
@@ -67,13 +68,13 @@ public class UserDetailService implements UserDetailsService {
 }
 ```
 
-通过以上配置，我们定义了一个用户名随机，密码统一为123456的用户信息的获取逻辑。这样，当我们启动项目，访问<strong><i>http://localhost:8080/login</strong></i>，只需要输入任意用户名以及123456作为密码即可登录系统。
+通过以上配置，我们定义了一个用户名随机，密码统一为 123456 的用户信息的获取逻辑。这样，当我们启动项目，访问<strong><i>http://localhost:8080/login</strong></i>，只需要输入任意用户名以及 123456 作为密码即可登录系统。
 
 ## 源码解析
 
-### BrowserConfig配置解析
+### BrowserConfig 配置解析
 
-我们首先来梳理下<strong><i>BrowserConfig</strong></i>中的配置是如何被Spring Security所加载的。
+我们首先来梳理下<strong><i>BrowserConfig</strong></i>中的配置是如何被 Spring Security 所加载的。
 
 首先找到调用<strong><i>BrowserConfig</strong></i>的<strong><i>configure()</strong></i>的地方，在其父类<strong><i>WebSecurityConfigurerAdapter</strong></i>的<strong><i>getHttp()</strong></i>中：
 
@@ -103,7 +104,7 @@ public class UserDetailService implements UserDetailsService {
 
 ![img](../../images/SpringSecurity/eb7a5916-4049-4682-9a11-10f1f1f94c74.png)
 
-我们重点看第二句代码，可以看到这里会提取存储在bean工厂中类型为<strong><i>WebSecurityConfigurer.class</strong></i>的bean，而<strong><i>BrowserConfig</strong></i>正是<strong><i>WebSecurityConfigurerAdapter</strong></i>的实现类。
+我们重点看第二句代码，可以看到这里会提取存储在 bean 工厂中类型为<strong><i>WebSecurityConfigurer.class</strong></i>的 bean，而<strong><i>BrowserConfig</strong></i>正是<strong><i>WebSecurityConfigurerAdapter</strong></i>的实现类。
 
 解决完<strong><i>configurers</strong></i>的赋值问题，我们回到<strong><i>AbstractConfiguredSecurityBuilder</strong></i>的<strong><i>init()</strong></i>处，找到调用该方法的地方，在同个类的<strong><i>doBuild()</strong></i>中：
 
@@ -117,7 +118,7 @@ public class UserDetailService implements UserDetailsService {
 
 ![img](../../images/SpringSecurity/a5c61feb-ca72-4768-94bd-1b0a8cf8af70.png)
 
-至此，我们分析完了<strong><i>BrowserConfig</strong></i>被Spring Security加载的过程。现在我们再来看看当我们自定义的配置被加载完后，<strong><i>http</strong></i>各属性的变化，在<strong><i>BrowserConfig</strong></i>的<strong><i>configure()</strong></i>末尾打上断点，当程序走到断点处时，查看<strong><i>http</strong></i>属性：
+至此，我们分析完了<strong><i>BrowserConfig</strong></i>被 Spring Security 加载的过程。现在我们再来看看当我们自定义的配置被加载完后，<strong><i>http</strong></i>各属性的变化，在<strong><i>BrowserConfig</strong></i>的<strong><i>configure()</strong></i>末尾打上断点，当程序走到断点处时，查看<strong><i>http</strong></i>属性：
 
 ![img](../../images/SpringSecurity/6c72c09b-742c-4415-851a-8ca5292a4969.png)
 
@@ -137,11 +138,11 @@ public class UserDetailService implements UserDetailsService {
 
 ![img](../../images/SpringSecurity/4612c27e-dd9f-4e60-92dc-fc9858496ec5.png)
 
-### login.html路径解析
+### login.html 路径解析
 
-当我们请求的资源需要经过认证时，Spring Security会将请求重定向到我们自定义的登录页，那么Spring又是如何找到我们自定义的登录页的呢？下面就让我们来解析一下：
+当我们请求的资源需要经过认证时，Spring Security 会将请求重定向到我们自定义的登录页，那么 Spring 又是如何找到我们自定义的登录页的呢？下面就让我们来解析一下：
 
-我们首先来到<strong><i>DispatcherServlet</strong></i>中，<strong><i>DispatcherServlet</strong></i>是Spring Web处理请求的入口。当Spring Web项目启动后，第一次接收到请求时，会调用其<strong><i>initStrategies()</strong></i>进行初始化：
+我们首先来到<strong><i>DispatcherServlet</strong></i>中，<strong><i>DispatcherServlet</strong></i>是 Spring Web 处理请求的入口。当 Spring Web 项目启动后，第一次接收到请求时，会调用其<strong><i>initStrategies()</strong></i>进行初始化：
 
 ![img](../../images/SpringSecurity/964ec4a4-6039-4205-8a87-ea2febcc00b6.png)
 
@@ -149,7 +150,7 @@ public class UserDetailService implements UserDetailsService {
 
 ![img](../../images/SpringSecurity/0a97b011-34ed-4d57-945e-95c8e6bafc8e.png)
 
-可以看到，当程序走到<strong><i>initHandlerMappings()</strong></i>中时，会从bean工厂中找出<strong><i>HandlerMapping.class</strong></i>类型的bean，将其存储到<strong><i>handlerMappings</strong></i>属性中。这里看到一共找到5个，分别是：<strong><i>requestMappingHandlerMapping</strong></i>（将请求与标注了<strong><i>@RequestMapping</strong></i>的方法进行关联）、<strong><i>weclomePageHandlerMapping</strong></i>（将请求与主页进行关联）、<strong><i>beanNameHandlerMapping</strong></i>（将请求与同名的bean进行关联）、<strong><i>routerFunctionMapping</strong></i>（将请求与<strong><i>RouterFunction</strong></i>进行关联）、<strong><i>resourceHandlerMapping</strong></i>（将请求与静态资源进行关联），这5个bean是在<strong><i>WebMvcAutoConfiguration$EnableWebMvcConfiguration</strong></i>中配置的：
+可以看到，当程序走到<strong><i>initHandlerMappings()</strong></i>中时，会从 bean 工厂中找出<strong><i>HandlerMapping.class</strong></i>类型的 bean，将其存储到<strong><i>handlerMappings</strong></i>属性中。这里看到一共找到 5 个，分别是：<strong><i>requestMappingHandlerMapping</strong></i>（将请求与标注了<strong><i>@RequestMapping</strong></i>的方法进行关联）、<strong><i>weclomePageHandlerMapping</strong></i>（将请求与主页进行关联）、<strong><i>beanNameHandlerMapping</strong></i>（将请求与同名的 bean 进行关联）、<strong><i>routerFunctionMapping</strong></i>（将请求与<strong><i>RouterFunction</strong></i>进行关联）、<strong><i>resourceHandlerMapping</strong></i>（将请求与静态资源进行关联），这 5 个 bean 是在<strong><i>WebMvcAutoConfiguration$EnableWebMvcConfiguration</strong></i>中配置的：
 
 <strong><i>requestMappingHandlerMapping:</strong></i>
 
@@ -177,11 +178,11 @@ public class UserDetailService implements UserDetailsService {
 
 ![img](../../images/SpringSecurity/6eca7b58-80f9-4e98-8483-62b4ef751854.png)
 
-可以看到这里实际调用的是<strong><i>configurers</strong></i>属性的<strong><i>addResourceHandlers()</strong></i>，而<strong><i>configurers</strong></i>是一个final类型的成员变量，其值是<strong><i>WebMvcConfigurerComposite</strong></i>的实例，我们来到<strong><i>WebMvcConfigurerComposite</strong></i>中：
+可以看到这里实际调用的是<strong><i>configurers</strong></i>属性的<strong><i>addResourceHandlers()</strong></i>，而<strong><i>configurers</strong></i>是一个 final 类型的成员变量，其值是<strong><i>WebMvcConfigurerComposite</strong></i>的实例，我们来到<strong><i>WebMvcConfigurerComposite</strong></i>中：
 
 ![img](../../images/SpringSecurity/c365e5ab-a7a3-4ebf-8a25-09cd2e049f22.png)
 
-可以看到这里实际调用的是<strong><i>delegates</strong></i>属性的<strong><i>addResourceHandlers()</strong></i>，<strong><i>delegates</strong></i>是一个final类型的集合，集合的元素由<strong><i>addWebMvcConfigurers()</strong></i>负责添加：
+可以看到这里实际调用的是<strong><i>delegates</strong></i>属性的<strong><i>addResourceHandlers()</strong></i>，<strong><i>delegates</strong></i>是一个 final 类型的集合，集合的元素由<strong><i>addWebMvcConfigurers()</strong></i>负责添加：
 
 ![img](../../images/SpringSecurity/895afead-ea6b-4ac6-8138-fbe0a223daf9.png)
 
@@ -189,11 +190,11 @@ public class UserDetailService implements UserDetailsService {
 
 ![img](../../images/SpringSecurity/a20e06a4-5a43-4edf-bea1-53fc9bc929e9.png)
 
-可以看到当<strong><i>setConfigurers()</strong></i>被初始化时，Spring会往参数<strong><i>configurers</strong></i>中传入两个值，我们关注第一个值，是一个<strong><i>WebMvcAutoConfiguration$WebMvcAutoConfigurationAdapter</strong></i>的实例，注意它的属性<strong><i>resourceProperties</strong></i>，是一个<strong><i>WebProperties$Resources</strong></i>的实例，默认情况下，在实例化<strong><i>WebMvcAutoConfigurationAdapter</strong></i>时，由传入参数<strong><i>webProperties</strong></i>进行赋值：<strong><i>webProperties.getResources()</strong></i>：
+可以看到当<strong><i>setConfigurers()</strong></i>被初始化时，Spring 会往参数<strong><i>configurers</strong></i>中传入两个值，我们关注第一个值，是一个<strong><i>WebMvcAutoConfiguration$WebMvcAutoConfigurationAdapter</strong></i>的实例，注意它的属性<strong><i>resourceProperties</strong></i>，是一个<strong><i>WebProperties$Resources</strong></i>的实例，默认情况下，在实例化<strong><i>WebMvcAutoConfigurationAdapter</strong></i>时，由传入参数<strong><i>webProperties</strong></i>进行赋值：<strong><i>webProperties.getResources()</strong></i>：
 
 ![img](../../images/SpringSecurity/97b6f22c-414d-4a16-aa8e-c3deece2f7cd.png)
 
-我们进入参数<strong><i>webProperties</strong></i>的类中，可以看到<strong><i>getResources()</strong></i>是直接实例化了一个<strong><i>Resources</strong></i>，其属性<strong><i>staticLocations</strong></i>是一个含有4个值的final类型的字符串数组，这4个值正是Spring寻找静态文件的地方：
+我们进入参数<strong><i>webProperties</strong></i>的类中，可以看到<strong><i>getResources()</strong></i>是直接实例化了一个<strong><i>Resources</strong></i>，其属性<strong><i>staticLocations</strong></i>是一个含有 4 个值的 final 类型的字符串数组，这 4 个值正是 Spring 寻找静态文件的地方：
 
 ![img](../../images/SpringSecurity/4d84fe43-2646-4a6f-a580-f39f6416d02d.png)
 
@@ -203,7 +204,7 @@ public class UserDetailService implements UserDetailsService {
 
 ![img](../../images/SpringSecurity/ccd16b38-d724-4c03-949e-3b6ba03268a9.png)
 
-在<strong><i>addResourceHandlers()</strong></i>中，会为<strong><i>registry</strong></i>添加两个资源处理器，当请求路径是“/webjars/”时，会在”classpath:/META-INF/resources/webjars/“路径下寻找对应的资源，当请求路径是“/**”时，会在”classpath:/META-INF/resources/“、”classpath:/resources/“、”classpath:/static/“、”classpath:/public/“路径下寻找对应的资源。
+在<strong><i>addResourceHandlers()</strong></i>中，会为<strong><i>registry</strong></i>添加两个资源处理器，当请求路径是“/webjars/”时，会在”classpath:/META-INF/resources/webjars/“路径下寻找对应的资源，当请求路径是“/\*\*”时，会在”classpath:/META-INF/resources/“、”classpath:/resources/“、”classpath:/static/“、”classpath:/public/“路径下寻找对应的资源。
 
 现在我们通过访问<strong><i>http://localhost:8080/login.html</strong></i>来验证这个过程。
 
@@ -243,75 +244,74 @@ public class UserDetailService implements UserDetailsService {
 
 最终，类加载器会在如上两个路径下找到登录页并返回。
 
-### UserDetailService配置解析
+### UserDetailService 配置解析
 
-我们定义的用户信息的获取逻辑是如何被Spring Security应用的呢？让我们通过阅读源码来了解一下。
+我们定义的用户信息的获取逻辑是如何被 Spring Security 应用的呢？让我们通过阅读源码来了解一下。
 
-还记得前面我们讲***BrowserConfig配置***被加载的过程吗？***UserDetailService***也是在这个过程中被一起加载完成的，回到**BrowserConfig配置解析**的第一幅图中，如下：
+还记得前面我们讲**_BrowserConfig 配置_**被加载的过程吗？**_UserDetailService_**也是在这个过程中被一起加载完成的，回到**BrowserConfig 配置解析**的第一幅图中，如下：
 
 ![img](../../images/SpringSecurity/68490740-e03c-4353-b5fc-ac99c0cf0435.png)
 
-在断点处位置，<strong><i>authenticationManager()</strong></i>会返回一个***AuthenticationManager***实例，我们进入<strong><i>authenticationManager()</strong></i>中:
+在断点处位置，<strong><i>authenticationManager()</strong></i>会返回一个**_AuthenticationManager_**实例，我们进入<strong><i>authenticationManager()</strong></i>中:
 
 ![img](../../images/SpringSecurity/e7a1a684-64db-41d0-a5c0-d9a841d86cc1.png)
 
-在<strong><i>authenticationManager()</strong></i>中，***AuthenticationManager***转由***AuthenticationConfiguration***中获取，我们进入<strong><i>getAuthenticationManager()</strong></i>中：
+在<strong><i>authenticationManager()</strong></i>中，**_AuthenticationManager_**转由**_AuthenticationConfiguration_**中获取，我们进入<strong><i>getAuthenticationManager()</strong></i>中：
 
 ![img](../../images/SpringSecurity/d9ae84ae-d60c-4d9c-a7fd-cddeb1142f95.png)
 
-程序来到***AuthenticationConfiguration***的<strong><i>getAuthenticationManager()</strong></i>中，***AuthenticationManager***转由***AuthenticationManagerBuilder***中获取，我们进入<strong><i>build()</strong></i>中：
+程序来到**_AuthenticationConfiguration_**的<strong><i>getAuthenticationManager()</strong></i>中，**_AuthenticationManager_**转由**_AuthenticationManagerBuilder_**中获取，我们进入<strong><i>build()</strong></i>中：
 
 ![img](../../images/SpringSecurity/19f71152-f456-4db7-a1d5-f79aaa37253b.png)
 
-程序来到***AbstractConfiguredSecurityBuilder***的<strong><i>doBuild()</strong></i>中，这里在构建***AuthenticationManager***实例时，需要初始化3个配置类，我们重点关注第3个配置类：***org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer***，这个配置类是在***AuthenticationConfiguration***中引入的：
+程序来到**_AbstractConfiguredSecurityBuilder_**的<strong><i>doBuild()</strong></i>中，这里在构建**_AuthenticationManager_**实例时，需要初始化 3 个配置类，我们重点关注第 3 个配置类：**_org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer_**，这个配置类是在**_AuthenticationConfiguration_**中引入的：
 
 ![img](../../images/SpringSecurity/9f06c823-645d-413b-8bb6-1d81b8f329ea.png)
 
-我们来到***InitializeUserDetailsBeanManagerConfigurer***的<strong><i>init()</strong></i>中：
+我们来到**_InitializeUserDetailsBeanManagerConfigurer_**的<strong><i>init()</strong></i>中：
 
 ![img](../../images/SpringSecurity/cd7d6cb9-c6e7-4570-aab8-309adcb15e16.png)
 
-这里会新建一个***InitializeUserDetailsManagerConfigurer***实例添加到***AuthenticationManagerBuilder***中。我们回到<strong><i>doBuild()</strong></i>中：
+这里会新建一个**_InitializeUserDetailsManagerConfigurer_**实例添加到**_AuthenticationManagerBuilder_**中。我们回到<strong><i>doBuild()</strong></i>中：
 
 ![img](../../images/SpringSecurity/3ea76980-417d-4c0c-9330-e0bb241c6a47.png)
 
-可以看到配置类变成了5个，其中就有刚刚新建的***InitializeUserDetailsManagerConfigurer***，程序接下来会调用各个配置类的<strong><i>configure()</strong></i>进行配置，我们来到***InitializeUserDetailsManagerConfigurer***的<strong><i>configure()</strong></i>中：
+可以看到配置类变成了 5 个，其中就有刚刚新建的**_InitializeUserDetailsManagerConfigurer_**，程序接下来会调用各个配置类的<strong><i>configure()</strong></i>进行配置，我们来到**_InitializeUserDetailsManagerConfigurer_**的<strong><i>configure()</strong></i>中：
 
 ![img](../../images/SpringSecurity/ec39a9f6-c97d-4b7d-8843-d20358c1d194.png)
 
-可以看到在<strong><i>configure()</strong></i>中，就会去bean工厂中寻找***UserDetailsService***类型的bean，若是我们没有自定义***UserDetailsService***的实现类的话，Spring Security默认会生成一个***InMemoryUserDetailsManager***的实例：
+可以看到在<strong><i>configure()</strong></i>中，就会去 bean 工厂中寻找**_UserDetailsService_**类型的 bean，若是我们没有自定义**_UserDetailsService_**的实现类的话，Spring Security 默认会生成一个**_InMemoryUserDetailsManager_**的实例：
 
 ![img](../../images/SpringSecurity/c6a7370c-4afb-4c5d-aa35-ba9c3406b1ed.png)
 
-***InMemoryUserDetailsManager***是在***UserDetailsServiceAutoConfiguration***类中配置的：
+**_InMemoryUserDetailsManager_**是在**_UserDetailsServiceAutoConfiguration_**类中配置的：
 
 ![img](../../images/SpringSecurity/476f8954-abe3-4e26-bfe1-8c5b4abbf0e0.png)
 
-解决完***UserDetailsService***的加载问题，现在我们来看看Spring Security是如何通过***UserDetailsService***获取用户信息的。
+解决完**_UserDetailsService_**的加载问题，现在我们来看看 Spring Security 是如何通过**_UserDetailsService_**获取用户信息的。
 
-通过**Spring Boot中开启Spring Security**一节的学习我们知道，登录判断的逻辑是在***UsernamePasswordAuthenticationFilter***中进行的，因此我们在***UsernamePasswordAuthenticationFilter***的<strong><i>attemptAuthenticatio()</strong></i>中打上断点，然后启动项目，访问登录页，输入用户名和密码点击登录后，程序来到***UsernamePasswordAuthenticationFilter***中：
+通过**Spring Boot 中开启 Spring Security**一节的学习我们知道，登录判断的逻辑是在**_UsernamePasswordAuthenticationFilter_**中进行的，因此我们在**_UsernamePasswordAuthenticationFilter_**的<strong><i>attemptAuthenticatio()</strong></i>中打上断点，然后启动项目，访问登录页，输入用户名和密码点击登录后，程序来到**_UsernamePasswordAuthenticationFilter_**中：
 
 ![img](../../images/SpringSecurity/1282014b-fc29-4c2b-9316-9fdd638653c9.png)
 
-这里将验证的逻辑交由***AuthenticationManager***进行，我们进入<strong><i>authenticate()</strong></i>中：
+这里将验证的逻辑交由**_AuthenticationManager_**进行，我们进入<strong><i>authenticate()</strong></i>中：
 
 ![img](../../images/SpringSecurity/5d511c93-3614-40e0-b3c9-9673c573d60f.png)
 
-程序来到***ProviderManager***的<strong><i>authenticate()</strong></i>中，这里将验证的逻辑委托给其父类进行，再次点击进入<strong><i>authenticate()</strong></i>中：
+程序来到**_ProviderManager_**的<strong><i>authenticate()</strong></i>中，这里将验证的逻辑委托给其父类进行，再次点击进入<strong><i>authenticate()</strong></i>中：
 
 ![img](../../images/SpringSecurity/8dddd63e-c567-4b41-a9d9-8ef8aa6f2a92.png)
 
-这里将验证的逻辑交由***AuthenticationProvider***进行，我们进入<strong><i>authenticate()</strong></i>中：
+这里将验证的逻辑交由**_AuthenticationProvider_**进行，我们进入<strong><i>authenticate()</strong></i>中：
 
 ![img](../../images/SpringSecurity/ec796a9b-7c65-49a2-9f9f-7685af7bd57b.png)
 
-程序来到***AbstractUserDetailsAuthenticationProvider***的<strong><i>authenticate()</strong></i>中，这里会根据用户名去寻找对应的用户实例，我们进入<strong><i>retrieveUser()</strong></i>中：
+程序来到**_AbstractUserDetailsAuthenticationProvider_**的<strong><i>authenticate()</strong></i>中，这里会根据用户名去寻找对应的用户实例，我们进入<strong><i>retrieveUser()</strong></i>中：
 
 ![img](../../images/SpringSecurity/3980e264-c073-456a-b808-715edd85633a.png)
 
-程序来到***DaoAuthenticationProvider***的<strong><i>retrieveUser()</strong></i>中，可以看到正是在这里，会从***UserDetailsService***的<strong><i>loadUserByUsername()</strong></i>中寻找对应的用户信息。
-
+程序来到**_DaoAuthenticationProvider_**的<strong><i>retrieveUser()</strong></i>中，可以看到正是在这里，会从**_UserDetailsService_**的<strong><i>loadUserByUsername()</strong></i>中寻找对应的用户信息。
 
 ## 参考
 
-1. [Spring Security自定义用户认证](https://mrbird.cc/Spring-Security-Authentication.html)
+1. [Spring Security 自定义用户认证](https://mrbird.cc/Spring-Security-Authentication.html)
