@@ -1,6 +1,4 @@
-[TOC]
-
-# 一文直接带你吃透  ArrayList
+# 一文直接带你吃透 ArrayList
 
 > ArrayList 是日常开发中相当常见、面试也相当常考的一种 JDK 集合类，了解并熟悉、甚至能实现一个 ArrayList 对面试、提升自己编码功底大有益处。
 
@@ -45,18 +43,16 @@ public class arrayList {
 
 ```java
 // 这是上面打印后的demo，可以看到第0处下标元素先是修改成了doocs，进行移除后，第0处下标元素变成了912
-finky  912  922  284  305  675  565  159  109  73  298  491  920  296  397  358  145  610  190  839  845  
+finky  912  922  284  305  675  565  159  109  73  298  491  920  296  397  358  145  610  190  839  845
 doocs
 912
 ```
-
-
 
 ## 二、ArrayList 的源码分析
 
 我们来看看 ArrayList 的源码：
 
-#### 1、来看看ArrayList的初始化：
+#### 1、来看看 ArrayList 的初始化：
 
 ```java
 // ArrayList 初始化时默认大小为10
@@ -67,23 +63,23 @@ private static final Object[] EMPTY_ELEMENTDATA = {};
 
 // 初始化ArrayList,传入初始化时的大小
 public ArrayList(int initialCapacity) {
-        if (initialCapacity > 0) {
-            this.elementData = new Object[initialCapacity];
-        } else if (initialCapacity == 0) {
-            this.elementData = EMPTY_ELEMENTDATA;
-        } else {
-            throw new IllegalArgumentException("Illegal Capacity: "+
-                                               initialCapacity);
-        }
+    if (initialCapacity > 0) {
+        this.elementData = new Object[initialCapacity];
+    } else if (initialCapacity == 0) {
+        this.elementData = EMPTY_ELEMENTDATA;
+    } else {
+        throw new IllegalArgumentException("Illegal Capacity: "+
+                                            initialCapacity);
     }
+}
 // 如果不传入大小的话就默认大小是10，那么这里就有一个问题：我们上面插入的元素超过了10，继续插入元素就会进行拷贝扩容，性能不是特别高。所以我们一般情况下初始化时给定一个比较靠谱的数组大小，避免到时候导致元素不断拷贝
 public ArrayList() {
-        this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
-   }
+    this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
+}
 
 ```
 
-==总结一下 ArrayList 初始化：我们创建 ArrayList 对象时，如果没有传入对应的大小，就会默认创建一个元素大小为10的数组，下次插入元素超过10时，会进行数组的拷贝扩容，这样性能消耗太高，所以建议就是在初始化时给定一个不要太小的容量大小。==
+总结一下 ArrayList 初始化：我们创建 ArrayList 对象时，如果没有传入对应的大小，就会默认创建一个元素大小为 10 的数组，下次插入元素超过 10 时，会进行数组的拷贝扩容，这样性能消耗太高，所以建议就是在初始化时给定一个不要太小的容量大小。==
 
 #### 2、 ArrayList 的 add 方法：
 
@@ -91,37 +87,38 @@ public ArrayList() {
 
 ```java
 public boolean add(E e) {
-        ensureCapacityInternal(size + 1);  // Increments modCount!!
-        elementData[size++] = e;
-        return true;
-    }
+    ensureCapacityInternal(size + 1);  // Increments modCount!!
+    elementData[size++] = e;
+    return true;
+}
 
 public void add(int index, E element) {
-        rangeCheckForAdd(index);
-        ensureCapacityInternal(size + 1);  // Increments modCount!!
-        System.arraycopy(elementData, index, elementData, index + 1,
-                         size - index);
-        elementData[index] = element;
-        size++;
-    }
+    rangeCheckForAdd(index);
+    ensureCapacityInternal(size + 1);  // Increments modCount!!
+    System.arraycopy(elementData, index, elementData, index + 1,
+                        size - index);
+    elementData[index] = element;
+    size++;
+}
 
 public void add(E e) {
-            checkForComodification();
-            try {
-                int i = cursor;
-                ArrayList.this.add(i, e);
-                cursor = i + 1;
-                lastRet = -1;
-                expectedModCount = modCount;
-            } catch (IndexOutOfBoundsException ex) {
-                throw new ConcurrentModificationException();
-            }
-        }
+    checkForComodification();
+    try {
+        int i = cursor;
+        ArrayList.this.add(i, e);
+        cursor = i + 1;
+        lastRet = -1;
+        expectedModCount = modCount;
+    } catch (IndexOutOfBoundsException ex) {
+        throw new ConcurrentModificationException();
+    }
+}
 
 private void rangeCheck(int index) {
     if (index < 0 || index >= this.size)
-           throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
-       }
+        throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
+    }
+}
 ```
 
 ![arraylist添加集合的方法](../../../images/JDK1.8/arraylist的add方法.png)
@@ -130,32 +127,30 @@ private void rangeCheck(int index) {
 
 再然后插入元素，同时对应的 index++。
 
-
-
 #### 3、瞧瞧 ArrayList 的 set 方法：
 
 ```java
 public E set(int index, E element) {
-        rangeCheck(index);
-        E oldValue = elementData(index);
-        elementData[index] = element;
-        return oldValue;
-    }
- 
-public void set(E e) {
-            if (lastRet < 0)
-                throw new IllegalStateException();
-            checkForComodification();
+    rangeCheck(index);
+    E oldValue = elementData(index);
+    elementData[index] = element;
+    return oldValue;
+}
 
-            try {
-                ArrayList.this.set(lastRet, e);
-            } catch (IndexOutOfBoundsException ex) {
-                throw new ConcurrentModificationException();
-            }
-        }
+public void set(E e) {
+    if (lastRet < 0)
+        throw new IllegalStateException();
+    checkForComodification();
+
+    try {
+        ArrayList.this.set(lastRet, e);
+    } catch (IndexOutOfBoundsException ex) {
+        throw new ConcurrentModificationException();
+    }
+}
 ```
 
-1、先进行index判断是否越界，如果没有越界的话获取原来的旧的值
+1、先进行 index 判断是否越界，如果没有越界的话获取原来的旧的值
 
 2、进行替换并返回该位置原来的旧的值
 
@@ -163,69 +158,67 @@ public void set(E e) {
 
 ```java
 public E get(int index) {
-            rangeCheck(index);
-            checkForComodification();
-            return ArrayList.this.elementData(offset + index);
-        } 
+    rangeCheck(index);
+    checkForComodification();
+    return ArrayList.this.elementData(offset + index);
+}
 ```
 
-进行index是否越界的判断，然后去取对应下标的值。
+进行 index 是否越界的判断，然后去取对应下标的值。
 
 #### 5、ArrayList 的 remove 方法：
 
 ```java
 public void remove() {
-            if (lastRet < 0)
-                throw new IllegalStateException();
-            checkForComodification();
+    if (lastRet < 0)
+        throw new IllegalStateException();
+    checkForComodification();
 
-            try {
-                ArrayList.this.remove(lastRet);
-                cursor = lastRet;
-                lastRet = -1;
-                expectedModCount = modCount;
-            } catch (IndexOutOfBoundsException ex) {
-                throw new ConcurrentModificationException();
-            }
-        }
-        
-public E remove(int index) {
-    	// 进行index是否越界的判断
-            rangeCheck(index); 
-            checkForComodification();
-            E result = parent.remove(parentOffset + index);
-            this.modCount = parent.modCount;
-            this.size--;
-            return result;
-        }
-
-public E remove(int index) {
-        rangeCheck(index);
-        modCount++;
-        E oldValue = elementData(index);
-        int numMoved = size - index - 1;
-        if (numMoved > 0)
-            System.arraycopy(elementData, index+1, elementData, index,
-                             numMoved);
-        elementData[--size] = null; 
-        return oldValue;
+    try {
+        ArrayList.this.remove(lastRet);
+        cursor = lastRet;
+        lastRet = -1;
+        expectedModCount = modCount;
+    } catch (IndexOutOfBoundsException ex) {
+        throw new ConcurrentModificationException();
     }
+}
+
+public E remove(int index) {
+    // 进行index是否越界的判断
+    rangeCheck(index);
+    checkForComodification();
+    E result = parent.remove(parentOffset + index);
+    this.modCount = parent.modCount;
+    this.size--;
+    return result;
+}
+
+public E remove(int index) {
+    rangeCheck(index);
+    modCount++;
+    E oldValue = elementData(index);
+    int numMoved = size - index - 1;
+    if (numMoved > 0)
+        System.arraycopy(elementData, index+1, elementData, index,
+                            numMoved);
+    elementData[--size] = null;
+    return oldValue;
+}
 ```
 
 ![arrayList删除元素的过程.png](../../../images/JDK1.8/arrayList删除元素的过程.png)
 
-1、先进行下标是否越界的判断，获取index处的元素值（这是要删除的值）
+1、先进行下标是否越界的判断，获取 index 处的元素值（这是要删除的值）
 
-2、然后进行元素拷贝，把index后面的元素往前拷贝
-
-
+2、然后进行元素拷贝，把 index 后面的元素往前拷贝
 
 #### 6、关于 ArrayList 动态扩容和数组拷贝：
 
 ```java
 private void ensureCapacityInternal(int minCapacity) {
-        ensureExplicitCapacity(calculateCapacity(elementData, minCapacity));
-    }
+    ensureExplicitCapacity(calculateCapacity(elementData, minCapacity));
+}
 
 private void ensureExplicitCapacity(int minCapacity) {
     modCount++;
@@ -234,25 +227,25 @@ private void ensureExplicitCapacity(int minCapacity) {
 }
 
 private void grow(int minCapacity) {
-        // overflow-conscious code
-        int oldCapacity = elementData.length;
-       // 扩容的代码：这里做了位运算，相当于数组扩容了1.5倍
-        int newCapacity = oldCapacity + (oldCapacity >> 1);
-        if (newCapacity - minCapacity < 0)
-            newCapacity = minCapacity;
-        if (newCapacity - MAX_ARRAY_SIZE > 0)
-            newCapacity = hugeCapacity(minCapacity);
-        // 随后进行元素拷贝
-        elementData = Arrays.copyOf(elementData, newCapacity);
-    }
+    // overflow-conscious code
+    int oldCapacity = elementData.length;
+    // 扩容的代码：这里做了位运算，相当于数组扩容了1.5倍
+    int newCapacity = oldCapacity + (oldCapacity >> 1);
+    if (newCapacity - minCapacity < 0)
+        newCapacity = minCapacity;
+    if (newCapacity - MAX_ARRAY_SIZE > 0)
+        newCapacity = hugeCapacity(minCapacity);
+    // 随后进行元素拷贝
+    elementData = Arrays.copyOf(elementData, newCapacity);
+}
 
 ```
 
-现在假定场景：arraylist中已经有10个元素类，要放第11个元素。
+现在假定场景：arraylist 中已经有 10 个元素类，要放第 11 个元素。
 
 此时进行容量检测，出现问题：空间大小不够。
 
-解决方法：此时进行数组扩容右位移1（**相当于总容量多加1.5倍**）扩容，老的大小+老大小的一半，进行元素拷贝
+解决方法：此时进行数组扩容右位移 1（**相当于总容量多加 1.5 倍**）扩容，老的大小+老大小的一半，进行元素拷贝
 
 ## 三、来仿照 JDK 源码写一个自己的 ArrayList 把
 
@@ -298,7 +291,7 @@ public class OwnArrayList<E> {
             throw new IllegalArgumentException("add failed,the index should >= 0 or <= size");
         data[index] = e;
     }
-    
+
     //    在数组中间插入一个元素
     public void add(int index, E element) {
         if (size == data.length) {
@@ -318,7 +311,7 @@ public class OwnArrayList<E> {
     public void addLast(E element) {
         add(size,element);
     }
-    
+
     //    在数组头部插入一个元素
     public void addFirst(E element) {
         add(0, element);
@@ -365,7 +358,7 @@ public class OwnArrayList<E> {
     public E removeFirst() {
         return remove(0);
     }
-    
+
     // 将数组空间的容量变成newCapacity大小
     private void resize(int newCapacity) {
         newCapacity = getCapacity()*2;
@@ -374,9 +367,8 @@ public class OwnArrayList<E> {
             newData[i] = data[i];
         data = newData;
     }
+}
 ```
-
-
 
 ## 四、面试时关于 ArrayList 要说的事
 
@@ -386,14 +378,11 @@ ArrayList 的底层是基于数组进行的，进行随机位置的插入和删�
 
 接着可以从源码的角度分析 add、remove、set、get、数组扩容拷贝的过程场景。
 
-最后也是特别重要的一点，就是要积极掌握主动性，延伸出 LinkedList的特点、源码、两者间的对比等。
+最后也是特别重要的一点，就是要积极掌握主动性，延伸出 LinkedList 的特点、源码、两者间的对比等。
 
-
-
-注：当需要动态数组时我们通常使用 ArrayList 而不是使用类似的 vector，这里有一点说明一下，就是尽管Vector的方法都是线程安全的，但其在单线程下需要花费的时间更多，而ArrayList尽管不是线程安全的，但其花费的时间很少。
+注：当需要动态数组时我们通常使用 ArrayList 而不是使用类似的 vector，这里有一点说明一下，就是尽管 Vector 的方法都是线程安全的，但其在单线程下需要花费的时间更多，而 ArrayList 尽管不是线程安全的，但其花费的时间很少。
 
 ## 终：参考资料
 
 1. JDK 集合框架 ArrayList 源码
 2. 《Core.Java.Volume.I.Fundamentals.11th.Edition》
-
