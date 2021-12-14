@@ -18,16 +18,16 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Compress Images
-        uses: calibreapp/image-actions@master
+        uses: calibreapp/image-actions@main
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           compressOnly: true
 
       - name: Commit Files
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git commit -m "[Automated] Optimize images" -a
+          git config --local user.email "szuyanglb@outlook.com"
+          git config --local user.name "yanglbme"
+          git commit -m "chore: auto compress images" -a
 
       - name: Push Changes
         uses: ad-m/github-push-action@master

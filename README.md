@@ -60,9 +60,9 @@
 
 - [面筋哥 IoC 容器的一天(上)](</docs/Spring/Spring源码故事（瞎编版）/面筋哥IoC容器的一天(上).md>)
 
-### Spring整体脉络
+### Spring 整体脉络
 
-* [16张图解锁Spring的整体脉络](</docs/Spring/Spring整体脉络/16张图解锁Spring的整体脉络.md>)
+- [16 张图解锁 Spring 的整体脉络](/docs/Spring/Spring整体脉络/16张图解锁Spring的整体脉络.md)
 
 ### Spring 类解析
 
@@ -119,9 +119,10 @@
 - [SpringBoot ConditionalOnBean](/docs/SpringBoot/SpringBoot-ConditionalOnBean.md)
 
 ### SpringSecurity
-- [SpringSecurity请求全过程解析](/docs/SpringSecurity/SpringSecurity请求全过程解析.md)
-- [SpringSecurity自定义用户认证](/docs/SpringSecurity/SpringSecurity自定义用户认证.md)
-- 
+
+- [SpringSecurity 请求全过程解析](/docs/SpringSecurity/SpringSecurity请求全过程解析.md)
+- [SpringSecurity 自定义用户认证](/docs/SpringSecurity/SpringSecurity自定义用户认证.md)
+
 ## MyBatis
 
 ### 基础支持层
