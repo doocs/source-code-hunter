@@ -126,9 +126,9 @@ FactoryBean ，它本身就是个 Bean，算是小工厂 ，归 BeanFactory 这�
 
 可以看到它就只有三个方法
 
-1. getObject() 获取对象
-2. isSingleton() 单例对象
-3. getObjectType() 返回的是 Bean 对象的类型
+1. `getObject()` 获取对象
+2. `isSingleton()` 单例对象
+3. `getObjectType()` 返回的是 Bean 对象的类型
 
 相比大工厂 BeanFactory 少了特别多东西，没有严格的 Bean 生命周期流程 😄
 
