@@ -70,6 +70,14 @@
           highlightColor: '#e96900',
         }
       },
+      contributors: {
+        repo: 'doocs/source-code-hunter',
+        ignores: ['/README.md'],
+        image: {
+          margin: '0.2em',
+          isRound: true
+        }
+      },
       plugins: [
         function (hook, vm) {
           hook.beforeEach(function (content) {
@@ -142,6 +150,7 @@
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/emoji.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/index.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-contributors@latest/dist/index.min.js"></script>
 </body>
 
 </html>
