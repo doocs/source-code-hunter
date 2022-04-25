@@ -437,8 +437,8 @@ public void registerService(String serviceName, String groupName, Instance insta
         namespaceId, serviceName, instance);
     String groupedServiceName = NamingUtils.getGroupedName(serviceName, groupName);
     if (instance.isEphemeral()) {
-    BeatInfo beatInfo = beatReactor.buildBeatInfo(groupedServiceName, instance);
-    beatReactor.addBeatInfo(groupedServiceName, beatInfo);
+        BeatInfo beatInfo = beatReactor.buildBeatInfo(groupedServiceName, instance);
+        beatReactor.addBeatInfo(groupedServiceName, beatInfo);
     }
 
     final Map<String, String> params = new HashMap<String, String>(32);
@@ -660,29 +660,29 @@ public Instance getInstance(String namespaceId, String serviceName, String clust
               result.put(SwitchEntry.CLIENT_BEAT_INTERVAL, switchDomain.getClientBeatInterval());
               RsInfo clientBeat = null;
               if (StringUtils.isNotBlank(beat)) {
-              clientBeat = JacksonUtils.toObj(beat, RsInfo.class);
+                  clientBeat = JacksonUtils.toObj(beat, RsInfo.class);
               }
               if (clientBeat != null) {
-              if (StringUtils.isNotBlank(clientBeat.getCluster())) {
-              clusterName = clientBeat.getCluster();
-              } else {
-              // fix #2533
-              clientBeat.setCluster(clusterName);
-              }
-              ip = clientBeat.getIp();
-              port = clientBeat.getPort();
-              }
-      
-              NamingUtils.checkServiceNameFormat(serviceName);
-              Loggers.SRV_LOG.debug("[CLIENT-BEAT] full arguments: beat: {}, serviceName: {}, namespaceId: {}", clientBeat,
-              serviceName, namespaceId);
-              BeatInfoInstanceBuilder builder = BeatInfoInstanceBuilder.newBuilder();
-              int resultCode = instanceServiceV2
-              .handleBeat(namespaceId, serviceName, ip, port, clusterName, clientBeat, builder);
-              result.put(CommonParams.CODE, resultCode);
-              result.put(SwitchEntry.CLIENT_BEAT_INTERVAL,
-              instanceServiceV2.getHeartBeatInterval(namespaceId, serviceName, ip, port, clusterName));
-              result.put(SwitchEntry.LIGHT_BEAT_ENABLED, switchDomain.isLightBeatEnabled());
-              return result;
+                  if (StringUtils.isNotBlank(clientBeat.getCluster())) {
+                      clusterName = clientBeat.getCluster();
+                  } else {
+                      // fix #2533
+                      clientBeat.setCluster(clusterName);
+                  }
+                ip = clientBeat.getIp();
+                port = clientBeat.getPort();
+                }
+        
+                NamingUtils.checkServiceNameFormat(serviceName);
+                Loggers.SRV_LOG.debug("[CLIENT-BEAT] full arguments: beat: {}, serviceName: {}, namespaceId: {}", clientBeat,
+                serviceName, namespaceId);
+                BeatInfoInstanceBuilder builder = BeatInfoInstanceBuilder.newBuilder();
+                int resultCode = instanceServiceV2
+                .handleBeat(namespaceId, serviceName, ip, port, clusterName, clientBeat, builder);
+                result.put(CommonParams.CODE, resultCode);
+                result.put(SwitchEntry.CLIENT_BEAT_INTERVAL,
+                instanceServiceV2.getHeartBeatInterval(namespaceId, serviceName, ip, port, clusterName));
+                result.put(SwitchEntry.LIGHT_BEAT_ENABLED, switchDomain.isLightBeatEnabled());
+                return result;
         }
 ```
