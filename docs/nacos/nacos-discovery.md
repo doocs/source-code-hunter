@@ -10,7 +10,7 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.alibaba.boot.nacos.discovery.autoconfigure.NacosDiscoveryAutoConfiguration
 ```
 
-找到注解`NacosDiscoveryAutoConfiguration`
+找到类 `NacosDiscoveryAutoConfiguration`
 
 ```java
 @ConditionalOnProperty(name = NacosDiscoveryConstants.ENABLED, matchIfMissing = true)
