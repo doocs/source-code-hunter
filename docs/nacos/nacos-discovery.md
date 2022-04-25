@@ -301,18 +301,18 @@ class BeatTask implements Runnable {
         try {
         	// 与nacos进行一次rest请求交互
             JSONObject result = serverProxy.sendBeat(beatInfo, BeatReactor.this.lightBeatEnabled);
-            long interval = result.getIntValue("clientBeatInterval");
+            long interval = result.get(CLIENT_BEAT_INTERVAL_FIELD).asLong();
             boolean lightBeatEnabled = false;
-            if (result.containsKey(CommonParams.LIGHT_BEAT_ENABLED)) {
-                lightBeatEnabled = result.getBooleanValue(CommonParams.LIGHT_BEAT_ENABLED);
+            if (result.has(CommonParams.LIGHT_BEAT_ENABLED)) {
+                lightBeatEnabled = result.get(CommonParams.LIGHT_BEAT_ENABLED).asBoolean();
             }
             BeatReactor.this.lightBeatEnabled = lightBeatEnabled;
             if (interval > 0) {
                 nextTime = interval;
             }
             int code = NamingResponseCode.OK;
-            if (result.containsKey(CommonParams.CODE)) {
-                code = result.getIntValue(CommonParams.CODE);
+            if (result.has(CommonParams.CODE)) {
+                code = result.get(CommonParams.CODE).asInt();
             }
             // 如果nacos找不到当前实例,
             if (code == NamingResponseCode.RESOURCE_NOT_FOUND) {
@@ -336,8 +336,12 @@ class BeatTask implements Runnable {
             NAMING_LOGGER.error("[CLIENT-BEAT] failed to send beat: {}, code: {}, msg: {}",
                 JSON.toJSONString(beatInfo), ne.getErrCode(), ne.getErrMsg());
 
+        } catch (Exception unknownEx) {
+                NAMING_LOGGER.error("[CLIENT-BEAT] failed to send beat: {}, unknown exception msg: {}",
+                        JacksonUtils.toJson(beatInfo), unknownEx.getMessage(), unknownEx);
+        } finally {
+                executorService.schedule(new BeatTask(beatInfo), nextTime, TimeUnit.MILLISECONDS);
         }
-        executorService.schedule(new BeatTask(beatInfo), nextTime, TimeUnit.MILLISECONDS);
     }
 }
 ```
