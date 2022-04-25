@@ -646,43 +646,43 @@ public Instance getInstance(String namespaceId, String serviceName, String clust
   3. 组装结果返回
 
 ```java
-        @CanDistro
-        @PutMapping("/beat")
-        @Secured(action = ActionTypes.WRITE)
-        public ObjectNode beat(@RequestParam(defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
-                  @RequestParam String serviceName,
-                  @RequestParam(defaultValue = StringUtils.EMPTY) String ip,
-                  @RequestParam(defaultValue = UtilsAndCommons.DEFAULT_CLUSTER_NAME) String clusterName,
-                  @RequestParam(defaultValue = "0") Integer port,
-                  @RequestParam(defaultValue = StringUtils.EMPTY) String beat)throws Exception {
+@CanDistro
+@PutMapping("/beat")
+@Secured(action = ActionTypes.WRITE)
+public ObjectNode beat(@RequestParam(defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
+          @RequestParam String serviceName,
+          @RequestParam(defaultValue = StringUtils.EMPTY) String ip,
+          @RequestParam(defaultValue = UtilsAndCommons.DEFAULT_CLUSTER_NAME) String clusterName,
+          @RequestParam(defaultValue = "0") Integer port,
+          @RequestParam(defaultValue = StringUtils.EMPTY) String beat)throws Exception {
 
-              ObjectNode result = JacksonUtils.createEmptyJsonNode();
-              result.put(SwitchEntry.CLIENT_BEAT_INTERVAL, switchDomain.getClientBeatInterval());
-              RsInfo clientBeat = null;
-              if (StringUtils.isNotBlank(beat)) {
-                  clientBeat = JacksonUtils.toObj(beat, RsInfo.class);
-              }
-              if (clientBeat != null) {
-                  if (StringUtils.isNotBlank(clientBeat.getCluster())) {
-                      clusterName = clientBeat.getCluster();
-                  } else {
-                      // fix #2533
-                      clientBeat.setCluster(clusterName);
-                  }
-                ip = clientBeat.getIp();
-                port = clientBeat.getPort();
-                }
-        
-                NamingUtils.checkServiceNameFormat(serviceName);
-                Loggers.SRV_LOG.debug("[CLIENT-BEAT] full arguments: beat: {}, serviceName: {}, namespaceId: {}", clientBeat,
-                serviceName, namespaceId);
-                BeatInfoInstanceBuilder builder = BeatInfoInstanceBuilder.newBuilder();
-                int resultCode = instanceServiceV2
-                .handleBeat(namespaceId, serviceName, ip, port, clusterName, clientBeat, builder);
-                result.put(CommonParams.CODE, resultCode);
-                result.put(SwitchEntry.CLIENT_BEAT_INTERVAL,
-                instanceServiceV2.getHeartBeatInterval(namespaceId, serviceName, ip, port, clusterName));
-                result.put(SwitchEntry.LIGHT_BEAT_ENABLED, switchDomain.isLightBeatEnabled());
-                return result;
+      ObjectNode result = JacksonUtils.createEmptyJsonNode();
+      result.put(SwitchEntry.CLIENT_BEAT_INTERVAL, switchDomain.getClientBeatInterval());
+      RsInfo clientBeat = null;
+      if (StringUtils.isNotBlank(beat)) {
+          clientBeat = JacksonUtils.toObj(beat, RsInfo.class);
+      }
+      if (clientBeat != null) {
+          if (StringUtils.isNotBlank(clientBeat.getCluster())) {
+              clusterName = clientBeat.getCluster();
+          } else {
+              // fix #2533
+              clientBeat.setCluster(clusterName);
+          }
+        ip = clientBeat.getIp();
+        port = clientBeat.getPort();
         }
+
+        NamingUtils.checkServiceNameFormat(serviceName);
+        Loggers.SRV_LOG.debug("[CLIENT-BEAT] full arguments: beat: {}, serviceName: {}, namespaceId: {}", clientBeat,
+        serviceName, namespaceId);
+        BeatInfoInstanceBuilder builder = BeatInfoInstanceBuilder.newBuilder();
+        int resultCode = instanceServiceV2
+        .handleBeat(namespaceId, serviceName, ip, port, clusterName, clientBeat, builder);
+        result.put(CommonParams.CODE, resultCode);
+        result.put(SwitchEntry.CLIENT_BEAT_INTERVAL,
+        instanceServiceV2.getHeartBeatInterval(namespaceId, serviceName, ip, port, clusterName));
+        result.put(SwitchEntry.LIGHT_BEAT_ENABLED, switchDomain.isLightBeatEnabled());
+        return result;
+}
 ```
