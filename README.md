@@ -273,7 +273,8 @@
 
 ## RocketMQ
 
-- [RockerMQ NameServer 与 Broker 的通信](docs/rocketmq/rocketmq-nameserver-broker.md)
+- [RocketMQ NameServer 与 Broker 的通信](docs/rocketmq/rocketmq-nameserver-broker.md)
+- [RocketMQ 生产者启动流程](docs/rocketmq/rocketmq-producer-start.md)
 
 ## 番外篇（JDK 1.8）
 
