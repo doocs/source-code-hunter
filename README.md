@@ -275,6 +275,7 @@
 
 - [RocketMQ NameServer 与 Broker 的通信](docs/rocketmq/rocketmq-nameserver-broker.md)
 - [RocketMQ 生产者启动流程](docs/rocketmq/rocketmq-producer-start.md)
+- [RocketMQ 消息发送流程](docs/rocketmq/rocketmq-send-message.md)
 
 ## 番外篇（JDK 1.8）
 
