@@ -277,6 +277,7 @@
 - [RocketMQ 生产者启动流程](docs/rocketmq/rocketmq-producer-start.md)
 - [RocketMQ 消息发送流程](docs/rocketmq/rocketmq-send-message.md)
 - [RocketMQ 消息发送存储流程](docs/rocketmq/rocketmq-send-store.md)
+- [RocketMQ MappedFile内存映射文件详解](docs/rocketmq/rocketmq-mappedfile-detail.md)
 
 ## 番外篇（JDK 1.8）
 
