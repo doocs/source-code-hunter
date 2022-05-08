@@ -280,6 +280,7 @@
 - [RocketMQ MappedFile内存映射文件详解](docs/rocketmq/rocketmq-mappedfile-detail.md)
 - [RocketMQ ConsumeQueue详解](docs/rocketmq/rocketmq-consumequeue.md)
 - [RocketMQ CommitLog详解](docs/rocketmq/rocketmq-commitlog.md)
+- [RocketMQ IndexFile详解](docs/rocketmq/rocketmq-indexfile.md)
 
 ## 番外篇（JDK 1.8）
 
