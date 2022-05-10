@@ -281,6 +281,7 @@
 - [RocketMQ ConsumeQueue详解](docs/rocketmq/rocketmq-consumequeue.md)
 - [RocketMQ CommitLog详解](docs/rocketmq/rocketmq-commitlog.md)
 - [RocketMQ IndexFile详解](docs/rocketmq/rocketmq-indexfile.md)
+- [RocketMQ 消费者启动流程](docs/rocketmq/rocketmq-consumer-start.md)
 
 ## 番外篇（JDK 1.8）
 
