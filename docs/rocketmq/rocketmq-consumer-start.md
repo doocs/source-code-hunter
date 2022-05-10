@@ -8,7 +8,7 @@ org.apache.rocketmq.client.impl.consumer.DefaultMQPushConsumerImpl#checkConfig
 
 校验消费组的长度不能大于 255
 
-`public static final int *CHARACTER_MAX_LENGTH* = 255;`
+`public static final int CHARACTER_MAX_LENGTH = 255;`
 
 ```java
 if (group.length() >CHARACTER_MAX_LENGTH) {
@@ -59,7 +59,7 @@ public static boolean isTopicOrGroupIllegal(String str) {
 
 消费组名称不能是`DEFAULT_CONSUMER`
 
-`public static final String *DEFAULT_CONSUMER_GROUP* = "DEFAULT_CONSUMER";`
+`public static final String DEFAULT_CONSUMER_GROUP = "DEFAULT_CONSUMER";`
 
 ```java
 if (this.defaultMQPushConsumer.getConsumerGroup().equals(MixAll.DEFAULT_CONSUMER_GROUP)) {
