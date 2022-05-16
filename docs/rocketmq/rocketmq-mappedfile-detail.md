@@ -1,3 +1,5 @@
+该文所涉及的 RocketMQ 源码版本为 4.9.3。
+
 # RocketMQ MappedFile 内存映射文件详解
 
 1、MappedFile 初始化

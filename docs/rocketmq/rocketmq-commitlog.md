@@ -1,3 +1,5 @@
+该文所涉及的 RocketMQ 源码版本为 4.9.3。
+
 # RocketMQ CommitLog 详解
 
 commitlog 目录主要存储消息，为了保证性能，顺序写入，每一条消息的长度都不相同，每条消息的前面四个字节存储该条消息的总长度，每个文件大小默认为 1G，文件的命名是以 commitLog 起始偏移量命名的，可以通过修改 broker 配置文件中 mappedFileSizeCommitLog 属性改变文件大小

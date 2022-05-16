@@ -1,3 +1,5 @@
+该文所涉及的 RocketMQ 源码版本为 4.9.3。
+
 # RockerMQ Nameserver 如何与 Broker 进行通信的？
 
 nameserver 每隔 10s 扫描一次 Broker，移除处于未激活状态的 Broker
