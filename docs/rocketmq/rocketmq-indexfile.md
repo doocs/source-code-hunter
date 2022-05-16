@@ -1,3 +1,5 @@
+该文所涉及的 RocketMQ 源码版本为 4.9.3。
+
 # RocketMQ IndexFile 详解
 
 首先明确一下 IndexFile 的文件结构

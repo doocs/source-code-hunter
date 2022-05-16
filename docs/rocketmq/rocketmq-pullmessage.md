@@ -1,3 +1,5 @@
+该文所涉及的 RocketMQ 源码版本为 4.9.3。
+
 # RocketMQ 消息拉取流程
 
 之前在消费者启动流程中描述过 MQClientInstance 的启动流程，在启动过程中会启动 PullMessageService，它继承了`ServiceThread`，并且 ServiceThread 实现了 Runnable 接口，所以是单独启动了一个线程
