@@ -132,13 +132,13 @@ FactoryBean ，它本身就是个 Bean，算是小工厂 ，归 BeanFactory 这�
 
 相比大工厂 BeanFactory 少了特别多东西，没有严格的 Bean 生命周期流程 😄
 
-FacotryBean 对象本身也是一个 Bean，是一个小工厂，可以生产另外的 Bean
+FactoryBean 对象本身也是一个 Bean，是一个小工厂，可以生产另外的 Bean
 
 BeanFactory 是 Spring 容器的根接口，是大工厂，生产各种各样的 Bean
 
 beanName 就是正常对象
 
-“&”+beanName ， 获取的是实现了该接口的 FacotryBean 工厂对象
+“&”+beanName ， 获取的是实现了该接口的 FactoryBean 工厂对象
 
 大致如下 👇
 
