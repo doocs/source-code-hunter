@@ -284,6 +284,7 @@
 - [RocketMQ 消费者启动流程](docs/rocketmq/rocketmq-consumer-start.md)
 - [RocketMQ 消息拉取流程](docs/rocketmq/rocketmq-pullmessage.md)
 - [RocketMQ Broker 处理拉取消息请求流程](docs/rocketmq/rocketmq-pullmessage-processor.md)
+- [RocketMQ 消息消费流程](docs/rocketmq/rocketmq-consume-message-process.md)
 
 ## 番外篇（JDK 1.8）
 
