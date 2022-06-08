@@ -2,7 +2,7 @@
 
 在使用 Spring 声明式事务处理 的时候，一种常用的方法是结合 IoC 容器 和 Spring 已有的 TransactionProxyFactoryBean 对事务管理进行配置，比如，可以在这个 TransactionProxyFactoryBean 中为事务方法配置传播行为、并发事务隔离级别等事务处理属性，从而对声明式事务的处理提供指导。具体来说，在对声明式事务处理的原理分析中，声明式事务处理的实现大致可以分为以下几个部分:
 
-- 读取和处理在 IoC 容器 中配置的事务处理属性，并转化为 Spring 事务处理 需要的内部数据结构，这里涉及的类是 TransactionAttributeSourceAdvisor，从名字可以看出，它是一个 AOP 通知器，Spring 使用这个通知器来完成对事务处理属性值的处理。处理的结果是，在 IoC 容器 中配置的事务处理属性信息，会被读入并转化成 TransactionAttribute 表示的数据对象，这个数据对象是 Spring 对事物处理属性值的数据抽象，对这些属性的处理是和 TransactionProxyFactoryBean 拦截下来的事务方法的处理结合起来的。
+- 读取和处理在 IoC 容器 中配置的事务处理属性，并转化为 Spring 事务处理 需要的内部数据结构，这里涉及的类是 TransactionAttributeSourceAdvisor，从名字可以看出，它是一个 AOP 通知器，Spring 使用这个通知器来完成对事务处理属性值的处理。处理的结果是，在 IoC 容器 中配置的事务处理属性信息，会被读入并转化成 TransactionAttribute 表示的数据对象，这个数据对象是 Spring 对事务处理属性值的数据抽象，对这些属性的处理是和 TransactionProxyFactoryBean 拦截下来的事务方法的处理结合起来的。
 - Spring 事务处理模块 实现统一的事务处理过程。这个通用的事务处理过程包含处理事务配置属性，以及与线程绑定完成事务处理的过程，Spring 通过 TransactionInfo 和 TransactionStatus 这两个数据对象，在事务处理过程中记录和传递相关执行场景。
 - 底层的事务处理实现。对于底层的事务操作，Spring 委托给具体的事务处理器来完成，这些具体的事务处理器，就是在 IoC 容器 中配置声明式事务处理时，配置的 PlatformTransactionManager 的具体实现，比如 DataSourceTransactionManager 和 HibernateTransactionManager 等。
 

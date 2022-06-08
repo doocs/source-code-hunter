@@ -10,7 +10,7 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.alibaba.boot.nacos.discovery.autoconfigure.NacosDiscoveryAutoConfiguration
 ```
 
-找到注解`NacosDiscoveryAutoConfiguration`
+找到类 `NacosDiscoveryAutoConfiguration`
 
 ```java
 @ConditionalOnProperty(name = NacosDiscoveryConstants.ENABLED, matchIfMissing = true)
@@ -301,18 +301,18 @@ class BeatTask implements Runnable {
         try {
         	// 与nacos进行一次rest请求交互
             JSONObject result = serverProxy.sendBeat(beatInfo, BeatReactor.this.lightBeatEnabled);
-            long interval = result.getIntValue("clientBeatInterval");
+            long interval = result.get(CLIENT_BEAT_INTERVAL_FIELD).asLong();
             boolean lightBeatEnabled = false;
-            if (result.containsKey(CommonParams.LIGHT_BEAT_ENABLED)) {
-                lightBeatEnabled = result.getBooleanValue(CommonParams.LIGHT_BEAT_ENABLED);
+            if (result.has(CommonParams.LIGHT_BEAT_ENABLED)) {
+                lightBeatEnabled = result.get(CommonParams.LIGHT_BEAT_ENABLED).asBoolean();
             }
             BeatReactor.this.lightBeatEnabled = lightBeatEnabled;
             if (interval > 0) {
                 nextTime = interval;
             }
             int code = NamingResponseCode.OK;
-            if (result.containsKey(CommonParams.CODE)) {
-                code = result.getIntValue(CommonParams.CODE);
+            if (result.has(CommonParams.CODE)) {
+                code = result.get(CommonParams.CODE).asInt();
             }
             // 如果nacos找不到当前实例,
             if (code == NamingResponseCode.RESOURCE_NOT_FOUND) {
@@ -336,8 +336,12 @@ class BeatTask implements Runnable {
             NAMING_LOGGER.error("[CLIENT-BEAT] failed to send beat: {}, code: {}, msg: {}",
                 JSON.toJSONString(beatInfo), ne.getErrCode(), ne.getErrMsg());
 
+        } catch (Exception unknownEx) {
+                NAMING_LOGGER.error("[CLIENT-BEAT] failed to send beat: {}, unknown exception msg: {}",
+                        JacksonUtils.toJson(beatInfo), unknownEx.getMessage(), unknownEx);
+        } finally {
+                executorService.schedule(new BeatTask(beatInfo), nextTime, TimeUnit.MILLISECONDS);
         }
-        executorService.schedule(new BeatTask(beatInfo), nextTime, TimeUnit.MILLISECONDS);
     }
 }
 ```
@@ -359,47 +363,41 @@ class BeatTask implements Runnable {
 
       NacosException exception = new NacosException();
 
-      if (servers != null && !servers.isEmpty()) {
-
-          Random random = new Random(System.currentTimeMillis());
-          int index = random.nextInt(servers.size());
-
-          for (int i = 0; i < servers.size(); i++) {
-              // 获取nacos所在的ip+port地址
-              String server = servers.get(index);
-              try {
-                  // 进行请求
-                  return callServer(api, params, body, server, method);
-              } catch (NacosException e) {
-                  exception = e;
-                  if (NAMING_LOGGER.isDebugEnabled()) {
-                      NAMING_LOGGER.debug("request {} failed.", server, e);
-                  }
-              }
-              index = (index + 1) % servers.size();
-          }
-      }
-
-      if (StringUtils.isNotBlank(nacosDomain)) {
-          for (int i = 0; i < UtilAndComs.REQUEST_DOMAIN_RETRY_COUNT; i++) {
-              try {
-                  return callServer(api, params, body, nacosDomain, method);
-              } catch (NacosException e) {
-                  exception = e;
-                  if (NAMING_LOGGER.isDebugEnabled()) {
-                      NAMING_LOGGER.debug("request {} failed.", nacosDomain, e);
-                  }
-              }
-          }
-      }
-
-      NAMING_LOGGER.error("request: {} failed, servers: {}, code: {}, msg: {}",
-          api, servers, exception.getErrCode(), exception.getErrMsg());
-
-      throw new NacosException(exception.getErrCode(), "failed to req API:/api/" + api + " after all servers(" + servers + ") tried: "
-          + exception.getMessage());
-
-  }
+      if (serverListManager.isDomain()) {
+            String nacosDomain = serverListManager.getNacosDomain();
+            for (int i = 0; i < maxRetry; i++) {
+                try {
+                    return callServer(api, params, body, nacosDomain, method);
+                } catch (NacosException e) {
+                    exception = e;
+                    if (NAMING_LOGGER.isDebugEnabled()) {
+                        NAMING_LOGGER.debug("request {} failed.", nacosDomain, e);
+                    }
+                }
+            }
+        } else {
+            Random random = new Random(System.currentTimeMillis());
+            int index = random.nextInt(servers.size());
+            
+            for (int i = 0; i < servers.size(); i++) {
+                String server = servers.get(index);
+                try {
+                    return callServer(api, params, body, server, method);
+                } catch (NacosException e) {
+                    exception = e;
+                    if (NAMING_LOGGER.isDebugEnabled()) {
+                        NAMING_LOGGER.debug("request {} failed.", server, e);
+                    }
+                }
+                index = (index + 1) % servers.size();
+            }
+        }
+        
+        NAMING_LOGGER.error("request: {} failed, servers: {}, code: {}, msg: {}", api, servers, exception.getErrCode(),
+                exception.getErrMsg());
+        
+        throw new NacosException(exception.getErrCode(),
+                "failed to req API:" + api + " after all servers(" + servers + ") tried: " + exception.getMessage());
   ```
 
 **学习点**
@@ -437,19 +435,24 @@ public void registerService(String serviceName, String groupName, Instance insta
 
     NAMING_LOGGER.info("[REGISTER-SERVICE] {} registering service {} with instance: {}",
         namespaceId, serviceName, instance);
+    String groupedServiceName = NamingUtils.getGroupedName(serviceName, groupName);
+    if (instance.isEphemeral()) {
+        BeatInfo beatInfo = beatReactor.buildBeatInfo(groupedServiceName, instance);
+        beatReactor.addBeatInfo(groupedServiceName, beatInfo);
+    }
 
-    final Map<String, String> params = new HashMap<String, String>(9);
+    final Map<String, String> params = new HashMap<String, String>(32);
     params.put(CommonParams.NAMESPACE_ID, namespaceId);
-    params.put(CommonParams.SERVICE_NAME, serviceName);
+    params.put(CommonParams.SERVICE_NAME, groupedServiceName);
     params.put(CommonParams.GROUP_NAME, groupName);
     params.put(CommonParams.CLUSTER_NAME, instance.getClusterName());
-    params.put("ip", instance.getIp());
-    params.put("port", String.valueOf(instance.getPort()));
-    params.put("weight", String.valueOf(instance.getWeight()));
-    params.put("enable", String.valueOf(instance.isEnabled()));
-    params.put("healthy", String.valueOf(instance.isHealthy()));
-    params.put("ephemeral", String.valueOf(instance.isEphemeral()));
-    params.put("metadata", JSON.toJSONString(instance.getMetadata()));
+    params.put(IP_PARAM, instance.getIp());
+    params.put(PORT_PARAM, String.valueOf(instance.getPort()));
+    params.put(WEIGHT_PARAM, String.valueOf(instance.getWeight()));
+    params.put(REGISTER_ENABLE_PARAM, String.valueOf(instance.isEnabled()));
+    params.put(HEALTHY_PARAM, String.valueOf(instance.isHealthy()));
+    params.put(EPHEMERAL_PARAM, String.valueOf(instance.isEphemeral()));
+    params.put(META_PARAM, JacksonUtils.toJson(instance.getMetadata()));
 
     reqAPI(UtilAndComs.NACOS_URL_INSTANCE, params, HttpMethod.POST);
 
@@ -645,76 +648,41 @@ public Instance getInstance(String namespaceId, String serviceName, String clust
 ```java
 @CanDistro
 @PutMapping("/beat")
-@Secured(parser = NamingResourceParser.class, action = ActionTypes.WRITE)
-public JSONObject beat(HttpServletRequest request) throws Exception {
+@Secured(action = ActionTypes.WRITE)
+public ObjectNode beat(@RequestParam(defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
+          @RequestParam String serviceName,
+          @RequestParam(defaultValue = StringUtils.EMPTY) String ip,
+          @RequestParam(defaultValue = UtilsAndCommons.DEFAULT_CLUSTER_NAME) String clusterName,
+          @RequestParam(defaultValue = "0") Integer port,
+          @RequestParam(defaultValue = StringUtils.EMPTY) String beat)throws Exception {
 
-    JSONObject result = new JSONObject();
-
-    result.put("clientBeatInterval", switchDomain.getClientBeatInterval());
-    String serviceName = WebUtils.required(request, CommonParams.SERVICE_NAME);
-    String namespaceId = WebUtils.optional(request, CommonParams.NAMESPACE_ID,
-        Constants.DEFAULT_NAMESPACE_ID);
-    String clusterName = WebUtils.optional(request, CommonParams.CLUSTER_NAME,
-        UtilsAndCommons.DEFAULT_CLUSTER_NAME);
-    String ip = WebUtils.optional(request, "ip", StringUtils.EMPTY);
-    int port = Integer.parseInt(WebUtils.optional(request, "port", "0"));
-    String beat = WebUtils.optional(request, "beat", StringUtils.EMPTY);
-
-    RsInfo clientBeat = null;
-    if (StringUtils.isNotBlank(beat)) {
-        clientBeat = JSON.parseObject(beat, RsInfo.class);
-    }
-
-    if (clientBeat != null) {
-        if (StringUtils.isNotBlank(clientBeat.getCluster())) {
-            clusterName = clientBeat.getCluster();
-        }
+      ObjectNode result = JacksonUtils.createEmptyJsonNode();
+      result.put(SwitchEntry.CLIENT_BEAT_INTERVAL, switchDomain.getClientBeatInterval());
+      RsInfo clientBeat = null;
+      if (StringUtils.isNotBlank(beat)) {
+          clientBeat = JacksonUtils.toObj(beat, RsInfo.class);
+      }
+      if (clientBeat != null) {
+          if (StringUtils.isNotBlank(clientBeat.getCluster())) {
+              clusterName = clientBeat.getCluster();
+          } else {
+              // fix #2533
+              clientBeat.setCluster(clusterName);
+          }
         ip = clientBeat.getIp();
         port = clientBeat.getPort();
-    }
-
-    if (Loggers.SRV_LOG.isDebugEnabled()) {
-        Loggers.SRV_LOG.debug("[CLIENT-BEAT] full arguments: beat: {}, serviceName: {}", clientBeat, serviceName);
-    }
-    // 获取实例
-    Instance instance = serviceManager.getInstance(namespaceId, serviceName, clusterName, ip, port);
-
-    if (instance == null) {
-        if (clientBeat == null) {
-            result.put(CommonParams.CODE, NamingResponseCode.RESOURCE_NOT_FOUND);
-            return result;
         }
-        instance = new Instance();
-        instance.setPort(clientBeat.getPort());
-        instance.setIp(clientBeat.getIp());
-        instance.setWeight(clientBeat.getWeight());
-        instance.setMetadata(clientBeat.getMetadata());
-        instance.setClusterName(clusterName);
-        instance.setServiceName(serviceName);
-        instance.setInstanceId(instance.getInstanceId());
-        instance.setEphemeral(clientBeat.isEphemeral());
 
-        serviceManager.registerInstance(namespaceId, serviceName, instance);
-    }
-
-    Service service = serviceManager.getService(namespaceId, serviceName);
-
-    if (service == null) {
-        throw new NacosException(NacosException.SERVER_ERROR,
-            "service not found: " + serviceName + "@" + namespaceId);
-    }
-    if (clientBeat == null) {
-        clientBeat = new RsInfo();
-        clientBeat.setIp(ip);
-        clientBeat.setPort(port);
-        clientBeat.setCluster(clusterName);
-    }
-    // 处理心跳方法
-    service.processClientBeat(clientBeat);
-
-    result.put(CommonParams.CODE, NamingResponseCode.OK);
-    result.put("clientBeatInterval", instance.getInstanceHeartBeatInterval());
-    result.put(SwitchEntry.LIGHT_BEAT_ENABLED, switchDomain.isLightBeatEnabled());
-    return result;
+        NamingUtils.checkServiceNameFormat(serviceName);
+        Loggers.SRV_LOG.debug("[CLIENT-BEAT] full arguments: beat: {}, serviceName: {}, namespaceId: {}", clientBeat,
+        serviceName, namespaceId);
+        BeatInfoInstanceBuilder builder = BeatInfoInstanceBuilder.newBuilder();
+        int resultCode = instanceServiceV2
+        .handleBeat(namespaceId, serviceName, ip, port, clusterName, clientBeat, builder);
+        result.put(CommonParams.CODE, resultCode);
+        result.put(SwitchEntry.CLIENT_BEAT_INTERVAL,
+        instanceServiceV2.getHeartBeatInterval(namespaceId, serviceName, ip, port, clusterName));
+        result.put(SwitchEntry.LIGHT_BEAT_ENABLED, switchDomain.isLightBeatEnabled());
+        return result;
 }
 ```
