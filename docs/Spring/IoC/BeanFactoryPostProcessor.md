@@ -1,12 +1,12 @@
-BeanFactoryBeanPostProcessor是当BeanDefinition读取完元数据（也就是从任意资源中定义的bean数据）后还未实例化之前可以进行修改
+BeanFactoryBeanPostProcessor 是当 BeanDefinition 读取完元数据（也就是从任意资源中定义的 bean 数据）后还未实例化之前可以进行修改
 
 抄录并翻译官方的语句
 
-> `BeanFactoryPostProcessor` 操作 bean 的元数据配置. 也就是说,Spring IoC 容器允许 `BeanFactoryPostProcessor` 读取配置元数据, 并可能在容器实例化除 `BeanFactoryPostProcessor` 实例之外的任何bean *之前* 更改它
+> `BeanFactoryPostProcessor` 操作 bean 的元数据配置. 也就是说,Spring IoC 容器允许 `BeanFactoryPostProcessor` 读取配置元数据, 并可能在容器实例化除 `BeanFactoryPostProcessor` 实例之外的任何 bean _之前_ 更改它
 
 tip:
 
-> 在 `BeanFactoryPostProcessor` (例如使用 `BeanFactory.getBean()`) 中使用这些 bean 的实例虽然在技术上是可行的,但这么来做会将bean过早实例化, 这违反了标准的容器生命周期. 同时也会引发一些副作用,例如绕过 bean 的后置处理.
+> 在 `BeanFactoryPostProcessor` (例如使用 `BeanFactory.getBean()`) 中使用这些 bean 的实例虽然在技术上是可行的,但这么来做会将 bean 过早实例化, 这违反了标准的容器生命周期. 同时也会引发一些副作用,例如绕过 bean 的后置处理。
 
 ```java
 public interface BeanFactoryPostProcessor {
@@ -19,22 +19,19 @@ public interface BeanFactoryPostProcessor {
 }
 ```
 
-#### BeanFactoryPostProcessor执行时期的探究
+#### BeanFactoryPostProcessor 执行时期的探究
 
-ApplicationContext的refresh()中的invokeBeanFactoryPostProcessors方法就开始创建我们的BFPP(BeanFactoryPostProcessor)了
+ApplicationContext 的 refresh() 中的 invokeBeanFactoryPostProcessors 方法就开始创建我们的 BFPP(BeanFactoryPostProcessor)了
 
-具体执行方法invokeBeanFactoryPostProcessors，虽然一百多行代码，其实只需要特别了解的地方就几处
+具体执行方法 invokeBeanFactoryPostProcessors，虽然一百多行代码，其实只需要特别了解的地方就几处。
 
 ```java
 public static void invokeBeanFactoryPostProcessors(
 			ConfigurableListableBeanFactory beanFactory, List<BeanFactoryPostProcessor> beanFactoryPostProcessors) {
-    
-public static void invokeBeanFactoryPostProcessors(
-			ConfigurableListableBeanFactory beanFactory, List<BeanFactoryPostProcessor> beanFactoryPostProcessors) {
-    
+
     Set<String> processedBeans = new HashSet<>();
 
-    //由于我们的beanFactory是DefaultListableBeanFactory实例是BeanDefinitionRegistry的子类所以可以进来
+    // 由于我们的beanFactory是DefaultListableBeanFactory实例是BeanDefinitionRegistry的子类所以可以进来
     if (beanFactory instanceof BeanDefinitionRegistry) {
         BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
         List<BeanFactoryPostProcessor> regularPostProcessors = new ArrayList<>();
@@ -51,10 +48,10 @@ public static void invokeBeanFactoryPostProcessors(
                 regularPostProcessors.add(postProcessor);
             }
         }
-        //BeanDefinitionRegistryPostProcessor是BFPP的子类但是比BFPP提前执行
-        //顺序实现PriorityOrdered接口先被执行，然后是Ordered接口，最后是什么都没实现的BeanDefinitionRegistryPostProcessor 
+        // BeanDefinitionRegistryPostProcessor是BFPP的子类但是比BFPP提前执行
+        // 顺序实现PriorityOrdered接口先被执行，然后是Ordered接口，最后是什么都没实现的BeanDefinitionRegistryPostProcessor
 
-        /**                                            
+        /**
               *都有beanFactory.getBean方法，证明BeanDefinitionRegistryPostProcessor这个bean现在已经被创建了
               */
 
@@ -109,8 +106,8 @@ public static void invokeBeanFactoryPostProcessors(
     else {
         invokeBeanFactoryPostProcessors(beanFactoryPostProcessors, beanFactory);
     }
-    //BFPP的执行顺序与上一样
-    /**                                            
+    // BFPP的执行顺序与上一样
+    /**
         *都有beanFactory.getBean方法，证明BFPP这个bean现在已经被创建了
         */
     String[] postProcessorNames =
@@ -159,13 +156,13 @@ public static void invokeBeanFactoryPostProcessors(
 }
 ```
 
-我们可以具体分析一下BeanFactoryPostProcessor的子类CustomEditorConfigurer自定义属性编辑器来巩固一下执行流程
+我们可以具体分析一下 BeanFactoryPostProcessor 的子类 CustomEditorConfigurer 自定义属性编辑器来巩固一下执行流程
 
-所谓属性编辑器是当你要自定义更改配置文件中的属性属性时，如String类型转为Date或者其他，下面的一个小例子展示如何String类型的属性怎么转化为Address属性
+所谓属性编辑器是当你要自定义更改配置文件中的属性属性时，如 String 类型转为 Date 或者其他，下面的一个小例子展示如何 String 类型的属性怎么转化为 Address 属性
 
 #### 简单工程（Spirng-version-5.3.18)
 
-Person类
+Person 类
 
 ```java
 package cn.demo1;
@@ -182,7 +179,7 @@ public class Person {
 }
 ```
 
-Address类
+Address 类
 
 ```java
 package cn.demo1;
@@ -197,7 +194,7 @@ public class Address {
 
 ```
 
-AddressParse类
+AddressParse 类
 
 ```java
 package cn.demo1;
@@ -216,7 +213,7 @@ public class AddressParse extends PropertyEditorSupport {
 }
 ```
 
-MyCustomEditor类
+MyCustomEditor 类
 
 ```java
 package cn.demo1;
@@ -233,20 +230,20 @@ public class MyCustomEditor implements PropertyEditorRegistrar {
 }
 ```
 
-配置文件test1.xml
+配置文件 test1.xml
 
 ```java
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
-           
+
     <!--    待属性编辑的bean，value代表的就是string类型-->
     <bean class="cn.demo1.Person" id="person">
         <property name="name" value="李华"/>
         <property name="address" value="四川,成都"/>
     </bean>
-        
+
     <!--    注册属性编辑器-->
     <bean class="org.springframework.beans.factory.config.CustomEditorConfigurer" id="configurer">
         <property name="propertyEditorRegistrars">
@@ -258,7 +255,7 @@ public class MyCustomEditor implements PropertyEditorRegistrar {
 </beans>
 ```
 
-测试类EdT
+测试类 EdT
 
 ```java
 package cn.test1;
@@ -278,19 +275,19 @@ public class EdT {
 }
 
 =====================测试结果
-    
+
 Person(name=李华, address=Address(province=四川, city=成都))
 ```
 
-可以看见我们成功的将String类型转化为Address类型，让我们来看看实现流程，
+可以看见我们成功的将 String 类型转化为 Address 类型，让我们来看看实现流程，
 
-- 首先实现PropertyEditorSupport来自定义属性编辑规则
-- 其次将你的编辑规则给到PropertyEditorRegistrar子类里进行注册
-- 最后在Spring中配置CustomEditorConfigurer类然后注入你的PropertyEditorRegistrar注册器
+- 首先实现 PropertyEditorSupport 来自定义属性编辑规则
+- 其次将你的编辑规则给到 PropertyEditorRegistrar 子类里进行注册
+- 最后在 Spring 中配置 CustomEditorConfigurer 类然后注入你的 PropertyEditorRegistrar 注册器
 
-让我们debug走一遍
+让我们 debug 走一遍
 
-如果你已经耐心看完上面的```BeanFactoryPostProcessor执行时期的探究```那么你应该可以知道接下来我们的步骤应该是进入invokeBeanFactoryPostProcessors这个方法里了
+如果你已经耐心看完上面的`BeanFactoryPostProcessor执行时期的探究`那么你应该可以知道接下来我们的步骤应该是进入 invokeBeanFactoryPostProcessors 这个方法里了
 
 ```java
 private static void invokeBeanFactoryPostProcessors(
@@ -305,12 +302,12 @@ private static void invokeBeanFactoryPostProcessors(
 	}
 ```
 
-很明显它执行postProcessBeanFactory这个方法
+很明显它执行 postProcessBeanFactory 这个方法
 
-我们探究的BFPP正是CustomEditorConfigurer，所以这个是CustomEditorConfigurer对BFPP的postProcessBeanFactory实现
+我们探究的 BFPP 正是 CustomEditorConfigurer，所以这个是 CustomEditorConfigurer 对 BFPP 的 postProcessBeanFactory 实现
 
 ```java
-//必然有个set方法让我们进行注入
+// 必然有个set方法让我们进行注入
 public void setPropertyEditorRegistrars(PropertyEditorRegistrar[] propertyEditorRegistrars) {
     this.propertyEditorRegistrars = propertyEditorRegistrars;
 }
@@ -319,7 +316,7 @@ public void setPropertyEditorRegistrars(PropertyEditorRegistrar[] propertyEditor
 public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
     if (this.propertyEditorRegistrars != null) {
         for (PropertyEditorRegistrar propertyEditorRegistrar : this.propertyEditorRegistrars) {
-            //把它加入Bean工厂里后面可以进行调用
+            // 把它加入Bean工厂里后面可以进行调用
 	private final Set<PropertyEditorRegistrar> propertyEditorRegistrars = new LinkedHashSet<>(4);
             beanFactory.addPropertyEditorRegistrar(propertyEditorRegistrar);
         }
@@ -332,16 +329,16 @@ public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) 
 
 关于这个注册器使用要到后面填充属性的时候才会用到，
 
-> 我其实觉得这个有点瑕疵，因为BFPP作用影响应该是当Spring还未创建bean的时候，可以用BFPP进行修改操作，可是这个属性编辑却影响了bean创建过后的修改操作，那么它就替代了BPP（BeanPostProcessor)的作用发挥了。（以上仅仅代表个人的观点，有可能是我想错了）
+> 我其实觉得这个有点瑕疵，因为 BFPP 作用影响应该是当 Spring 还未创建 bean 的时候，可以用 BFPP 进行修改操作，可是这个属性编辑却影响了 bean 创建过后的修改操作，那么它就替代了 BPP（BeanPostProcessor)的作用发挥了。（以上仅仅代表个人的观点，有可能是我想错了）
 
-当我们debug到AbstractAutowireCapableBeanFactory的populateBean这个方法填充bean的属性的时候，
+当我们 debug 到 AbstractAutowireCapableBeanFactory 的 populateBean 这个方法填充 bean 的属性的时候，
 
 让我们看看它的方法，其中我省略了大部分无关代码
 
 ```java
 protected void populateBean(String beanName, RootBeanDefinition mbd, @Nullable BeanWrapper bw) {
-    //这个是如果你配置的bean中有属性值的话
-    //也就是如下的配置，那么pvs不会为空的
+    // 这个是如果你配置的bean中有属性值的话
+    // 也就是如下的配置，那么pvs不会为空的
     /**
     <bean class="cn.demo1.Person" id="person">
         <property name="name" value="李华"/>
@@ -351,23 +348,23 @@ protected void populateBean(String beanName, RootBeanDefinition mbd, @Nullable B
     PropertyValues pvs = (mbd.hasPropertyValues() ? mbd.getPropertyValues() : null);
 
     if (pvs != null) {
-        //属性操作
+        // 属性操作
         applyPropertyValues(beanName, mbd, bw, pvs);
     }
 }
 ```
 
-让我们继续看看applyPropertyValues这个方法，无关的代码我也给省略了
+让我们继续看看 applyPropertyValues 这个方法，无关的代码我也给省略了
 
 ```java
 protected void applyPropertyValues(String beanName, BeanDefinition mbd, BeanWrapper bw, PropertyValues pvs) {
-    //PropertyValues接口的默认实现。允许对属性进行简单操作，并提供构造函数以支持从 Map 进行深度复制和构造。
+    // PropertyValues接口的默认实现。允许对属性进行简单操作，并提供构造函数以支持从 Map 进行深度复制和构造。
     MutablePropertyValues mpvs = null;
     List<PropertyValue> original;
-    //可以进去
+    // 可以进去
     if (pvs instanceof MutablePropertyValues) {
         mpvs = (MutablePropertyValues) pvs;
-    //默认为false，即我们需要类型转换
+    // 默认为false，即我们需要类型转换
         if (mpvs.isConverted()) {
             // Shortcut: use the pre-converted values as-is.
             try {
@@ -379,21 +376,21 @@ protected void applyPropertyValues(String beanName, BeanDefinition mbd, BeanWrap
                     mbd.getResourceDescription(), beanName, "Error setting property values", ex);
             }
         }
-      //把bean的属性以列表的形式展示出来
+      // 把bean的属性以列表的形式展示出来
         original = mpvs.getPropertyValueList();
     }
     else {
         original = Arrays.asList(pvs.getPropertyValues());
     }
-    //默认为空
+    // 默认为空
     TypeConverter converter = getCustomTypeConverter();
     if (converter == null) {
         converter = bw;
     }
-    //就一个组合类，帮助更好的bean的属性的解析
+    // 就一个组合类，帮助更好的bean的属性的解析
     BeanDefinitionValueResolver valueResolver = new BeanDefinitionValueResolver(this, beanName, mbd, converter);
-   
-    //深拷贝
+
+    // 深拷贝
     List<PropertyValue> deepCopy = new ArrayList<>(original.size());
     boolean resolveNecessary = false;
     for (PropertyValue pv : original) {
@@ -401,11 +398,11 @@ protected void applyPropertyValues(String beanName, BeanDefinition mbd, BeanWrap
             deepCopy.add(pv);
         }
         else {
-            //获取bean的属性名字
+            // 获取bean的属性名字
             String propertyName = pv.getName();
             //获取bean属性值的包装对象
             Object originalValue = pv.getValue();
-            //自动装配的事情
+            // 自动装配的事情
             if (originalValue == AutowiredPropertyMarker.INSTANCE) {
                 Method writeMethod = bw.getPropertyDescriptor(propertyName).getWriteMethod();
                 if (writeMethod == null) {
@@ -413,14 +410,14 @@ protected void applyPropertyValues(String beanName, BeanDefinition mbd, BeanWrap
                 }
                 originalValue = new DependencyDescriptor(new MethodParameter(writeMethod, 0), true);
             }
-            //把bean的属性值从包装类中分离出来
+            // 把bean的属性值从包装类中分离出来
             Object resolvedValue = valueResolver.resolveValueIfNecessary(pv, originalValue);
             Object convertedValue = resolvedValue;
-            //一般为true
+            // 一般为true
             boolean convertible = bw.isWritableProperty(propertyName) &&
                 !PropertyAccessorUtils.isNestedOrIndexedProperty(propertyName);
             if (convertible) {
-                //这个就是重点，对应我们的属性转化
+                // 这个就是重点，对应我们的属性转化
                 convertedValue = convertForProperty(resolvedValue, propertyName, bw, converter);
             }
 }
@@ -432,9 +429,9 @@ protected void applyPropertyValues(String beanName, BeanDefinition mbd, BeanWrap
 @Nullable
 private Object convertForProperty(
     @Nullable Object value, String propertyName, BeanWrapper bw, TypeConverter converter) {
-    //BeanWrapperImpl是继承TypeConverter的
+    // BeanWrapperImpl是继承TypeConverter的
     if (converter instanceof BeanWrapperImpl) {
-        //所以执行下面的方法
+        // 所以执行下面的方法
         return ((BeanWrapperImpl) converter).convertForProperty(value, propertyName);
     }
     else {
@@ -458,24 +455,11 @@ public Object convertForProperty(@Nullable Object value, String propertyName) th
     if (td == null) {
         td = cachedIntrospectionResults.addTypeDescriptor(pd, new TypeDescriptor(property(pd)));
     }
-    //上面的工作不用管，全是一些前戏工作，这个才是主题，至此我们的流程就到这里结束吧
-    //后面的流程太多了，大部分都是处理细节，你只需要知道大概的脉络就行，就是最终它肯定会
-    //走到AddressParse这个核心处理
+    // 上面的工作不用管，全是一些前戏工作，这个才是主题，至此我们的流程就到这里结束吧
+    // 后面的流程太多了，大部分都是处理细节，你只需要知道大概的脉络就行，就是最终它肯定会
+    // 走到AddressParse这个核心处理
     return convertForProperty(propertyName, null, value, td);
 }
 ```
 
-你可以自己可以尝试debug一下，看别人实践真的不如自己动手实践一下，Spring的包装类实属太多，但是可以抓住核心流程进行debug
-
-
-
-
-
-
-
-
-
-
-
-
-
+你可以自己可以尝试 debug 一下，看别人实践真的不如自己动手实践一下，Spring 的包装类实属太多，但是可以抓住核心流程进行 debug。
