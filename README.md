@@ -24,6 +24,7 @@
 - [将 bean 解析封装成 BeanDefinition](/docs/Spring/IoC/2、将bean解析封装成BeanDefinition.md)
 - [将 BeanDefinition 注册进 IoC 容器](/docs/Spring/IoC/3、将BeanDefinition注册进IoC容器.md)
 - [依赖注入(DI)](</docs/Spring/IoC/4、依赖注入(DI).md>)
+- [BeanFactoryPostProcessor](/docs/Spring/Ioc/BeanFactoryPostProcessor.md)
 - [BeanPostProcessor](/docs/Spring/IoC/BeanPostProcessor.md)
 - [Spring BeanFactory 源码解析](/docs/Spring/clazz/Spring-beanFactory.md)
 
