@@ -1,3 +1,5 @@
+# BeanFactoryBeanPostProcessor 源码分析
+
 BeanFactoryBeanPostProcessor 是当 BeanDefinition 读取完元数据（也就是从任意资源中定义的 bean 数据）后还未实例化之前可以进行修改
 
 抄录并翻译官方的语句
@@ -19,7 +21,7 @@ public interface BeanFactoryPostProcessor {
 }
 ```
 
-#### BeanFactoryPostProcessor 执行时期的探究
+## BeanFactoryPostProcessor 执行时期的探究
 
 ApplicationContext 的 refresh() 中的 invokeBeanFactoryPostProcessors 方法就开始创建我们的 BFPP(BeanFactoryPostProcessor)了
 
@@ -160,7 +162,7 @@ public static void invokeBeanFactoryPostProcessors(
 
 所谓属性编辑器是当你要自定义更改配置文件中的属性属性时，如 String 类型转为 Date 或者其他，下面的一个小例子展示如何 String 类型的属性怎么转化为 Address 属性
 
-#### 简单工程（Spirng-version-5.3.18)
+## 简单工程（Spring-version-5.3.18)
 
 Person 类
 

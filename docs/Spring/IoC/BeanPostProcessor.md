@@ -1,3 +1,5 @@
+# BeanPostProcessor 源码分析
+
 BeanPostProcessor 接口也叫 Bean 后置处理器，作用是在 Bean 对象实例化和依赖注入完成后，在配置文件 bean 的 init-method(初始化方法)或者 InitializingBean 的 afterPropertiesSet 的前后添加我们自己的处理逻辑。注意是 Bean 实例化完毕后及依赖注入完成后触发的，接口的源码如下。
 
 ```java
