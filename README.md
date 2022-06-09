@@ -361,6 +361,11 @@ GitHub 技术社区 [Doocs](https://github.com/doocs)，致力于打造一个内
 
 <!-- ALL-CONTRIBUTORS-LIST: END -->
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=doocs/source-code-hunter&type=Date)](https://star-history.com/#doocs/source-code-hunter&Date)
+
+
 ## 公众号
 
 [Doocs](https://github.com/doocs) 技术社区旗下唯一公众号「**Doocs 开源社区**」​，欢迎扫码关注，**专注分享技术领域相关知识及行业最新资讯**。当然，也可以加我个人微信（备注：GitHub），拉你进技术交流群。
