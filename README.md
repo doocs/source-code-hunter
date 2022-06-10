@@ -27,6 +27,7 @@
 - [BeanFactoryPostProcessor](/docs/Spring/IoC/BeanFactoryPostProcessor.md)
 - [BeanPostProcessor](/docs/Spring/IoC/BeanPostProcessor.md)
 - [Spring BeanFactory 源码解析](/docs/Spring/clazz/Spring-beanFactory.md)
+- [循环依赖](/docs/Spring/IoC/循环依赖.md)
 
 ### AOP
 
