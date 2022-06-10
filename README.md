@@ -337,6 +337,10 @@
 
 ---
 
+## Stars 趋势
+
+[![Star History Chart](https://api.star-history.com/svg?repos=doocs/source-code-hunter&type=Date)](https://star-history.com/#doocs/source-code-hunter&Date)
+
 ## Doocs 社区优质项目
 
 GitHub 技术社区 [Doocs](https://github.com/doocs)，致力于打造一个内容完整、持续成长的互联网开发者学习生态圈！以下是 Doocs 的一些优秀项目，欢迎各位开发者朋友持续保持关注。
@@ -360,11 +364,6 @@ GitHub 技术社区 [Doocs](https://github.com/doocs)，致力于打造一个内
 <a href="https://opencollective.com/doocs/contributors.svg?width=890&button=true"><img src="https://opencollective.com/doocs/contributors.svg?width=890&button=false" /></a>
 
 <!-- ALL-CONTRIBUTORS-LIST: END -->
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=doocs/source-code-hunter&type=Date)](https://star-history.com/#doocs/source-code-hunter&Date)
-
 
 ## 公众号
 
