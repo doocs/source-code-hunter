@@ -120,7 +120,7 @@ if (changed) {
 
 `MessageQueue mqSelected = this.selectOneMessageQueue(topicPublishInfo, lastBrokerName);`
 
-首先判断是否启用故障延迟机制 ，默认不启用，第一次查询 lastBrokerName 为空，`sendWhichQueue`自增然后对队列个数取模获取队列，如果消息发送失败，下一次`sendWhichQueue`仍然自增然后对队列个数取模，可以规避掉上次失败的 broker
+首先判断是否启用故障延迟机制 ，默认不启用，第一次查询 lastBrokerName 为空，`sendWhichQueue`自增然后对队列个数取模获取队列，如果消息发送失败，下一次`sendWhichQueue`仍然自增然后对队列个数取模，可以规避掉上次失败的队列（MessageQueue）
 
 ```java
 public MessageQueue selectOneMessageQueue(final String lastBrokerName) {
