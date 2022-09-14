@@ -279,10 +279,10 @@
 - [RocketMQ 生产者启动流程](docs/rocketmq/rocketmq-producer-start.md)
 - [RocketMQ 消息发送流程](docs/rocketmq/rocketmq-send-message.md)
 - [RocketMQ 消息发送存储流程](docs/rocketmq/rocketmq-send-store.md)
-- [RocketMQ MappedFile内存映射文件详解](docs/rocketmq/rocketmq-mappedfile-detail.md)
-- [RocketMQ ConsumeQueue详解](docs/rocketmq/rocketmq-consumequeue.md)
-- [RocketMQ CommitLog详解](docs/rocketmq/rocketmq-commitlog.md)
-- [RocketMQ IndexFile详解](docs/rocketmq/rocketmq-indexfile.md)
+- [RocketMQ MappedFile 内存映射文件详解](docs/rocketmq/rocketmq-mappedfile-detail.md)
+- [RocketMQ ConsumeQueue 详解](docs/rocketmq/rocketmq-consumequeue.md)
+- [RocketMQ CommitLog 详解](docs/rocketmq/rocketmq-commitlog.md)
+- [RocketMQ IndexFile 详解](docs/rocketmq/rocketmq-indexfile.md)
 - [RocketMQ 消费者启动流程](docs/rocketmq/rocketmq-consumer-start.md)
 - [RocketMQ 消息拉取流程](docs/rocketmq/rocketmq-pullmessage.md)
 - [RocketMQ Broker 处理拉取消息请求流程](docs/rocketmq/rocketmq-pullmessage-processor.md)
@@ -387,6 +387,10 @@ GitHub 技术社区 [Doocs](https://github.com/doocs)，致力于打造一个内
   </tr>
 </table>
 
+<<<<<<< HEAD
 关注公众号「**Doocs**」，回复 **PDF**，即可获取 [互联网 Java 工程师进阶知识完全扫盲](https://github.com/doocs/advanced-java) 项目离线 PDF 文档（283 页精华），学习更加方便！
+=======
+关注「**Doocs**」公众号，回复 **PDF**，即可获取 [互联网 Java 工程师进阶知识完全扫盲](https://github.com/doocs/advanced-java) 项目离线 PDF 文档（283 页精华），学习更加方便！
+>>>>>>> d309ac0 (docs: update documents)
 
 ![](./images/pdf.png)

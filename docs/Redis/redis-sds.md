@@ -112,7 +112,7 @@ sds sdsnewlen(const void *init, size_t initlen) {
     unsigned char *fp;
 
     // 检查长度是否溢出
-    assert(initlen + hdrlen + 1 > initlen); 
+    assert(initlen + hdrlen + 1 > initlen);
 
     // 创建字符串，+1是因为 `\0` 结束符
     // sh指向header首字节
@@ -131,7 +131,7 @@ sds sdsnewlen(const void *init, size_t initlen) {
 
     // 赋值len, alloc, flags
     ...
-     
+
 
     // 赋值buf[]
     if (initlen && init)
@@ -145,7 +145,7 @@ sds sdsnewlen(const void *init, size_t initlen) {
 }
 ```
 
-创建 SDS 的大致流程是这样的：首先根据字符串长度计算得到 type，根据 type 计算头部所需长度，然后动态分配内存空间。通过计算出指向header的指针sh，指向buf的指针s，对结构体各字段进行赋值。
+创建 SDS 的大致流程是这样的：首先根据字符串长度计算得到 type，根据 type 计算头部所需长度，然后动态分配内存空间。通过计算出指向 header 的指针 sh，指向 buf 的指针 s，对结构体各字段进行赋值。
 
 注意：
 
@@ -180,11 +180,11 @@ void sdsclear(sds s) {
 }
 ```
 
-### 3. 更新len
+### 3. 更新 len
 
-因为sdsnewlen函数返回的是char* 类型的buf，所以兼容了c语言操作字符串的函数，
-那么当 `s = ['a', 'b', 'c', '\0']` 时， 再操作`s[2] = '\0'`, 这个时候`sdslen(s)`得到的结果是3，因为len字段没有更新，如果直接更新`'\0'`，需要调用以下函数更新len
-    
+因为 sdsnewlen 函数返回的是 char\* 类型的 buf，所以兼容了 c 语言操作字符串的函数，
+那么当 `s = ['a', 'b', 'c', '\0']` 时， 再操作`s[2] = '\0'`, 这个时候`sdslen(s)`得到的结果是 3，因为 len 字段没有更新，如果直接更新`'\0'`，需要调用以下函数更新 len
+
 ```c
 void sdsupdatelen(sds s) {
     size_t reallen = strlen(s);
@@ -256,7 +256,7 @@ sds sdsMakeRoomFor(sds s, size_t addlen) {
     newlen = (len+addlen);
 
     // 检查长度是否溢出
-    assert(newlen > len); 
+    assert(newlen > len);
 
     // 新长度<1MB，按新长度的2倍扩容
     if (newlen < SDS_MAX_PREALLOC)
@@ -274,7 +274,7 @@ sds sdsMakeRoomFor(sds s, size_t addlen) {
     hdrlen = sdsHdrSize(type);
 
     // 检查长度是否溢出
-    assert(hdrlen + newlen + 1 > len); 
+    assert(hdrlen + newlen + 1 > len);
 
     if (oldtype==type) {
         // 类型没变，直接通过realloc扩大动态数组即可。

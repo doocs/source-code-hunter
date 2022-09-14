@@ -378,7 +378,7 @@ class BeatTask implements Runnable {
         } else {
             Random random = new Random(System.currentTimeMillis());
             int index = random.nextInt(servers.size());
-            
+
             for (int i = 0; i < servers.size(); i++) {
                 String server = servers.get(index);
                 try {
@@ -392,10 +392,10 @@ class BeatTask implements Runnable {
                 index = (index + 1) % servers.size();
             }
         }
-        
+
         NAMING_LOGGER.error("request: {} failed, servers: {}, code: {}, msg: {}", api, servers, exception.getErrCode(),
                 exception.getErrMsg());
-        
+
         throw new NacosException(exception.getErrCode(),
                 "failed to req API:" + api + " after all servers(" + servers + ") tried: " + exception.getMessage());
   ```

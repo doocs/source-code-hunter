@@ -18,7 +18,7 @@ if (group.length() >CHARACTER_MAX_LENGTH) {
 }
 ```
 
-消费组名称只能包含数字、字母、%、-、_、|
+消费组名称只能包含数字、字母、%、-、\_、|
 
 ```java
 // regex: ^[%|a-zA-Z0-9_-]+$
@@ -129,7 +129,7 @@ private void copySubscription() throws MQClientException {
 
 `3、初始化MqClientInstance、RebalanceImpl、PullApiWrapper`
 
-创建`MqClientInstance`， 无论在生产者端还是消费者端都是一个很重要的类， 封装了Topic信息、broker信息，当然还有生产者和消费者的信息。
+创建`MqClientInstance`， 无论在生产者端还是消费者端都是一个很重要的类， 封装了 Topic 信息、broker 信息，当然还有生产者和消费者的信息。
 
 ```java
 public MQClientInstance getOrCreateMQClientInstance(final ClientConfig clientConfig, RPCHook rpcHook) {

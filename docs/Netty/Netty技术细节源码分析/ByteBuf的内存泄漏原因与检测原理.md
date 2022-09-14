@@ -2,7 +2,7 @@
 
 ## Netty 中的 ByteBuf 为什么会发生内存泄漏
 
-在 Netty 中，ByetBuf 并不是只采用可达性分析来对 ByteBuf 底层的 `byte[]` 数组来进行垃圾回收，而同时采用引用计数法来进行回收，来保证堆外内存的准确时机的释放。  
+在 Netty 中，ByetBuf 并不是只采用可达性分析来对 ByteBuf 底层的 `byte[]` 数组来进行垃圾回收，而同时采用引用计数法来进行回收，来保证堆外内存的准确时机的释放。
 
 在每个 ByteBuf 中都维护着一个 refCnt 用来对 ByteBuf 的被引用数进行记录，当 ByteBuf 的 `retain()` 方法被调用时，将会增加 refCnt 的计数，而其 `release()` 方法被调用时将会减少其被引用数计数。
 
@@ -24,7 +24,7 @@ private boolean release0(int decrement) {
 }
 ```
 
-当调用了 ByteBuf 的 `release()` 方法的时候，最后在上方的 `release0()` 方法中将会为 ByteBuf 的引用计数减一，当引用计数归于 0 的时候，将会调用 `deallocate()` 方法对其对应的底层存储数组进行释放(在池化的 ByteBuf 中，在 `deallocate()` 方法里会把该 ByteBuf 的 `byte[]` 回收到底层内存池中，以确保 `byte[]` 可以重复利用)。 
+当调用了 ByteBuf 的 `release()` 方法的时候，最后在上方的 `release0()` 方法中将会为 ByteBuf 的引用计数减一，当引用计数归于 0 的时候，将会调用 `deallocate()` 方法对其对应的底层存储数组进行释放(在池化的 ByteBuf 中，在 `deallocate()` 方法里会把该 ByteBuf 的 `byte[]` 回收到底层内存池中，以确保 `byte[]` 可以重复利用)。
 
 由于 Netty 中的 ByteBuf 并不是随着申请之后会马上使其引用计数归 0 而进行释放，往往在这两个操作之间还有许多操作，如果在这其中如果发生异常抛出导致引用没有及时释放，在使用池化 ByetBuffer 的情况下内存泄漏的问题就会产生。
 

@@ -28,7 +28,7 @@ org.apache.rocketmq.store.index.IndexFile#putKey
 
 如果当前 Index 文件未满，则根据 key 计算出哈希码，然后对槽数量取余定位到某一个哈希槽位置，
 
-哈希槽的物理偏移量 = IndexHeader 的大小（默认 40Byte） + 哈希槽位置 * 每个哈希槽的大小（4 字节）
+哈希槽的物理偏移量 = IndexHeader 的大小（默认 40Byte） + 哈希槽位置 \* 每个哈希槽的大小（4 字节）
 
 ```java
 int keyHash = indexKeyHashMethod(key);
@@ -61,7 +61,7 @@ if (this.indexHeader.getBeginTimestamp() <= 0) {
 }
 ```
 
-新添加的消息 index 的物理偏移量 = IndexHeader 大小（40Byte） + Index 文件哈希槽的数量 * 哈希槽的大小（4Byte ） + Index 文件索引数量 * 索引大小（20Byte）
+新添加的消息 index 的物理偏移量 = IndexHeader 大小（40Byte） + Index 文件哈希槽的数量 _ 哈希槽的大小（4Byte ） + Index 文件索引数量 _ 索引大小（20Byte）
 
 将消息哈希码、消息物理偏移量、消息存储时间戳与 Index 文件第一条消息的时间戳的差值、当前哈希槽的值、当前 Indexfile 的索引个数存入 mappedByteBuffer
 
@@ -115,7 +115,7 @@ long end: 结束时间戳
 
 根据 key 计算哈希码，哈希码与哈希槽的数量取余得到哈希槽的索引
 
-哈希槽的物理地址 = IndexHeader（40byte） + 哈希槽索引 * 每个哈希槽的大小（4byte）
+哈希槽的物理地址 = IndexHeader（40byte） + 哈希槽索引 \* 每个哈希槽的大小（4byte）
 
 ```java
 int keyHash = indexKeyHashMethod(key);
