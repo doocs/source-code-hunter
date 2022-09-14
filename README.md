@@ -387,10 +387,7 @@ GitHub 技术社区 [Doocs](https://github.com/doocs)，致力于打造一个内
   </tr>
 </table>
 
-<<<<<<< HEAD
-关注公众号「**Doocs**」，回复 **PDF**，即可获取 [互联网 Java 工程师进阶知识完全扫盲](https://github.com/doocs/advanced-java) 项目离线 PDF 文档（283 页精华），学习更加方便！
-=======
+
 关注「**Doocs**」公众号，回复 **PDF**，即可获取 [互联网 Java 工程师进阶知识完全扫盲](https://github.com/doocs/advanced-java) 项目离线 PDF 文档（283 页精华），学习更加方便！
->>>>>>> d309ac0 (docs: update documents)
 
 ![](./images/pdf.png)
