@@ -24,8 +24,10 @@
 - [将 bean 解析封装成 BeanDefinition](/docs/Spring/IoC/2、将bean解析封装成BeanDefinition.md)
 - [将 BeanDefinition 注册进 IoC 容器](/docs/Spring/IoC/3、将BeanDefinition注册进IoC容器.md)
 - [依赖注入(DI)](</docs/Spring/IoC/4、依赖注入(DI).md>)
+- [BeanFactoryPostProcessor](/docs/Spring/IoC/BeanFactoryPostProcessor.md)
 - [BeanPostProcessor](/docs/Spring/IoC/BeanPostProcessor.md)
 - [Spring BeanFactory 源码解析](/docs/Spring/clazz/Spring-beanFactory.md)
+- [循环依赖](/docs/Spring/IoC/循环依赖.md)
 
 ### AOP
 
@@ -271,6 +273,21 @@
 - [Sentinel 底层 LongAdder 的计数实现](docs/Sentinel/Sentinel底层LongAdder的计数实现.md)
 - [Sentinel 限流算法的实现](docs/Sentinel/Sentinel限流算法的实现.md)
 
+## RocketMQ
+
+- [RocketMQ NameServer 与 Broker 的通信](docs/rocketmq/rocketmq-nameserver-broker.md)
+- [RocketMQ 生产者启动流程](docs/rocketmq/rocketmq-producer-start.md)
+- [RocketMQ 消息发送流程](docs/rocketmq/rocketmq-send-message.md)
+- [RocketMQ 消息发送存储流程](docs/rocketmq/rocketmq-send-store.md)
+- [RocketMQ MappedFile 内存映射文件详解](docs/rocketmq/rocketmq-mappedfile-detail.md)
+- [RocketMQ ConsumeQueue 详解](docs/rocketmq/rocketmq-consumequeue.md)
+- [RocketMQ CommitLog 详解](docs/rocketmq/rocketmq-commitlog.md)
+- [RocketMQ IndexFile 详解](docs/rocketmq/rocketmq-indexfile.md)
+- [RocketMQ 消费者启动流程](docs/rocketmq/rocketmq-consumer-start.md)
+- [RocketMQ 消息拉取流程](docs/rocketmq/rocketmq-pullmessage.md)
+- [RocketMQ Broker 处理拉取消息请求流程](docs/rocketmq/rocketmq-pullmessage-processor.md)
+- [RocketMQ 消息消费流程](docs/rocketmq/rocketmq-consume-message-process.md)
+
 ## 番外篇（JDK 1.8）
 
 ### 基础类库
@@ -321,6 +338,10 @@
 
 ---
 
+## Stars 趋势
+
+[![Star History Chart](https://api.star-history.com/svg?repos=doocs/source-code-hunter&type=Date)](https://star-history.com/#doocs/source-code-hunter&Date)
+
 ## Doocs 社区优质项目
 
 GitHub 技术社区 [Doocs](https://github.com/doocs)，致力于打造一个内容完整、持续成长的互联网开发者学习生态圈！以下是 Doocs 的一些优秀项目，欢迎各位开发者朋友持续保持关注。
@@ -347,7 +368,7 @@ GitHub 技术社区 [Doocs](https://github.com/doocs)，致力于打造一个内
 
 ## 公众号
 
-[Doocs](https://github.com/doocs) 技术社区旗下唯一公众号「**Doocs 开源社区**」​，欢迎扫码关注，**专注分享技术领域相关知识及行业最新资讯**。当然，也可以加我个人微信（备注：GitHub），拉你进技术交流群。
+[Doocs](https://github.com/doocs) 技术社区旗下唯一公众号「**Doocs**」​，欢迎扫码关注，**专注分享技术领域相关知识及行业最新资讯**。当然，也可以加我个人微信（备注：GitHub），拉你进技术交流群。
 
 <table>
   <tr>
@@ -366,6 +387,7 @@ GitHub 技术社区 [Doocs](https://github.com/doocs)，致力于打造一个内
   </tr>
 </table>
 
-关注「**Doocs 开源社区**」公众号，回复 **PDF**，即可获取 [互联网 Java 工程师进阶知识完全扫盲](https://github.com/doocs/advanced-java) 项目离线 PDF 文档（283 页精华），学习更加方便！
+
+关注「**Doocs**」公众号，回复 **PDF**，即可获取 [互联网 Java 工程师进阶知识完全扫盲](https://github.com/doocs/advanced-java) 项目离线 PDF 文档（283 页精华），学习更加方便！
 
 ![](./images/pdf.png)
