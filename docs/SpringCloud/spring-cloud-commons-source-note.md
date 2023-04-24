@@ -440,7 +440,7 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 
 [示例代码](https://github.com/haitaoss/spring-cloud-commons/tree/source-v3.1.5/source-note-spring-cloud-commons/src/main/java/cn/haitaoss/ServiceRegisterAndLoadBalance/Main.java)
 
-负载均衡会使用 LoadBalancerClient 来执行请求的，大致逻辑是会通过 DiscoveryClient 得到 serviceId 有哪些实例，在通过负载均衡策略的逻辑筛选出唯一的 实例，然后根据这个实例的 url 执行请求。
+负载均衡会使用 LoadBalancerClient 来执行请求的，大致逻辑是通过 DiscoveryClient 得到 serviceId 有哪些实例，再通过负载均衡策略的逻辑筛选出唯一的实例，然后根据这个实例的 url 执行请求。
 
 `spring-cloud-loadbalancer.jar!/META-INF/spring.factories`的部分内容
 
