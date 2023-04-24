@@ -6,14 +6,14 @@ Author: [haitaoss](https://github.com/haitaoss)
 
 参考资料和需要掌握的知识：
 
-- [SpringBoot源码分析](https://github.com/haitaoss/spring-boot/blob/source-v2.7.8/note/springboot-source-note.md)
-- [Spring源码分析](https://github.com/haitaoss/spring-framework)
+- [SpringBoot 源码分析](https://github.com/haitaoss/spring-boot/blob/source-v2.7.8/note/springboot-source-note.md)
+- [Spring 源码分析](https://github.com/haitaoss/spring-framework)
 - [Spring Cloud 官网文档](https://docs.spring.io/spring-cloud/docs/2021.0.5/reference/html/)
 - [Spring Cloud Commons 官网文档](https://docs.spring.io/spring-cloud-commons/docs/3.1.5/reference/html/)
 
 # Spring Cloud 介绍
 
-SpringCloud是在SpringBoot的基础上构建的。Spring Cloud以两个库的形式提供了许多特性：Spring Cloud Context 和 Spring Cloud Commons。Spring Cloud Context 为SpringCloud应用程序的ApplicationContext提供扩展机制（引导上下文、加密、刷新属性和环境端点）。Spring Cloud Commons 是一组抽象(服务注册、负载均衡、熔断器等API) 和 通用类，用于不同的Spring Cloud实现（例如Spring Cloud Netflix和Spring Cloud Consul）
+SpringCloud 是在 SpringBoot 的基础上构建的。Spring Cloud 以两个库的形式提供了许多特性：Spring Cloud Context 和 Spring Cloud Commons。Spring Cloud Context 为 SpringCloud 应用程序的 ApplicationContext 提供扩展机制（引导上下文、加密、刷新属性和环境端点）。Spring Cloud Commons 是一组抽象(服务注册、负载均衡、熔断器等 API) 和 通用类，用于不同的 Spring Cloud 实现（例如 Spring Cloud Netflix 和 Spring Cloud Consul）
 
 是基于 Spring Boot 的自动装配原理实现的，其实就是定义了很多自动配置类，所以在 SpringCloud 的环境下 启动 SpringBoot 程序 会有很多功能。
 
@@ -21,11 +21,11 @@ SpringCloud是在SpringBoot的基础上构建的。Spring Cloud以两个库的�
 
 ## BootstrapApplicationListener (bootstrap.properties 读取原理)
 
-[前置知识：SprinBoot加载application.yml的原理](https://github.com/haitaoss/spring-boot/blob/source-v2.7.8/note/springboot-source-note.md#%E5%B1%9E%E6%80%A7%E6%96%87%E4%BB%B6%E7%9A%84%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F)
+[前置知识：SprinBoot 加载 application.yml 的原理](https://github.com/haitaoss/spring-boot/blob/source-v2.7.8/note/springboot-source-note.md#%E5%B1%9E%E6%80%A7%E6%96%87%E4%BB%B6%E7%9A%84%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F)
 
 [示例代码](https://github.com/haitaoss/spring-cloud-commons/tree/source-v3.1.5/source-note-spring-cloud-commons/src/main/java/cn/haitaoss/BootstrapProperties/Main.java)
 
-BootstrapApplicationListener 是用于完成 SpringCloud 的接入的，主要是完成 bootstrapContext的创建、bootstrap属性的加载、设置bootstrapContext为父容器。下面是 BootstrapApplicationListener 被触发的入口和核心逻辑
+BootstrapApplicationListener 是用于完成 SpringCloud 的接入的，主要是完成 bootstrapContext 的创建、bootstrap 属性的加载、设置 bootstrapContext 为父容器。下面是 BootstrapApplicationListener 被触发的入口和核心逻辑
 
 ```java
 /**
@@ -176,8 +176,8 @@ public class BootstrapImportSelectorConfiguration {}
 
 ### ConfigurationPropertiesRebinderAutoConfiguration
 
-1. 记录 @ConfigurationProperties 的bean
-2. 接收 EnvironmentChangeEvent 事件，对记录的bean进行重新初始化从而完成属性的更新
+1. 记录 @ConfigurationProperties 的 bean
+2. 接收 EnvironmentChangeEvent 事件，对记录的 bean 进行重新初始化从而完成属性的更新
 
 ```java
 /**
@@ -202,8 +202,8 @@ public class BootstrapImportSelectorConfiguration {}
 ### RefreshAutoConfiguration
 
 1. 注册 refresh scope 到 BeanFactory 中
-2. 接收 RefreshEvent 事件，更新 Environment 和 清空 refresh scope 中记录的bean
-3. 使用 @RefreshScope 标注的bean，最终生成的是代理对象，每次执行代理对象的方法，都会从 refresh scope 中获取bean得到调用方法的对象，从而能保证更新之后，获取的对象也是新的
+2. 接收 RefreshEvent 事件，更新 Environment 和 清空 refresh scope 中记录的 bean
+3. 使用 @RefreshScope 标注的 bean，最终生成的是代理对象，每次执行代理对象的方法，都会从 refresh scope 中获取 bean 得到调用方法的对象，从而能保证更新之后，获取的对象也是新的
 
 ```java
 /**
@@ -306,13 +306,13 @@ public @interface LoadBalanced {}
 
 ```java
 public class Config {
-    
+
     @Bean
     @LoadBalanced
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
-    
+
     @Bean
     public RestTemplate restTemplate2() {
         return new RestTemplate();
@@ -325,15 +325,15 @@ public class LoadBalancerAutoConfiguration {
    @LoadBalanced
    @Autowired(required = false)
    private List<RestTemplate> restTemplates = Collections.emptyList();
-    
+
 }
 ```
 
-## @LoadBalancerClient和@LoadBalancerClients
+## @LoadBalancerClient 和@LoadBalancerClients
 
 @LoadBalancerClient 映射成 LoadBalancerClientSpecification 然后注册到 BeanFactory 中。
 
-@LoadBalancerClients 其实就是多个 @LoadBalancerClient 
+@LoadBalancerClients 其实就是多个 @LoadBalancerClient
 
 ```java
 @Configuration(proxyBeanMethods = false)
@@ -395,6 +395,7 @@ DiscoveryClient 是用来获取注册中心注册了多少实例，单独看是�
  *      注册 CompositeDiscoveryClient 是 DiscoveryClient 的实现类，其作用是用来聚合 List<DiscoveryClient> 的
  **/
 ```
+
 ## LoadBalancerAutoConfiguration
 
 `spring-cloud-commons.jar!/META-INF/spring.factories`的部分内容
@@ -404,13 +405,13 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
    org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration,\
 ```
 
-> 这个配置类主要是定义了 LoadBalancerInterceptor 用来拦截RestTemplate的执行，其拦截逻辑是委托给
+> 这个配置类主要是定义了 LoadBalancerInterceptor 用来拦截 RestTemplate 的执行，其拦截逻辑是委托给
 >
 > [LoadBalancerClient](#LoadBalancerClient) 来做。又定义了 LoadBalancerRequestFactory 用于生成 LoadBalancerClient 的参数，
 >
 > 而 LoadBalancerRequestFactory 会使用 LoadBalancerRequestTransformer 对 HttpRequest 进行增强，
 >
-> 所以我们可以自定义 **LoadBalancerRequestTransformer** 的bean对 负载均衡的请求 进行修改。
+> 所以我们可以自定义 **LoadBalancerRequestTransformer** 的 bean 对 负载均衡的请求 进行修改。
 
 ```java
 /**
@@ -439,7 +440,7 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 
 [示例代码](https://github.com/haitaoss/spring-cloud-commons/tree/source-v3.1.5/source-note-spring-cloud-commons/src/main/java/cn/haitaoss/ServiceRegisterAndLoadBalance/Main.java)
 
-负载均衡会使用 LoadBalancerClient 来执行请求的，大致逻辑是会通过 DiscoveryClient 得到 serviceId 有哪些实例，在通过负载均衡策略的逻辑筛选出唯一的 实例，然后根据这个实例的url执行请求。
+负载均衡会使用 LoadBalancerClient 来执行请求的，大致逻辑是会通过 DiscoveryClient 得到 serviceId 有哪些实例，在通过负载均衡策略的逻辑筛选出唯一的 实例，然后根据这个实例的 url 执行请求。
 
 `spring-cloud-loadbalancer.jar!/META-INF/spring.factories`的部分内容
 
@@ -452,7 +453,7 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 
 ### LoadBalancerAutoConfiguration
 
-[提供了@LoadBalancerClient 用于简易的注册LoadBalancerClientSpecification](#@LoadBalancerClient)
+[提供了@LoadBalancerClient 用于简易的注册 LoadBalancerClientSpecification](#@LoadBalancerClient)
 
 ```java
 /**
@@ -463,11 +464,11 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
  *      注册 LoadBalancerClientFactory 其继承 NamedContextFactory。
  *          会根据 name 创建一个IOC容器，IOC容器默认有两个配置类：PropertyPlaceholderAutoConfiguration、LoadBalancerClientConfiguration
  *          并依赖 LoadBalancerClientSpecification 用来扩展配置类，创建的IOC容器会缓存到Map中。
- *          
+ *
  *          LoadBalancerClientConfiguration 其目的是注册了 ServiceInstanceListSupplier、ReactorLoadBalancer<ServiceInstance>
  *          这两个bean是用来实现负载均衡策略得到唯一的 ServiceInstance 的。而且都有 @ConditionalOnMissingBean 条件，若我们想自定义
  *          可以设置 LoadBalancerClientSpecification 扩展配置类。
- *          
+ *
  *          可以使用 @LoadBalancerClient 或者直接注册 LoadBalancerClientSpecification 类型的bean到容器中，
  **/
 ```
@@ -498,7 +499,7 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
  * */
 ```
 
-### 负载均衡的RestTemplate执行请求的流程
+### 负载均衡的 RestTemplate 执行请求的流程
 
 使用 restTemplate 发送请求，最终会委托给 ClientHttpRequestInterceptor 执行请求
 
@@ -523,7 +524,7 @@ RestTemplate -> (RetryLoadBalancerInterceptor|LoadBalancerInterceptor)
  * {@link AbstractBufferingClientHttpRequest#executeInternal(HttpHeaders)}
  * {@link InterceptingClientHttpRequest#executeInternal(HttpHeaders, byte[])}
  * {@link InterceptingClientHttpRequest.InterceptingRequestExecution#execute(HttpRequest, byte[])}
- *      在这里回调 ClientHttpRequestInterceptor 的方法，从而实现拦截请求的执行       
+ *      在这里回调 ClientHttpRequestInterceptor 的方法，从而实现拦截请求的执行
  **/
 ```
 
@@ -572,7 +573,7 @@ public ClientHttpResponse execute(HttpRequest request, byte[] body) throws IOExc
 
 整体逻辑和 [LoadBalancerInterceptor](#LoadBalancerInterceptor) 是一样的，只不过是使用 [RetryTemplate](https://github.com/spring-projects/spring-retry) 来执行，根据重试策略重复执行而已。
 
-会使用 **LoadBalancedRetryFactory** 来生成 LoadBalancedRetryPolicy、BackOffPolicy、RetryListener 这三个东西是用来决定该如何重试，默认是有一个 BlockingLoadBalancedRetryPolicy 会根据属性信息生成 LoadBalancedRetryPolicy、BackOffPolicy，若我们有需要可以自定义 LoadBalancedRetryFactory bean注册到容器中，因为
+会使用 **LoadBalancedRetryFactory** 来生成 LoadBalancedRetryPolicy、BackOffPolicy、RetryListener 这三个东西是用来决定该如何重试，默认是有一个 BlockingLoadBalancedRetryPolicy 会根据属性信息生成 LoadBalancedRetryPolicy、BackOffPolicy，若我们有需要可以自定义 LoadBalancedRetryFactory bean 注册到容器中，因为
 
 ```java
 @Configuration
@@ -619,7 +620,7 @@ spring.cloud.loadbalancer.retry.backoff.jitter=1
  *          2.2 使用 LoadBalancedRetryFactory 生成重试监听器
  *             RetryListener[] retryListeners = lbRetryFactory.createRetryListeners(serviceName);
  *             template.setListeners(retryListeners);
- *          ...             
+ *          ...
  *
  *  3. 使用 RetryTemplate 执行
  *      return template.execute(context -> {
@@ -648,9 +649,9 @@ spring.cloud.loadbalancer.retry.backoff.jitter=1
 ### BlockingLoadBalancerClient#execute
 
 1. 执行请求过程中会回调 LoadBalancerLifecycle 生命周期方法
-2. 负载均衡得到 serviceInstance 构造出 HttpRequest 后，会使用 LoadBalancerRequestTransformer 对 HttpRequest  进行增强
+2. 负载均衡得到 serviceInstance 构造出 HttpRequest 后，会使用 LoadBalancerRequestTransformer 对 HttpRequest 进行增强
 
-> 	注：不建议将 LoadBalancerLifecycle、ServiceInstanceListSupplier、ReactorLoadBalancer 注册到应用程序中，而是通过 LoadBalancerClientSpecification 的方式为每一个 serviceInstance 设置独立的bean，从而实现不同的 serviceInstance 使用不同的 负载均衡策略
+>     注：不建议将 LoadBalancerLifecycle、ServiceInstanceListSupplier、ReactorLoadBalancer 注册到应用程序中，而是通过 LoadBalancerClientSpecification 的方式为每一个 serviceInstance 设置独立的bean，从而实现不同的 serviceInstance 使用不同的 负载均衡策略
 
 ```java
 /**
@@ -708,7 +709,7 @@ spring.cloud.loadbalancer.retry.backoff.jitter=1
  *
  *      9.3 放行请求，最终会发送Http请求
  *          execution.execute(serviceRequest, body);
- *          
+ *
  *
  *  10. 回调 LoadBalancerLifecycle#onComplete 生命周期方法
  *      supportedLifecycleProcessors
@@ -769,14 +770,14 @@ public class LoadBalancerClientConfiguration {
       return new RoundRobinLoadBalancer(
             loadBalancerClientFactory.getLazyProvider(name, ServiceInstanceListSupplier.class), name);
    }
-  
+
    @Bean
    @ConditionalOnMissingBean
    public ServiceInstanceListSupplier discoveryClientServiceInstanceListSupplier(
             ConfigurableApplicationContext context) {
        return ServiceInstanceListSupplier.builder().withDiscoveryClient().withCaching().build(context);
    }
-	
+
 }
 ```
 
@@ -854,7 +855,7 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
  * 总结：通过 LoadBalancerWebClientBuilderBeanPostProcessor 给 WebClient.Builder 增加 Filter，所以使用 WebClient.Builder 执行请求时会执行 Filter 的逻辑。
  *      DeferringLoadBalancerExchangeFilterFunction 的逻辑是 回调 LoadBalancerLifecycle 的方法，使用 LoadBalancerClientFactory 生成的负载均衡器得到唯一的 ServiceInstance，
  *      根据 ServiceInstance 的信息 修改请求的信息，从而实现负载均衡请求。
- * 
+ *
  * WebClient.Builder -> ReactorLoadBalancerExchangeFilterFunction -> LoadBalancerLifecycle -> LoadBalancerClientFactory
  * */
 ```
