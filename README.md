@@ -117,7 +117,7 @@
 - [SpringBoot 日志系统](/docs/SpringBoot/SpringBoot-LogSystem.md)
 - [SpringBoot ConditionalOnBean](/docs/SpringBoot/SpringBoot-ConditionalOnBean.md)
 
-## Spring Cloud
+### Spring Cloud
 
 - [Spring Cloud Commons 源码](docs/SpringCloud/spring-cloud-commons-source-note.md)
 - [Spring Cloud OpenFeign 源码](docs/SpringCloud/spring-cloud-openfeign-source-note.md)
@@ -317,8 +317,6 @@
 - [Executor 线程池组件 源码赏析](docs/JDK/concurrentCoding/Executor线程池组件.md)
 - [Lock 锁组件 源码赏析](docs/JDK/concurrentCoding/Lock锁组件.md)
 - [详解 AbstractQueuedSynchronizer 抽象类](docs/JDK/concurrentCoding/详解AbstractQueuedSynchronizer.md)
-- [CountdownLatch 类 源码赏析](docs/JDK/concurrentCoding/CountdownLatch.md)
-- [CyclicBarrier 类 源码赏析](docs/JDK/concurrentCoding/CyclicBarrier.md)
 - [Semaphore 类 源码赏析](docs/JDK/concurrentCoding/Semaphore.md)
 
 ## 学习心得
