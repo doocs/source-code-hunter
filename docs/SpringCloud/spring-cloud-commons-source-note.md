@@ -23,7 +23,32 @@ SpringCloud 是在 SpringBoot 的基础上构建的。Spring Cloud 以两个库�
 
 [前置知识：SprinBoot 加载 application.yml 的原理](https://github.com/haitaoss/spring-boot/blob/source-v2.7.8/note/springboot-source-note.md#%E5%B1%9E%E6%80%A7%E6%96%87%E4%BB%B6%E7%9A%84%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F)
 
-[示例代码](https://github.com/haitaoss/spring-cloud-commons/tree/source-v3.1.5/source-note-spring-cloud-commons/src/main/java/cn/haitaoss/BootstrapProperties/Main.java)
+示例代码
+
+```java
+@EnableAutoConfiguration
+public class Main {
+
+	public static void main(String[] args) {
+		// 是否创建 bootstrapContext
+		System.setProperty("spring.cloud.bootstrap.enabled", "true");
+		// 设置 bootstrapContext 中属性文件的搜索目录 或者是 属性文件
+		System.setProperty("spring.cloud.bootstrap.location", "");
+		System.setProperty("spring.cloud.bootstrap.additional-location",
+				"optional:classpath:/config/haitao/,classpath:/haitao.properties");
+		// 设置 bootstrapContext 默认属性文件的名字
+		// System.setProperty("spring.cloud.bootstrap.name", "bootstrap-haitao");
+		// 设置 profile
+		// System.setProperty("spring.profiles.active", "haitao");
+		// 测试读取属性
+		ConfigurableApplicationContext context = SpringApplication.run(Main.class, args);
+		ConfigurableEnvironment environment = context.getEnvironment();
+		Stream.iterate(1, i -> i + 1).limit(5).map(i -> "p" + i).forEach(
+				name -> System.out.println(String.format("key:%s \t valus: %s", name, environment.getProperty(name))));
+	}
+
+}
+```
 
 BootstrapApplicationListener 是用于完成 SpringCloud 的接入的，主要是完成 bootstrapContext 的创建、bootstrap 属性的加载、设置 bootstrapContext 为父容器。下面是 BootstrapApplicationListener 被触发的入口和核心逻辑
 
@@ -109,7 +134,43 @@ public class BootstrapImportSelectorConfiguration {}
 
 ### PropertySourceBootstrapConfiguration
 
-[示例代码](https://github.com/haitaoss/spring-cloud-commons/tree/source-v3.1.5/source-note-spring-cloud-commons/src/main/java/cn/haitaoss/BootstrapProperties/BootstrapConfiguration/MyPropertySourceLocator.java)
+示例代码
+
+```java
+public class MyPropertySourceLocator implements PropertySourceLocator {
+
+    public MyPropertySourceLocator() {
+        System.out.println("MyPropertySourceLocator...构造器");
+    }
+
+    @Resource
+    private ApplicationContext applicationContext;
+
+    @Value("${dynamicConfigFile}")
+    private String filePath;
+
+    @Override
+    public PropertySource<?> locate(Environment environment) {
+        PropertySource<?> propertySource;
+        try {
+            // 也可以改成网络资源
+            propertySource = new YamlPropertySourceLoader()
+                    .load("haitao-propertySource", applicationContext.getResource(filePath)).get(0);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return propertySource;
+    }
+
+}
+```
+
+`META-INF/spring.factories`
+
+```properties
+org.springframework.cloud.bootstrap.BootstrapConfiguration=\
+  cn.haitaoss.BootstrapProperties.BootstrapConfiguration.MyPropertySourceLocator
+```
 
 ```java
 /**
@@ -154,7 +215,39 @@ public class BootstrapImportSelectorConfiguration {}
 
 ## @RefreshScope 和 @ConfigurationProperties bean 的更新
 
-[示例代码](https://github.com/haitaoss/spring-cloud-commons/tree/source-v3.1.5/source-note-spring-cloud-commons/src/main/java/cn/haitaoss/refresh/Main.java)
+示例代码
+
+```java
+@SpringBootApplication
+public class Main {
+
+	/**
+	 * 总结用法:
+	 *
+	 * 可以通过属性 spring.cloud.refresh.refreshable spring.cloud.refresh.extraRefreshable
+	 * 代替 @RefreshScope
+	 *
+	 * 可以设置属性 spring.cloud.refresh.enabled=false 取消 @RefreshScope 的自动注入 是
+	 * spring.cloud.refresh.never-refreshable 属性记录的类就不重会新绑定属性
+	 */
+	public static void main(String[] args) {
+		// TODOHAITAO: 2023/4/6 访问验证属性更新 GET http://127.0.0.1:8080/actuator/refresh
+		// 启用 bootstrap 属性的加载
+		System.setProperty("spring.cloud.bootstrap.enabled", "true");
+
+        // 通过配置属性的方式，扩展bean为 refresh scope 的
+		System.setProperty("spring.cloud.refresh.refreshable",
+				Arrays.asList(RefreshScopeBean1.class.getName(), RefreshScopeBean2.class.getName()).stream()
+						.collect(Collectors.joining(",")));
+		System.setProperty("spring.cloud.refresh.extraRefreshable",
+				Arrays.asList(Object.class.getName()).stream().collect(Collectors.joining(",")));
+
+        // 设置 bootstrapContext 会默认加载的 bean
+        System.setProperty("spring.cloud.bootstrap.sources","cn.haitaoss.RefreshScope.config.MyPropertySourceLocator");
+	}
+
+}
+```
 
 ```java
 /**
@@ -438,7 +531,29 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 
 ## LoadBalancerClient
 
-[示例代码](https://github.com/haitaoss/spring-cloud-commons/tree/source-v3.1.5/source-note-spring-cloud-commons/src/main/java/cn/haitaoss/ServiceRegisterAndLoadBalance/Main.java)
+示例代码
+
+```java
+@EnableAutoConfiguration
+@RestController
+@Import({ LoadBalancerClientConfig.class, LoadBalancerOtherConfig.class })
+public class Main extends BaseApp {
+
+	public static void main(String[] args) {
+		/**
+		 * TODOHAITAO: 2023/4/7 验证方式 运行 Main、Client1、Client2 然后访问:
+         * - 堵塞式 GET http://localhost:8080/s1
+         * - 响应式 GET http://localhost:8080/2/s1
+		 */
+		// 采用那种方式对 RestTemplate 进行增强，看
+		// org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration
+		System.setProperty("spring.cloud.loadbalancer.retry.enabled", "false");
+		System.setProperty("spring.profiles.active", "loadbalance");
+		ConfigurableApplicationContext context = SpringApplication.run(Main.class);
+	}
+
+}
+```
 
 负载均衡会使用 LoadBalancerClient 来执行请求的，大致逻辑是通过 DiscoveryClient 得到 serviceId 有哪些实例，再通过负载均衡策略的逻辑筛选出唯一的实例，然后根据这个实例的 url 执行请求。
 
@@ -720,7 +835,16 @@ spring.cloud.loadbalancer.retry.backoff.jitter=1
 
 ### ReactorLoadBalancer
 
-[示例代码](https://github.com/haitaoss/spring-cloud-commons/tree/source-v3.1.5/source-note-spring-cloud-commons/src/main/java/cn/haitaoss/ServiceRegisterAndLoadBalance/loadbalancer/LoadBalancerClientConfig.java)
+示例代码
+
+```java
+@LoadBalancerClient(name = "s1", configuration = { MyLoadBalancer.class, MyServiceInstanceListSupplier.class })
+@LoadBalancerClients({ @LoadBalancerClient(name = "s2", configuration = MyRandomLoadBalancer.class),
+		@LoadBalancerClient(name = "s3", configuration = MyRoundRobinLoadBalancer.class), })
+public class LoadBalancerClientConfig {
+
+}
+```
 
 ```java
 /**
@@ -783,7 +907,28 @@ public class LoadBalancerClientConfiguration {
 
 ### ServiceInstanceListSupplier
 
-[示例代码](https://github.com/haitaoss/spring-cloud-commons/tree/source-v3.1.5/source-note-spring-cloud-commons/src/main/java/cn/haitaoss/ServiceRegisterAndLoadBalance/loadbalancer/MyServiceInstanceListSupplier.java)
+示例代码
+
+```java
+public class MyServiceInstanceListSupplier {
+
+    @Bean
+    public ServiceInstanceListSupplier discoveryClientServiceInstanceListSupplier(
+            ConfigurableApplicationContext context) {
+        return ServiceInstanceListSupplier.builder()
+                //.withDiscoveryClient() // 通过 ReactiveDiscoveryClient 获取 List<ServiceInstance>
+                .withBlockingDiscoveryClient() // 通过 DiscoveryClient 获取 List<ServiceInstance>
+                // 下面配置的是通过什么方式 过滤 List<ServiceInstance>
+                // .withZonePreference() // spring.cloud.loadbalancer.zone" 属性值与 serviceInstance.getMetadata().get("zone") 进行匹配
+                // .withBlockingHealthChecks() // spring.cloud.loadbalancer.healthCheck.* 属性定义的的规则来过滤
+                // .withRequestBasedStickySession() spring.cloud.loadbalancer.stickySession.instanceIdCookieName 属性值过滤 serviceInstance.getInstanceId()
+                // .withSameInstancePreference()
+                .withCaching() // 会使用到 LoadBalancerCacheManager 缓存 List<ServiceInstance>
+                .build(context);
+    }
+
+}
+```
 
 ```java
 /**
@@ -803,15 +948,15 @@ public class LoadBalancerClientConfiguration {
 ```java
 public interface ServiceInstanceListSupplier extends Supplier<Flux<List<ServiceInstance>>> {
 
-   String getServiceId();
+    String getServiceId();
 
-   default Flux<List<ServiceInstance>> get(Request request) {
-      return get();
-   }
+    default Flux<List<ServiceInstance>> get(Request request) {
+        return get();
+    }
 
-   static ServiceInstanceListSupplierBuilder builder() {
-      return new ServiceInstanceListSupplierBuilder();
-   }
+    static ServiceInstanceListSupplierBuilder builder() {
+        return new ServiceInstanceListSupplierBuilder();
+    }
 
 }
 ```
@@ -819,8 +964,6 @@ public interface ServiceInstanceListSupplier extends Supplier<Flux<List<ServiceI
 ### WebClient.Builder 实现负载均衡
 
 WebClient.Builder 是执行响应式请求的工具类。下面是让 WebClient.Builder 具有负载均衡能力的实现逻辑。
-
-[示例代码](https://github.com/haitaoss/spring-cloud-commons/tree/source-v3.1.5/source-note-spring-cloud-commons/src/main/java/cn/haitaoss/ServiceRegisterAndLoadBalance/loadbalancer/LoadBalancerOtherConfig.java)
 
 `spring-cloud-commons.jar!/META-INF/spring.factories`的部分内容
 
