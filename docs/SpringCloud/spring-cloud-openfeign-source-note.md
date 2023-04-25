@@ -344,8 +344,6 @@ public @interface FeignClient {
 
 这是 OpenFeign 提供的工具类，用于快速生成 FeignClient 接口的代理对象。其本质是通过配置 FeignClientFactoryBean 然后执行 [getObject](#FeignClientFactoryBean#getObject) 得到代理对象。
 
-[示例代码](https://github.com/haitaoss/spring-cloud-openfeign/tree/source-v3.1.5/source-note-spring-cloud-openfeign/src/main/java/cn/haitaoss/feign/DynamicFeignClient.java)
-
 ## Targeter
 
 ```java
