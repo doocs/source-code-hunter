@@ -114,7 +114,7 @@ public class GatewayClassPathWarningAutoConfiguration {
 
 可以自定义这些类型的 bean 实现功能的扩展：**RouteLocator**、**HttpHeaderFilter**、**GlobalFilter** 、**GatewayFilterFactory**、**RoutePredicateFactory**
 
-默认通过 @Bean 注册了很多的 GlobalFilter、GatewayFilterFactory、RoutePredicateFactory 且都是有条件注解的，可以通过设置属性不进行默认注册。主要是有这[三个条件注解](#ConditionalOnEnabledGlobalFilter、ConditionalOnEnabledFilter、ConditionalOnEnabledPredicate)
+默认通过 @Bean 注册了很多的 GlobalFilter、GatewayFilterFactory、RoutePredicateFactory 且都是有条件注解的，可以通过设置属性不进行默认注册。主要是有这[三个条件注解](#conditionalonenabledglobalfilterconditionalonenabledfilterconditionalonenabledpredicate)
 
 ```java
 @Configuration(proxyBeanMethods = false)
