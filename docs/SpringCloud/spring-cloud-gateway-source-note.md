@@ -77,18 +77,18 @@ org.springframework.cloud.gateway.mvc.config.ProxyResponseAutoConfiguration
 @ConditionalOnProperty(name = "spring.cloud.gateway.enabled", matchIfMissing = true)
 public class GatewayClassPathWarningAutoConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+    @Configuration(proxyBeanMethods = false)
     // SpringMVC 会存在这个类，所以条件会满足，这个类就会注册到BeanFactory中
-	@ConditionalOnClass(name = "org.springframework.web.servlet.DispatcherServlet")
-	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-	protected static class SpringMvcFoundOnClasspathConfiguration {
+    @ConditionalOnClass(name = "org.springframework.web.servlet.DispatcherServlet")
+    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+    protected static class SpringMvcFoundOnClasspathConfiguration {
 
-		public SpringMvcFoundOnClasspathConfiguration() {
-             // 实例化就直接抛出异常
-			throw new MvcFoundOnClasspathException();
-		}
+        public SpringMvcFoundOnClasspathConfiguration() {
+            // 实例化就直接抛出异常
+            throw new MvcFoundOnClasspathException();
+        }
 
-	}
+    }
 }
 ```
 
@@ -272,34 +272,34 @@ public class GatewayAutoConfiguration {
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(name = "spring.cloud.gateway.enabled", matchIfMissing = true)
 @ConditionalOnClass({ DispatcherHandler.class, ReactiveResilience4JAutoConfiguration.class,
-      ReactiveCircuitBreakerFactory.class, ReactiveResilience4JCircuitBreakerFactory.class })
+        ReactiveCircuitBreakerFactory.class, ReactiveResilience4JCircuitBreakerFactory.class })
 public class GatewayResilience4JCircuitBreakerAutoConfiguration {
 
-   /**
-    * SpringCloudCircuitBreakerResilience4JFilterFactory 实现 GatewayFilterFactory 接口，
-    * 其核心逻辑是使用 ReactiveCircuitBreaker 来执行业务逻辑，当 出现异常 或者 路由请求返回的状态码是期望值 就
-    * 直接使用 DispatcherHandler 来执行 fallbackUrl，可以理解成使用 fallbackUrl 重新执行一次请求。
-    * 并且会往 ServerWebExchange 设置一个key记录异常对象。
-    */
-   @Bean
-   @ConditionalOnBean(ReactiveResilience4JCircuitBreakerFactory.class)
-   @ConditionalOnEnabledFilter
-   public SpringCloudCircuitBreakerResilience4JFilterFactory springCloudCircuitBreakerResilience4JFilterFactory(
-         ReactiveResilience4JCircuitBreakerFactory reactiveCircuitBreakerFactory,
-         ObjectProvider<DispatcherHandler> dispatcherHandler) {
-      return new SpringCloudCircuitBreakerResilience4JFilterFactory(reactiveCircuitBreakerFactory, dispatcherHandler);
-   }
+    /**
+     * SpringCloudCircuitBreakerResilience4JFilterFactory 实现 GatewayFilterFactory 接口，
+     * 其核心逻辑是使用 ReactiveCircuitBreaker 来执行业务逻辑，当 出现异常 或者 路由请求返回的状态码是期望值 就
+     * 直接使用 DispatcherHandler 来执行 fallbackUrl，可以理解成使用 fallbackUrl 重新执行一次请求。
+     * 并且会往 ServerWebExchange 设置一个key记录异常对象。
+     */
+    @Bean
+    @ConditionalOnBean(ReactiveResilience4JCircuitBreakerFactory.class)
+    @ConditionalOnEnabledFilter
+    public SpringCloudCircuitBreakerResilience4JFilterFactory springCloudCircuitBreakerResilience4JFilterFactory(
+            ReactiveResilience4JCircuitBreakerFactory reactiveCircuitBreakerFactory,
+            ObjectProvider<DispatcherHandler> dispatcherHandler) {
+        return new SpringCloudCircuitBreakerResilience4JFilterFactory(reactiveCircuitBreakerFactory, dispatcherHandler);
+    }
 
-   /**
-    * FallbackHeadersGatewayFilterFactory 实现 GatewayFilterFactory 接口，
-    * 其核心逻辑：如果请求是 fallbackUrl 执行的（通过异常key判断），那就设置一些请求头
-    */
-   @Bean
-   @ConditionalOnMissingBean
-   @ConditionalOnEnabledFilter
-   public FallbackHeadersGatewayFilterFactory fallbackHeadersGatewayFilterFactory() {
-      return new FallbackHeadersGatewayFilterFactory();
-   }
+    /**
+     * FallbackHeadersGatewayFilterFactory 实现 GatewayFilterFactory 接口，
+     * 其核心逻辑：如果请求是 fallbackUrl 执行的（通过异常key判断），那就设置一些请求头
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnEnabledFilter
+    public FallbackHeadersGatewayFilterFactory fallbackHeadersGatewayFilterFactory() {
+        return new FallbackHeadersGatewayFilterFactory();
+    }
 
 }
 ```
@@ -314,45 +314,45 @@ public class GatewayResilience4JCircuitBreakerAutoConfiguration {
 @AutoConfigureAfter(GatewayReactiveLoadBalancerClientAutoConfiguration.class)
 public class GatewayNoLoadBalancerClientAutoConfiguration {
 
-   /**
-    * NoLoadBalancerClientFilter 实现 GlobalFilter 接口，也就是每个 Route 的请求都会执行。
-    * 功能：路由的Url 有 lb 前缀 就直接抛出异常，也就是说不支持 负载均衡的路由
-    *
-    * BeanFactory 中没有 ReactiveLoadBalancerClientFilter 才会生效。
-    */
-   @Bean
-   @ConditionalOnMissingBean(ReactiveLoadBalancerClientFilter.class)
-   public NoLoadBalancerClientFilter noLoadBalancerClientFilter(GatewayLoadBalancerProperties properties) {
-      return new NoLoadBalancerClientFilter(properties.isUse404());
-   }
+    /**
+     * NoLoadBalancerClientFilter 实现 GlobalFilter 接口，也就是每个 Route 的请求都会执行。
+     * 功能：路由的Url 有 lb 前缀 就直接抛出异常，也就是说不支持 负载均衡的路由
+     *
+     * BeanFactory 中没有 ReactiveLoadBalancerClientFilter 才会生效。
+     */
+    @Bean
+    @ConditionalOnMissingBean(ReactiveLoadBalancerClientFilter.class)
+    public NoLoadBalancerClientFilter noLoadBalancerClientFilter(GatewayLoadBalancerProperties properties) {
+        return new NoLoadBalancerClientFilter(properties.isUse404());
+    }
 
-   protected static class NoLoadBalancerClientFilter implements GlobalFilter, Ordered {
+    protected static class NoLoadBalancerClientFilter implements GlobalFilter, Ordered {
 
-      private final boolean use404;
+        private final boolean use404;
 
-      public NoLoadBalancerClientFilter(boolean use404) {
-         this.use404 = use404;
-      }
+        public NoLoadBalancerClientFilter(boolean use404) {
+            this.use404 = use404;
+        }
 
-      @Override
-      public int getOrder() {
-         return LOAD_BALANCER_CLIENT_FILTER_ORDER;
-      }
+        @Override
+        public int getOrder() {
+            return LOAD_BALANCER_CLIENT_FILTER_ORDER;
+        }
 
-      @Override
-      @SuppressWarnings("Duplicates")
-      public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-         URI url = exchange.getAttribute(GATEWAY_REQUEST_URL_ATTR);
-         String schemePrefix = exchange.getAttribute(GATEWAY_SCHEME_PREFIX_ATTR);
-         // url 没有 lb 前缀 就放行
-         if (url == null || (!"lb".equals(url.getScheme()) && !"lb".equals(schemePrefix))) {
-            return chain.filter(exchange);
-         }
-         // 不能处理 lb:// 所以 直接报错
-         throw NotFoundException.create(use404, "Unable to find instance for " + url.getHost());
-      }
+        @Override
+        @SuppressWarnings("Duplicates")
+        public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+            URI url = exchange.getAttribute(GATEWAY_REQUEST_URL_ATTR);
+            String schemePrefix = exchange.getAttribute(GATEWAY_SCHEME_PREFIX_ATTR);
+            // url 没有 lb 前缀 就放行
+            if (url == null || (!"lb".equals(url.getScheme()) && !"lb".equals(schemePrefix))) {
+                return chain.filter(exchange);
+            }
+            // 不能处理 lb:// 所以 直接报错
+            throw NotFoundException.create(use404, "Unable to find instance for " + url.getHost());
+        }
 
-   }
+    }
 
 }
 ```
@@ -366,54 +366,54 @@ public class GatewayNoLoadBalancerClientAutoConfiguration {
 @ConditionalOnClass({ DispatcherHandler.class, MeterRegistry.class, MetricsAutoConfiguration.class })
 public class GatewayMetricsAutoConfiguration {
 
-   // 会从 ServerWebExchange 中得到 请求的Method、响应的状态码等
-   @Bean
-   public GatewayHttpTagsProvider gatewayHttpTagsProvider() {
-      return new GatewayHttpTagsProvider();
-   }
+    // 会从 ServerWebExchange 中得到 请求的Method、响应的状态码等
+    @Bean
+    public GatewayHttpTagsProvider gatewayHttpTagsProvider() {
+        return new GatewayHttpTagsProvider();
+    }
 
-   // 会从 ServerWebExchange 中得到 匹配的路由地址
-   @Bean
-   @ConditionalOnProperty(name = GatewayProperties.PREFIX + ".metrics.tags.path.enabled")
-   public GatewayPathTagsProvider gatewayPathTagsProvider() {
-      return new GatewayPathTagsProvider();
-   }
+    // 会从 ServerWebExchange 中得到 匹配的路由地址
+    @Bean
+    @ConditionalOnProperty(name = GatewayProperties.PREFIX + ".metrics.tags.path.enabled")
+    public GatewayPathTagsProvider gatewayPathTagsProvider() {
+        return new GatewayPathTagsProvider();
+    }
 
-   // 会从 ServerWebExchange 中得到 routId、route uri
-   @Bean
-   public GatewayRouteTagsProvider gatewayRouteTagsProvider() {
-      return new GatewayRouteTagsProvider();
-   }
+    // 会从 ServerWebExchange 中得到 routId、route uri
+    @Bean
+    public GatewayRouteTagsProvider gatewayRouteTagsProvider() {
+        return new GatewayRouteTagsProvider();
+    }
 
-   // 将 GatewayMetricsProperties 的信息映射成 Tags
-   @Bean
-   public PropertiesTagsProvider propertiesTagsProvider(GatewayMetricsProperties properties) {
-      return new PropertiesTagsProvider(properties.getTags());
-   }
+    // 将 GatewayMetricsProperties 的信息映射成 Tags
+    @Bean
+    public PropertiesTagsProvider propertiesTagsProvider(GatewayMetricsProperties properties) {
+        return new PropertiesTagsProvider(properties.getTags());
+    }
 
-   /**
-    * GatewayMetricsFilter 实现 GlobalFilter 接口，
-    * 将 List<GatewayTagsProvider> 返回的信息记录到 MeterRegistry 中
-    */
-   @Bean
-   @ConditionalOnBean(MeterRegistry.class)
-   @ConditionalOnProperty(name = GatewayProperties.PREFIX + ".metrics.enabled", matchIfMissing = true)
-   public GatewayMetricsFilter gatewayMetricFilter(MeterRegistry meterRegistry,
-         List<GatewayTagsProvider> tagsProviders, GatewayMetricsProperties properties) {
-      return new GatewayMetricsFilter(meterRegistry, tagsProviders, properties.getPrefix());
-   }
+    /**
+     * GatewayMetricsFilter 实现 GlobalFilter 接口，
+     * 将 List<GatewayTagsProvider> 返回的信息记录到 MeterRegistry 中
+     */
+    @Bean
+    @ConditionalOnBean(MeterRegistry.class)
+    @ConditionalOnProperty(name = GatewayProperties.PREFIX + ".metrics.enabled", matchIfMissing = true)
+    public GatewayMetricsFilter gatewayMetricFilter(MeterRegistry meterRegistry,
+                                                    List<GatewayTagsProvider> tagsProviders, GatewayMetricsProperties properties) {
+        return new GatewayMetricsFilter(meterRegistry, tagsProviders, properties.getPrefix());
+    }
 
-   /**
-    * RouteDefinitionMetrics 实现 ApplicationListener<RefreshRoutesEvent> 接口，
-    * 收到事件的逻辑是 RouteDefinitionLocator.getRouteDefinitions().count() 记录到 MeterRegistry 中
-    */
-   @Bean
-   @ConditionalOnBean(MeterRegistry.class)
-   @ConditionalOnProperty(name = GatewayProperties.PREFIX + ".metrics.enabled", matchIfMissing = true)
-   public RouteDefinitionMetrics routeDefinitionMetrics(MeterRegistry meterRegistry,
-         RouteDefinitionLocator routeDefinitionLocator, GatewayMetricsProperties properties) {
-      return new RouteDefinitionMetrics(meterRegistry, routeDefinitionLocator, properties.getPrefix());
-   }
+    /**
+     * RouteDefinitionMetrics 实现 ApplicationListener<RefreshRoutesEvent> 接口，
+     * 收到事件的逻辑是 RouteDefinitionLocator.getRouteDefinitions().count() 记录到 MeterRegistry 中
+     */
+    @Bean
+    @ConditionalOnBean(MeterRegistry.class)
+    @ConditionalOnProperty(name = GatewayProperties.PREFIX + ".metrics.enabled", matchIfMissing = true)
+    public RouteDefinitionMetrics routeDefinitionMetrics(MeterRegistry meterRegistry,
+                                                         RouteDefinitionLocator routeDefinitionLocator, GatewayMetricsProperties properties) {
+        return new RouteDefinitionMetrics(meterRegistry, routeDefinitionLocator, properties.getPrefix());
+    }
 
 }
 ```
@@ -427,20 +427,20 @@ public class GatewayMetricsAutoConfiguration {
 @ConditionalOnProperty(name = "spring.cloud.gateway.redis.enabled", matchIfMissing = true)
 class GatewayRedisAutoConfiguration {
 
-   /**
-    * RedisRouteDefinitionRepository 实现 RouteDefinitionRepository 接口。
-    * 使用 redis 作为缓存层，存储 RouteDefinition
-    */
-   @Bean
-   @ConditionalOnProperty(value = "spring.cloud.gateway.redis-route-definition-repository.enabled",
-         havingValue = "true")
-   @ConditionalOnClass(ReactiveRedisTemplate.class)
-   public RedisRouteDefinitionRepository redisRouteDefinitionRepository(
-         ReactiveRedisTemplate<String, RouteDefinition> reactiveRedisTemplate) {
-      return new RedisRouteDefinitionRepository(reactiveRedisTemplate);
-   }
+    /**
+     * RedisRouteDefinitionRepository 实现 RouteDefinitionRepository 接口。
+     * 使用 redis 作为缓存层，存储 RouteDefinition
+     */
+    @Bean
+    @ConditionalOnProperty(value = "spring.cloud.gateway.redis-route-definition-repository.enabled",
+            havingValue = "true")
+    @ConditionalOnClass(ReactiveRedisTemplate.class)
+    public RedisRouteDefinitionRepository redisRouteDefinitionRepository(
+            ReactiveRedisTemplate<String, RouteDefinition> reactiveRedisTemplate) {
+        return new RedisRouteDefinitionRepository(reactiveRedisTemplate);
+    }
 
-   // ...
+    // ...
 }
 ```
 
@@ -453,79 +453,79 @@ class GatewayRedisAutoConfiguration {
 @EnableConfigurationProperties
 public class GatewayDiscoveryClientAutoConfiguration {
 
-	/**
-	 * 这是一个 PathRoutePredicateFactory，根据 serviceId 进行路由
-	 * @return
-	 */
-	public static List<PredicateDefinition> initPredicates() {
-		ArrayList<PredicateDefinition> definitions = new ArrayList<>();
-		// TODO: add a predicate that matches the url at /serviceId?
+    /**
+     * 这是一个 PathRoutePredicateFactory，根据 serviceId 进行路由
+     * @return
+     */
+    public static List<PredicateDefinition> initPredicates() {
+        ArrayList<PredicateDefinition> definitions = new ArrayList<>();
+        // TODO: add a predicate that matches the url at /serviceId?
 
-		// add a predicate that matches the url at /serviceId/**
-		PredicateDefinition predicate = new PredicateDefinition();
-		predicate.setName(normalizeRoutePredicateName(PathRoutePredicateFactory.class));
-		predicate.addArg(PATTERN_KEY, "'/'+serviceId+'/**'");
-		definitions.add(predicate);
-		return definitions;
-	}
+        // add a predicate that matches the url at /serviceId/**
+        PredicateDefinition predicate = new PredicateDefinition();
+        predicate.setName(normalizeRoutePredicateName(PathRoutePredicateFactory.class));
+        predicate.addArg(PATTERN_KEY, "'/'+serviceId+'/**'");
+        definitions.add(predicate);
+        return definitions;
+    }
 
-	/**
-	 * 这是一个 RewritePathGatewayFilterFactory，移除 serviceId 路径前缀
-	 * @return
-	 */
-	public static List<FilterDefinition> initFilters() {
-		ArrayList<FilterDefinition> definitions = new ArrayList<>();
+    /**
+     * 这是一个 RewritePathGatewayFilterFactory，移除 serviceId 路径前缀
+     * @return
+     */
+    public static List<FilterDefinition> initFilters() {
+        ArrayList<FilterDefinition> definitions = new ArrayList<>();
 
-		// add a filter that removes /serviceId by default
-		FilterDefinition filter = new FilterDefinition();
-		filter.setName(normalizeFilterFactoryName(RewritePathGatewayFilterFactory.class));
-		String regex = "'/' + serviceId + '/?(?<remaining>.*)'";
-		String replacement = "'/${remaining}'";
-		filter.addArg(REGEXP_KEY, regex);
-		filter.addArg(REPLACEMENT_KEY, replacement);
-		definitions.add(filter);
+        // add a filter that removes /serviceId by default
+        FilterDefinition filter = new FilterDefinition();
+        filter.setName(normalizeFilterFactoryName(RewritePathGatewayFilterFactory.class));
+        String regex = "'/' + serviceId + '/?(?<remaining>.*)'";
+        String replacement = "'/${remaining}'";
+        filter.addArg(REGEXP_KEY, regex);
+        filter.addArg(REPLACEMENT_KEY, replacement);
+        definitions.add(filter);
 
-		return definitions;
-	}
+        return definitions;
+    }
 
-	/**
-	 * DiscoveryLocatorProperties 类上标注了 @ConfigurationProperties("spring.cloud.gateway.discovery.locator")
-	 * 也就是可以通过配置属性的方式设置属性值，下面的逻辑是设置默认值的意思。
-	 * DiscoveryClientRouteDefinitionLocator 会使用这两个属性会作为生成 RouteDefinition 的 Predicate 和 Filter
-	 * @return
-	 */
-	@Bean
-	public DiscoveryLocatorProperties discoveryLocatorProperties() {
-		DiscoveryLocatorProperties properties = new DiscoveryLocatorProperties();
-		// 默认就设置 PathRoutePredicateFactory
-		properties.setPredicates(initPredicates());
-		// 默认就设置 RewritePathGatewayFilterFactory
-		properties.setFilters(initFilters());
-		return properties;
-	}
+    /**
+     * DiscoveryLocatorProperties 类上标注了 @ConfigurationProperties("spring.cloud.gateway.discovery.locator")
+     * 也就是可以通过配置属性的方式设置属性值，下面的逻辑是设置默认值的意思。
+     * DiscoveryClientRouteDefinitionLocator 会使用这两个属性会作为生成 RouteDefinition 的 Predicate 和 Filter
+     * @return
+     */
+    @Bean
+    public DiscoveryLocatorProperties discoveryLocatorProperties() {
+        DiscoveryLocatorProperties properties = new DiscoveryLocatorProperties();
+        // 默认就设置 PathRoutePredicateFactory
+        properties.setPredicates(initPredicates());
+        // 默认就设置 RewritePathGatewayFilterFactory
+        properties.setFilters(initFilters());
+        return properties;
+    }
 
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(value = "spring.cloud.discovery.reactive.enabled", matchIfMissing = true)
-	public static class ReactiveDiscoveryClientRouteDefinitionLocatorConfiguration {
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnProperty(value = "spring.cloud.discovery.reactive.enabled", matchIfMissing = true)
+    public static class ReactiveDiscoveryClientRouteDefinitionLocatorConfiguration {
 
-		/**
-		 * DiscoveryClientRouteDefinitionLocator 实现 RouteDefinitionLocator。
-		 * 会根据 ReactiveDiscoveryClient.getServices() 返回的 Flux<ServiceInstance> 生成 Flux<RouteDefinition>
-		 * 每个 RouteDefinition 是由 ServiceInstance + DiscoveryLocatorProperties 的内容 配置 路由Uri、Predicate、Filter
-		 * 大部分属性值是通过解析 SPEL 表达式得到的，其中根对象是 ServiceInstance，所以说 编写的 SPEL 表达式可以引用 ServiceInstance 中的属性
-		 *
-		 * @param discoveryClient
-		 * @param properties
-		 * @return
-		 */
-		@Bean
-		@ConditionalOnProperty(name = "spring.cloud.gateway.discovery.locator.enabled")
-		public DiscoveryClientRouteDefinitionLocator discoveryClientRouteDefinitionLocator(
-				ReactiveDiscoveryClient discoveryClient, DiscoveryLocatorProperties properties) {
-			return new DiscoveryClientRouteDefinitionLocator(discoveryClient, properties);
-		}
+        /**
+         * DiscoveryClientRouteDefinitionLocator 实现 RouteDefinitionLocator。
+         * 会根据 ReactiveDiscoveryClient.getServices() 返回的 Flux<ServiceInstance> 生成 Flux<RouteDefinition>
+         * 每个 RouteDefinition 是由 ServiceInstance + DiscoveryLocatorProperties 的内容 配置 路由Uri、Predicate、Filter
+         * 大部分属性值是通过解析 SPEL 表达式得到的，其中根对象是 ServiceInstance，所以说 编写的 SPEL 表达式可以引用 ServiceInstance 中的属性
+         *
+         * @param discoveryClient
+         * @param properties
+         * @return
+         */
+        @Bean
+        @ConditionalOnProperty(name = "spring.cloud.gateway.discovery.locator.enabled")
+        public DiscoveryClientRouteDefinitionLocator discoveryClientRouteDefinitionLocator(
+                ReactiveDiscoveryClient discoveryClient, DiscoveryLocatorProperties properties) {
+            return new DiscoveryClientRouteDefinitionLocator(discoveryClient, properties);
+        }
 
-	}
+    }
 
 }
 ```
@@ -536,22 +536,22 @@ public class GatewayDiscoveryClientAutoConfiguration {
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(SimpleUrlHandlerMapping.class)
 @ConditionalOnProperty(name = "spring.cloud.gateway.globalcors.add-to-simple-url-handler-mapping",
-      matchIfMissing = false)
+        matchIfMissing = false)
 public class SimpleUrlHandlerMappingGlobalCorsAutoConfiguration {
 
-   @Autowired
-   private GlobalCorsProperties globalCorsProperties;
+    @Autowired
+    private GlobalCorsProperties globalCorsProperties;
 
-   @Autowired
-   private SimpleUrlHandlerMapping simpleUrlHandlerMapping;
+    @Autowired
+    private SimpleUrlHandlerMapping simpleUrlHandlerMapping;
 
-   /**
-    * 为 SimpleUrlHandlerMapping 配置 跨域配置信息
-    */
-   @PostConstruct
-   void config() {
-      simpleUrlHandlerMapping.setCorsConfigurations(globalCorsProperties.getCorsConfigurations());
-   }
+    /**
+     * 为 SimpleUrlHandlerMapping 配置 跨域配置信息
+     */
+    @PostConstruct
+    void config() {
+        simpleUrlHandlerMapping.setCorsConfigurations(globalCorsProperties.getCorsConfigurations());
+    }
 
 }
 ```
@@ -564,31 +564,31 @@ public class SimpleUrlHandlerMappingGlobalCorsAutoConfiguration {
 @EnableConfigurationProperties(GatewayLoadBalancerProperties.class)
 public class GatewayReactiveLoadBalancerClientAutoConfiguration {
 
-   /**
-    * ReactiveLoadBalancerClientFilter 实现 GlobalFilter 接口。
-    * 作用：url 没有 lb 协议 就放行，有 lb 就使用 LoadBalancerClientFactory 得到负载均衡后的 uri，修改 ServerWebExchange 放行filter
-    */
-   @Bean
-   @ConditionalOnBean(LoadBalancerClientFactory.class)
-   @ConditionalOnMissingBean(ReactiveLoadBalancerClientFilter.class)
-   @ConditionalOnEnabledGlobalFilter
-   public ReactiveLoadBalancerClientFilter gatewayLoadBalancerClientFilter(LoadBalancerClientFactory clientFactory,
-         GatewayLoadBalancerProperties properties) {
-      return new ReactiveLoadBalancerClientFilter(clientFactory, properties);
-   }
+    /**
+     * ReactiveLoadBalancerClientFilter 实现 GlobalFilter 接口。
+     * 作用：url 没有 lb 协议 就放行，有 lb 就使用 LoadBalancerClientFactory 得到负载均衡后的 uri，修改 ServerWebExchange 放行filter
+     */
+    @Bean
+    @ConditionalOnBean(LoadBalancerClientFactory.class)
+    @ConditionalOnMissingBean(ReactiveLoadBalancerClientFilter.class)
+    @ConditionalOnEnabledGlobalFilter
+    public ReactiveLoadBalancerClientFilter gatewayLoadBalancerClientFilter(LoadBalancerClientFactory clientFactory,
+                                                                            GatewayLoadBalancerProperties properties) {
+        return new ReactiveLoadBalancerClientFilter(clientFactory, properties);
+    }
 
-   /**
-    * LoadBalancerServiceInstanceCookieFilter 实现 GlobalFilter 接口
-    * 作用：是负载均衡的路由，就添加一个Cookie键值对
-    */
-   @Bean
-   @ConditionalOnBean({ ReactiveLoadBalancerClientFilter.class, LoadBalancerClientFactory.class })
-   @ConditionalOnMissingBean
-   @ConditionalOnEnabledGlobalFilter
-   public LoadBalancerServiceInstanceCookieFilter loadBalancerServiceInstanceCookieFilter(
-         LoadBalancerClientFactory loadBalancerClientFactory) {
-      return new LoadBalancerServiceInstanceCookieFilter(loadBalancerClientFactory);
-   }
+    /**
+     * LoadBalancerServiceInstanceCookieFilter 实现 GlobalFilter 接口
+     * 作用：是负载均衡的路由，就添加一个Cookie键值对
+     */
+    @Bean
+    @ConditionalOnBean({ ReactiveLoadBalancerClientFilter.class, LoadBalancerClientFactory.class })
+    @ConditionalOnMissingBean
+    @ConditionalOnEnabledGlobalFilter
+    public LoadBalancerServiceInstanceCookieFilter loadBalancerServiceInstanceCookieFilter(
+            LoadBalancerClientFactory loadBalancerClientFactory) {
+        return new LoadBalancerServiceInstanceCookieFilter(loadBalancerClientFactory);
+    }
 
 }
 ```
@@ -615,19 +615,19 @@ ProxyResponseAutoConfiguration 是 HandlerMethodArgumentResolver 接口的实现
 @Retention(RetentionPolicy.RUNTIME)@Target({ ElementType.TYPE, ElementType.METHOD })
 @Conditional(OnEnabledGlobalFilter.class)
 public @interface ConditionalOnEnabledGlobalFilter {
-	Class<? extends GlobalFilter> value() default OnEnabledGlobalFilter.DefaultValue.class;
+    Class<? extends GlobalFilter> value() default OnEnabledGlobalFilter.DefaultValue.class;
 }
 
 @Retention(RetentionPolicy.RUNTIME)@Target({ ElementType.TYPE, ElementType.METHOD })
 @Conditional(OnEnabledFilter.class)
 public @interface ConditionalOnEnabledFilter {
-	Class<? extends GatewayFilterFactory<?>> value() default OnEnabledFilter.DefaultValue.class;
+    Class<? extends GatewayFilterFactory<?>> value() default OnEnabledFilter.DefaultValue.class;
 }
 
 @Retention(RetentionPolicy.RUNTIME)@Target({ ElementType.TYPE, ElementType.METHOD })
 @Conditional(OnEnabledPredicate.class)
 public @interface ConditionalOnEnabledPredicate {
-	Class<? extends RoutePredicateFactory<?>> value() default OnEnabledPredicate.DefaultValue.class;
+    Class<? extends RoutePredicateFactory<?>> value() default OnEnabledPredicate.DefaultValue.class;
 }
 ```
 
@@ -667,40 +667,40 @@ spring.cloud.gateway.predicate.XX.enabled=false
 ```java
 public class NettyRoutingFilter implements GlobalFilter, Ordered {
 
-   @Override
-   public int getOrder() {
-      return Integer.MAX_VALUE; // 最大值，说明这是最后要执行的 GatewayFilter
-   }
+    @Override
+    public int getOrder() {
+        return Integer.MAX_VALUE; // 最大值，说明这是最后要执行的 GatewayFilter
+    }
 
-   @Override
-   @SuppressWarnings("Duplicates")
-   public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-      URI requestUrl = exchange.getRequiredAttribute(GATEWAY_REQUEST_URL_ATTR);
+    @Override
+    @SuppressWarnings("Duplicates")
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        URI requestUrl = exchange.getRequiredAttribute(GATEWAY_REQUEST_URL_ATTR);
 
-      String scheme = requestUrl.getScheme();
-      // 已经路由 或者 不是 http、https 就放行
-      if (isAlreadyRouted(exchange) || (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme))) {
-         return chain.filter(exchange);
-      }
-      // 设置一个属性，标记 已经路由了
-      setAlreadyRouted(exchange);
+        String scheme = requestUrl.getScheme();
+        // 已经路由 或者 不是 http、https 就放行
+        if (isAlreadyRouted(exchange) || (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme))) {
+            return chain.filter(exchange);
+        }
+        // 设置一个属性，标记 已经路由了
+        setAlreadyRouted(exchange);
 
-      /**
-       * 遍历执行所有的 HttpHeadersFilter 得到 HttpHeaders。
-       * 也就是说可以对最终要执行的 请求头 进行加工
-       *
-       * 注：HttpHeadersFilter 是从BeanFactory中获取的，所以我们可以自定义 HttpHeadersFilter 达到扩展的目的
-       * */
-      HttpHeaders filtered = filterRequest(getHeadersFilters(), exchange);
+        /**
+         * 遍历执行所有的 HttpHeadersFilter 得到 HttpHeaders。
+         * 也就是说可以对最终要执行的 请求头 进行加工
+         *
+         * 注：HttpHeadersFilter 是从BeanFactory中获取的，所以我们可以自定义 HttpHeadersFilter 达到扩展的目的
+         * */
+        HttpHeaders filtered = filterRequest(getHeadersFilters(), exchange);
 
-      // 根据 Route 的元数据构造 HttpClient 然后执行请求
-      Flux<HttpClientResponse> responseFlux = getHttpClient(route, exchange)
-            .headers()
-            .responseConnection((res, connection) -> {});
+        // 根据 Route 的元数据构造 HttpClient 然后执行请求
+        Flux<HttpClientResponse> responseFlux = getHttpClient(route, exchange)
+                .headers()
+                .responseConnection((res, connection) -> {});
 
-      // 放行
-      return responseFlux.then(chain.filter(exchange));
-   }
+        // 放行
+        return responseFlux.then(chain.filter(exchange));
+    }
 
 }
 ```
@@ -711,42 +711,42 @@ public class NettyRoutingFilter implements GlobalFilter, Ordered {
 
 ```java
 public class WebsocketRoutingFilter implements GlobalFilter, Ordered {
-   @Override
-   public int getOrder() {
-      // 在 NettyRoutingFilter 之前执行
-      return Integer.MAX_VALUE - 1;
-   }
+    @Override
+    public int getOrder() {
+        // 在 NettyRoutingFilter 之前执行
+        return Integer.MAX_VALUE - 1;
+    }
 
-   @Override
-   public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-      // 有请求头 upgrade=WebSocket ，那就将 http、https 转成 ws、wss 协议
-      changeSchemeIfIsWebSocketUpgrade(exchange);
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        // 有请求头 upgrade=WebSocket ，那就将 http、https 转成 ws、wss 协议
+        changeSchemeIfIsWebSocketUpgrade(exchange);
 
-      URI requestUrl = exchange.getRequiredAttribute(GATEWAY_REQUEST_URL_ATTR);
-      String scheme = requestUrl.getScheme();
+        URI requestUrl = exchange.getRequiredAttribute(GATEWAY_REQUEST_URL_ATTR);
+        String scheme = requestUrl.getScheme();
 
-      // 已经路由过 或者 不是 ws、wss 协议 就放行
-      if (isAlreadyRouted(exchange) || (!"ws".equals(scheme) && !"wss".equals(scheme))) {
-         return chain.filter(exchange);
-      }
-      // 标记路由了
-      setAlreadyRouted(exchange);
+        // 已经路由过 或者 不是 ws、wss 协议 就放行
+        if (isAlreadyRouted(exchange) || (!"ws".equals(scheme) && !"wss".equals(scheme))) {
+            return chain.filter(exchange);
+        }
+        // 标记路由了
+        setAlreadyRouted(exchange);
 
-      HttpHeaders headers = exchange.getRequest().getHeaders();
-      /**
-       * 遍历执行所有的 HttpHeadersFilter 得到 HttpHeaders。
-       * 也就是说可以对最终要执行的 请求头 进行加工
-       *
-       * 注：HttpHeadersFilter 是从BeanFactory中获取的，所以我们可以自定义 HttpHeadersFilter 达到扩展的目的
-       * */
-      HttpHeaders filtered = filterRequest(getHeadersFilters(), exchange);
+        HttpHeaders headers = exchange.getRequest().getHeaders();
+        /**
+         * 遍历执行所有的 HttpHeadersFilter 得到 HttpHeaders。
+         * 也就是说可以对最终要执行的 请求头 进行加工
+         *
+         * 注：HttpHeadersFilter 是从BeanFactory中获取的，所以我们可以自定义 HttpHeadersFilter 达到扩展的目的
+         * */
+        HttpHeaders filtered = filterRequest(getHeadersFilters(), exchange);
 
-      List<String> protocols = getProtocols(headers);
+        List<String> protocols = getProtocols(headers);
 
-      // 使用 webSocketService 执行请求。且不在执行后续的filter
-      return this.webSocketService.handleRequest(exchange,
-            new ProxyWebSocketHandler(requestUrl, this.webSocketClient, filtered, protocols));
-   }
+        // 使用 webSocketService 执行请求。且不在执行后续的filter
+        return this.webSocketService.handleRequest(exchange,
+                new ProxyWebSocketHandler(requestUrl, this.webSocketClient, filtered, protocols));
+    }
 }
 ```
 
@@ -760,72 +760,72 @@ RoutePredicateHandlerMapping 是由 [GatewayAutoConfiguration](#GatewayAutoConfi
 
 ```java
 public class RoutePredicateHandlerMapping extends AbstractHandlerMapping {
-   /**
-    * 通过依赖注入得到这些bean
-    */
-   public RoutePredicateHandlerMapping(FilteringWebHandler webHandler, RouteLocator routeLocator,
-         GlobalCorsProperties globalCorsProperties, Environment environment) {
-      this.webHandler = webHandler;
-      this.routeLocator = routeLocator;
-      /**
-       * 获取属性作为 order 值，默认是1。从而决定是 DispatcherHandler 使用的第几个 HandlerMapping，
-       * 因为 HandlerMapping 的特点是能处理就使用，不在使用其他的 HandlerMapping，所以优先级是很重要的。
-       * */
-      setOrder(environment.getProperty(GatewayProperties.PREFIX + ".handler-mapping.order", Integer.class, 1));
-      // 设置同源配置信息
-      setCorsConfigurations(globalCorsProperties.getCorsConfigurations());
-   }
+    /**
+     * 通过依赖注入得到这些bean
+     */
+    public RoutePredicateHandlerMapping(FilteringWebHandler webHandler, RouteLocator routeLocator,
+                                        GlobalCorsProperties globalCorsProperties, Environment environment) {
+        this.webHandler = webHandler;
+        this.routeLocator = routeLocator;
+        /**
+         * 获取属性作为 order 值，默认是1。从而决定是 DispatcherHandler 使用的第几个 HandlerMapping，
+         * 因为 HandlerMapping 的特点是能处理就使用，不在使用其他的 HandlerMapping，所以优先级是很重要的。
+         * */
+        setOrder(environment.getProperty(GatewayProperties.PREFIX + ".handler-mapping.order", Integer.class, 1));
+        // 设置同源配置信息
+        setCorsConfigurations(globalCorsProperties.getCorsConfigurations());
+    }
 
-   /**
-    * 返回值不是 Mono.empty() 就表示 RoutePredicateHandlerMapping 命中了，
-    * 就会执行 HandlerAdapter.handle(serverWebExchange,webHandler)
-    */
-   @Override
-   protected Mono<?> getHandlerInternal(ServerWebExchange exchange) {
-      // 设置一个属性
-      exchange.getAttributes().put(GATEWAY_HANDLER_MAPPER_ATTR, getSimpleName());
-      /**
-       * 使用 routeLocator 得到 List<Route> 遍历
-       * */
-      return lookupRoute(exchange)
-            .flatMap((Function<Route, Mono<?>>) r -> {
-               exchange.getAttributes().remove(GATEWAY_PREDICATE_ROUTE_ATTR);
-               /**
-                * 将 Route 设置到 exchange 中
-                *
-                * 后续流程会用到
-                *        {@link FilteringWebHandler#handle(ServerWebExchange)}
-                * */
-               exchange.getAttributes().put(GATEWAY_ROUTE_ATTR, r);
-               /**
-                * 会由 SimpleHandlerAdapter 处理
-                * */
-               return Mono.just(webHandler);
-            }).switchIfEmpty(Mono.empty().then(Mono.fromRunnable(() -> {
-               exchange.getAttributes().remove(GATEWAY_PREDICATE_ROUTE_ATTR);
-            })));
-   }
+    /**
+     * 返回值不是 Mono.empty() 就表示 RoutePredicateHandlerMapping 命中了，
+     * 就会执行 HandlerAdapter.handle(serverWebExchange,webHandler)
+     */
+    @Override
+    protected Mono<?> getHandlerInternal(ServerWebExchange exchange) {
+        // 设置一个属性
+        exchange.getAttributes().put(GATEWAY_HANDLER_MAPPER_ATTR, getSimpleName());
+        /**
+         * 使用 routeLocator 得到 List<Route> 遍历
+         * */
+        return lookupRoute(exchange)
+                .flatMap((Function<Route, Mono<?>>) r -> {
+                    exchange.getAttributes().remove(GATEWAY_PREDICATE_ROUTE_ATTR);
+                    /**
+                     * 将 Route 设置到 exchange 中
+                     *
+                     * 后续流程会用到
+                     *        {@link FilteringWebHandler#handle(ServerWebExchange)}
+                     * */
+                    exchange.getAttributes().put(GATEWAY_ROUTE_ATTR, r);
+                    /**
+                     * 会由 SimpleHandlerAdapter 处理
+                     * */
+                    return Mono.just(webHandler);
+                }).switchIfEmpty(Mono.empty().then(Mono.fromRunnable(() -> {
+                    exchange.getAttributes().remove(GATEWAY_PREDICATE_ROUTE_ATTR);
+                })));
+    }
 
-   protected Mono<Route> lookupRoute(ServerWebExchange exchange) {
-      /**
-       * 得到 Route，根据 Route 的 Predicate 决定是否匹配
-       * */
-      return this.routeLocator.getRoutes()
-            /**
-             * concatMap 的特点是 返回的内容不是 Mono.empty() 、Flux.empty() 才收集到 Flux 中
-             * */
-            .concatMap(route -> Mono.just(route).filterWhen(r -> {
-               // exchange 中存一下 routeId
-               exchange.getAttributes().put(GATEWAY_PREDICATE_ROUTE_ATTR, r.getId());
-               /**
-                * 执行谓词
-                * {@link AsyncPredicate.AndAsyncPredicate#apply(Object)}
-                * */
-               return r.getPredicate().apply(exchange);
-            }).onErrorResume(e -> Mono.empty()))
-            // 拿到第一个。所以 Route 的顺序会决定最终的方法的执行
-            .next();
-   }
+    protected Mono<Route> lookupRoute(ServerWebExchange exchange) {
+        /**
+         * 得到 Route，根据 Route 的 Predicate 决定是否匹配
+         * */
+        return this.routeLocator.getRoutes()
+                /**
+                 * concatMap 的特点是 返回的内容不是 Mono.empty() 、Flux.empty() 才收集到 Flux 中
+                 * */
+                .concatMap(route -> Mono.just(route).filterWhen(r -> {
+                    // exchange 中存一下 routeId
+                    exchange.getAttributes().put(GATEWAY_PREDICATE_ROUTE_ATTR, r.getId());
+                    /**
+                     * 执行谓词
+                     * {@link AsyncPredicate.AndAsyncPredicate#apply(Object)}
+                     * */
+                    return r.getPredicate().apply(exchange);
+                }).onErrorResume(e -> Mono.empty()))
+                // 拿到第一个。所以 Route 的顺序会决定最终的方法的执行
+                .next();
+    }
 
 }
 ```
@@ -853,7 +853,7 @@ public class CachingRouteLocator
     private ApplicationEventPublisher applicationEventPublisher;
 
     public CachingRouteLocator(RouteLocator delegate) {
-	    // 是这个 CompositeRouteLocator
+        // 是这个 CompositeRouteLocator
         this.delegate = delegate;
         // 使用 ConcurrentHashMap 缓存 Route，缓存中没有就执行 fetch 方法得到
         routes = CacheFlux.lookup(cache, CACHE_KEY, Route.class).onCacheMissResume(this::fetch);
@@ -900,191 +900,191 @@ RouteDefinitionRouteLocator 是由 [GatewayAutoConfiguration](#GatewayAutoConfig
 
 ```java
 public class RouteDefinitionRouteLocator implements RouteLocator {
-   /**
-    * 通过依赖注入得到
-    */
-   public RouteDefinitionRouteLocator(RouteDefinitionLocator routeDefinitionLocator,
-         List<RoutePredicateFactory> predicates, List<GatewayFilterFactory> gatewayFilterFactories,
-         GatewayProperties gatewayProperties, ConfigurationService configurationService) {
-      this.routeDefinitionLocator = routeDefinitionLocator;
-      this.configurationService = configurationService;
-      /**
-       * 将 List 转成 Map，key 是执行 {@link RoutePredicateFactory#name()} 得到的。
-       * 默认的逻辑是 类名去除 RoutePredicateFactory
-       * 比如 AddHeadRoutePredicateFactory 的key是 AddHead
-       * */
-      initFactories(predicates);
-      /**
-       * 逻辑同上 {@link GatewayFilterFactory#name()}
-       * 默认的逻辑是 类名去除 GatewayFilterFactory
-       * 比如 AddRequestHeaderGatewayFilterFactory 的key是 AddRequestHeader
-       * */
-      gatewayFilterFactories.forEach(factory -> this.gatewayFilterFactories.put(factory.name(), factory));
-      this.gatewayProperties = gatewayProperties;
-   }
+    /**
+     * 通过依赖注入得到
+     */
+    public RouteDefinitionRouteLocator(RouteDefinitionLocator routeDefinitionLocator,
+                                       List<RoutePredicateFactory> predicates, List<GatewayFilterFactory> gatewayFilterFactories,
+                                       GatewayProperties gatewayProperties, ConfigurationService configurationService) {
+        this.routeDefinitionLocator = routeDefinitionLocator;
+        this.configurationService = configurationService;
+        /**
+         * 将 List 转成 Map，key 是执行 {@link RoutePredicateFactory#name()} 得到的。
+         * 默认的逻辑是 类名去除 RoutePredicateFactory
+         * 比如 AddHeadRoutePredicateFactory 的key是 AddHead
+         * */
+        initFactories(predicates);
+        /**
+         * 逻辑同上 {@link GatewayFilterFactory#name()}
+         * 默认的逻辑是 类名去除 GatewayFilterFactory
+         * 比如 AddRequestHeaderGatewayFilterFactory 的key是 AddRequestHeader
+         * */
+        gatewayFilterFactories.forEach(factory -> this.gatewayFilterFactories.put(factory.name(), factory));
+        this.gatewayProperties = gatewayProperties;
+    }
 
-   @Override
-   public Flux<Route> getRoutes() {
-      /**
-       * 通过 RouteDefinitionLocator 得到 RouteDefinition ，然后根据 RouteDefinition 转成 Route
-       * */
-      Flux<Route> routes = this.routeDefinitionLocator.getRouteDefinitions().map(this::convertToRoute);
-      return routes;
-   }
+    @Override
+    public Flux<Route> getRoutes() {
+        /**
+         * 通过 RouteDefinitionLocator 得到 RouteDefinition ，然后根据 RouteDefinition 转成 Route
+         * */
+        Flux<Route> routes = this.routeDefinitionLocator.getRouteDefinitions().map(this::convertToRoute);
+        return routes;
+    }
 
-   private Route convertToRoute(RouteDefinition routeDefinition) {
-      /**
-       * 会根据定义 predicates 的顺序，遍历处理。根据 predicate.getName() 找到 RoutePredicateFactory，
-       * 再使用 factory 生成 AsyncPredicate
-       * */
-      AsyncPredicate<ServerWebExchange> predicate = combinePredicates(routeDefinition);
-      /**
-       * 先处理通过属性定义的 默认Filter（spring.cloud.gateway.defaultFilters），再根据定义 filters 的顺序，遍历处理。根据 filter.getName() 找到 GatewayFilterFactory，
-       * 再使用 factory 生成 GatewayFilter
-       *
-       * 最后会根据 order 进行排序。
-       * */
-      List<GatewayFilter> gatewayFilters = getFilters(routeDefinition);
+    private Route convertToRoute(RouteDefinition routeDefinition) {
+        /**
+         * 会根据定义 predicates 的顺序，遍历处理。根据 predicate.getName() 找到 RoutePredicateFactory，
+         * 再使用 factory 生成 AsyncPredicate
+         * */
+        AsyncPredicate<ServerWebExchange> predicate = combinePredicates(routeDefinition);
+        /**
+         * 先处理通过属性定义的 默认Filter（spring.cloud.gateway.defaultFilters），再根据定义 filters 的顺序，遍历处理。根据 filter.getName() 找到 GatewayFilterFactory，
+         * 再使用 factory 生成 GatewayFilter
+         *
+         * 最后会根据 order 进行排序。
+         * */
+        List<GatewayFilter> gatewayFilters = getFilters(routeDefinition);
 
-      // 构造出 Route
-      return Route.async(routeDefinition).asyncPredicate(predicate).replaceFilters(gatewayFilters).build();
-   }
+        // 构造出 Route
+        return Route.async(routeDefinition).asyncPredicate(predicate).replaceFilters(gatewayFilters).build();
+    }
 
-   @SuppressWarnings("unchecked")
-   List<GatewayFilter> loadGatewayFilters(String id, List<FilterDefinition> filterDefinitions) {
-      ArrayList<GatewayFilter> ordered = new ArrayList<>(filterDefinitions.size());
-      for (int i = 0; i < filterDefinitions.size(); i++) {
-         FilterDefinition definition = filterDefinitions.get(i);
-         // 根据 definition.getName() 拿到 GatewayFilterFactory
-         GatewayFilterFactory factory = this.gatewayFilterFactories.get(definition.getName());
-         if (factory == null) {
-            throw new IllegalArgumentException(
-                  "Unable to find GatewayFilterFactory with name " + definition.getName());
-         }
+    @SuppressWarnings("unchecked")
+    List<GatewayFilter> loadGatewayFilters(String id, List<FilterDefinition> filterDefinitions) {
+        ArrayList<GatewayFilter> ordered = new ArrayList<>(filterDefinitions.size());
+        for (int i = 0; i < filterDefinitions.size(); i++) {
+            FilterDefinition definition = filterDefinitions.get(i);
+            // 根据 definition.getName() 拿到 GatewayFilterFactory
+            GatewayFilterFactory factory = this.gatewayFilterFactories.get(definition.getName());
+            if (factory == null) {
+                throw new IllegalArgumentException(
+                        "Unable to find GatewayFilterFactory with name " + definition.getName());
+            }
 
-         /**
-          * 使用 configurationService 生成 configuration
-          *
-          * 和这个是一样的的，看这里就知道了
-          *        {@link RouteDefinitionRouteLocator#lookup(RouteDefinition, PredicateDefinition)}
-          * */
-         // @formatter:off
-         Object configuration = this.configurationService.with(factory)
-               .name(definition.getName())
-               .properties(definition.getArgs())
-               .eventFunction((bound, properties) -> new FilterArgsEvent(
-                     // TODO: why explicit cast needed or java compile fails
-                     RouteDefinitionRouteLocator.this, id, (Map<String, Object>) properties))
-               .bind();
-         // @formatter:on
+            /**
+             * 使用 configurationService 生成 configuration
+             *
+             * 和这个是一样的的，看这里就知道了
+             *        {@link RouteDefinitionRouteLocator#lookup(RouteDefinition, PredicateDefinition)}
+             * */
+            // @formatter:off
+            Object configuration = this.configurationService.with(factory)
+                    .name(definition.getName())
+                    .properties(definition.getArgs())
+                    .eventFunction((bound, properties) -> new FilterArgsEvent(
+                            // TODO: why explicit cast needed or java compile fails
+                            RouteDefinitionRouteLocator.this, id, (Map<String, Object>) properties))
+                    .bind();
+            // @formatter:on
 
-         if (configuration instanceof HasRouteId) {
-            HasRouteId hasRouteId = (HasRouteId) configuration;
-            // 设置 routeId
-            hasRouteId.setRouteId(id);
-         }
+            if (configuration instanceof HasRouteId) {
+                HasRouteId hasRouteId = (HasRouteId) configuration;
+                // 设置 routeId
+                hasRouteId.setRouteId(id);
+            }
 
-         // factory 根据 configuration 生成 GatewayFilter
-         GatewayFilter gatewayFilter = factory.apply(configuration);
-         if (gatewayFilter instanceof Ordered) {
-            ordered.add(gatewayFilter);
-         }
-         else {
-            // 默认的 order 值 就是 定义 filter 的顺序
-            ordered.add(new OrderedGatewayFilter(gatewayFilter, i + 1));
-         }
-      }
+            // factory 根据 configuration 生成 GatewayFilter
+            GatewayFilter gatewayFilter = factory.apply(configuration);
+            if (gatewayFilter instanceof Ordered) {
+                ordered.add(gatewayFilter);
+            }
+            else {
+                // 默认的 order 值 就是 定义 filter 的顺序
+                ordered.add(new OrderedGatewayFilter(gatewayFilter, i + 1));
+            }
+        }
 
-      return ordered;
-   }
+        return ordered;
+    }
 
-   private List<GatewayFilter> getFilters(RouteDefinition routeDefinition) {
-      List<GatewayFilter> filters = new ArrayList<>();
+    private List<GatewayFilter> getFilters(RouteDefinition routeDefinition) {
+        List<GatewayFilter> filters = new ArrayList<>();
 
-      if (!this.gatewayProperties.getDefaultFilters().isEmpty()) {
-         /**
-          * 先添加通过属性定义的默认Filter
-          * spring.cloud.gateway.defaultFilters=[f1,f2]
-          * */
-         filters.addAll(loadGatewayFilters(routeDefinition.getId(),
-               new ArrayList<>(this.gatewayProperties.getDefaultFilters())));
-      }
+        if (!this.gatewayProperties.getDefaultFilters().isEmpty()) {
+            /**
+             * 先添加通过属性定义的默认Filter
+             * spring.cloud.gateway.defaultFilters=[f1,f2]
+             * */
+            filters.addAll(loadGatewayFilters(routeDefinition.getId(),
+                    new ArrayList<>(this.gatewayProperties.getDefaultFilters())));
+        }
 
-      final List<FilterDefinition> definitionFilters = routeDefinition.getFilters();
-      if (!CollectionUtils.isEmpty(definitionFilters)) {
-         // 再添加 RouteDefinition 定义的 filter
-         filters.addAll(loadGatewayFilters(routeDefinition.getId(), definitionFilters));
-      }
+        final List<FilterDefinition> definitionFilters = routeDefinition.getFilters();
+        if (!CollectionUtils.isEmpty(definitionFilters)) {
+            // 再添加 RouteDefinition 定义的 filter
+            filters.addAll(loadGatewayFilters(routeDefinition.getId(), definitionFilters));
+        }
 
-      // 排序
-      AnnotationAwareOrderComparator.sort(filters);
-      return filters;
-   }
+        // 排序
+        AnnotationAwareOrderComparator.sort(filters);
+        return filters;
+    }
 
-   private AsyncPredicate<ServerWebExchange> combinePredicates(RouteDefinition routeDefinition) {
-      List<PredicateDefinition> predicates = routeDefinition.getPredicates();
-      // routeDefinition 没有定义 predicate ，就设置一个返回 ture 的 AsyncPredicate
-      if (predicates == null || predicates.isEmpty()) {
-         // this is a very rare case, but possible, just match all
-         return AsyncPredicate.from(exchange -> true);
-      }
+    private AsyncPredicate<ServerWebExchange> combinePredicates(RouteDefinition routeDefinition) {
+        List<PredicateDefinition> predicates = routeDefinition.getPredicates();
+        // routeDefinition 没有定义 predicate ，就设置一个返回 ture 的 AsyncPredicate
+        if (predicates == null || predicates.isEmpty()) {
+            // this is a very rare case, but possible, just match all
+            return AsyncPredicate.from(exchange -> true);
+        }
 
-      /**
-       * 获取 AsyncPredicate。
-       *
-       * 会根据 predicate.getName() 拿到 RoutePredicateFactory，执行 RoutePredicateFactory.apply(config) 生成 AsyncPredicate
-       * */
-      AsyncPredicate<ServerWebExchange> predicate = lookup(routeDefinition, predicates.get(0));
-      // 遍历剩下的 predicate
-      for (PredicateDefinition andPredicate : predicates.subList(1, predicates.size())) {
-         AsyncPredicate<ServerWebExchange> found = lookup(routeDefinition, andPredicate);
-         /**
-          * and 的连接多个 predicate。返回的是这个类型 AndAsyncPredicate
-          *
-          * 其实就是不断的套娃。
-          * */
-         predicate = predicate.and(found);
-      }
+        /**
+         * 获取 AsyncPredicate。
+         *
+         * 会根据 predicate.getName() 拿到 RoutePredicateFactory，执行 RoutePredicateFactory.apply(config) 生成 AsyncPredicate
+         * */
+        AsyncPredicate<ServerWebExchange> predicate = lookup(routeDefinition, predicates.get(0));
+        // 遍历剩下的 predicate
+        for (PredicateDefinition andPredicate : predicates.subList(1, predicates.size())) {
+            AsyncPredicate<ServerWebExchange> found = lookup(routeDefinition, andPredicate);
+            /**
+             * and 的连接多个 predicate。返回的是这个类型 AndAsyncPredicate
+             *
+             * 其实就是不断的套娃。
+             * */
+            predicate = predicate.and(found);
+        }
 
-      return predicate;
-   }
+        return predicate;
+    }
 
-   @SuppressWarnings("unchecked")
-   private AsyncPredicate<ServerWebExchange> lookup(RouteDefinition route, PredicateDefinition predicate) {
-      /**
-       * predicates 是根据 BeanFactory 中 RoutePredicateFactory 类型的 bean 生成的。
-       * 所以可以理解成是从 BeanFactory 中得到 RoutePredicateFactory。
-       * */
-      RoutePredicateFactory<Object> factory = this.predicates.get(predicate.getName());
-      if (factory == null) {
-         throw new IllegalArgumentException("Unable to find RoutePredicateFactory with name " + predicate.getName());
-      }
-      if (logger.isDebugEnabled()) {
-         logger.debug("RouteDefinition " + route.getId() + " applying " + predicate.getArgs() + " to "
-               + predicate.getName());
-      }
+    @SuppressWarnings("unchecked")
+    private AsyncPredicate<ServerWebExchange> lookup(RouteDefinition route, PredicateDefinition predicate) {
+        /**
+         * predicates 是根据 BeanFactory 中 RoutePredicateFactory 类型的 bean 生成的。
+         * 所以可以理解成是从 BeanFactory 中得到 RoutePredicateFactory。
+         * */
+        RoutePredicateFactory<Object> factory = this.predicates.get(predicate.getName());
+        if (factory == null) {
+            throw new IllegalArgumentException("Unable to find RoutePredicateFactory with name " + predicate.getName());
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("RouteDefinition " + route.getId() + " applying " + predicate.getArgs() + " to "
+                         + predicate.getName());
+        }
 
-      /**
-       * factory 实现 ShortcutConfigurable 接口，规定如何生成的 属性绑定的Map
-       * factory 实现 Configurable 接口，规定使用 config 是啥
-       *
-       * configurationService 会依赖 factory 生成 属性绑定的Map 得到 Config 的类型
-       * 然后使用 属性绑定的Map + ConversionsService + Validator 实例化 Config ，并且会对 Config 进行属性绑定和属性校验（JSR303）
-       * */
-      // @formatter:off
-      Object config = this.configurationService.with(factory)
-            .name(predicate.getName())
-            // 设置属性。会根据这个生成用于属性绑定的Map
-            .properties(predicate.getArgs())
-            // 定义事件。对 config 完成属性绑定完后，会发布这个事件
-            .eventFunction((bound, properties) -> new PredicateArgsEvent(
-                  RouteDefinitionRouteLocator.this, route.getId(), properties))
-            .bind();
-      // @formatter:on
+        /**
+         * factory 实现 ShortcutConfigurable 接口，规定如何生成的 属性绑定的Map
+         * factory 实现 Configurable 接口，规定使用 config 是啥
+         *
+         * configurationService 会依赖 factory 生成 属性绑定的Map 得到 Config 的类型
+         * 然后使用 属性绑定的Map + ConversionsService + Validator 实例化 Config ，并且会对 Config 进行属性绑定和属性校验（JSR303）
+         * */
+        // @formatter:off
+        Object config = this.configurationService.with(factory)
+                .name(predicate.getName())
+                // 设置属性。会根据这个生成用于属性绑定的Map
+                .properties(predicate.getArgs())
+                // 定义事件。对 config 完成属性绑定完后，会发布这个事件
+                .eventFunction((bound, properties) -> new PredicateArgsEvent(
+                        RouteDefinitionRouteLocator.this, route.getId(), properties))
+                .bind();
+        // @formatter:on
 
-      // 根据 config 使用 factory 生成 AsyncPredicate
-      return factory.applyAsync(config);
-   }
+        // 根据 config 使用 factory 生成 AsyncPredicate
+        return factory.applyAsync(config);
+    }
 
 }
 ```
@@ -1101,21 +1101,21 @@ PropertiesRouteDefinitionLocator 是由 [GatewayAutoConfiguration](#GatewayAutoC
 
 ```java
 public class PropertiesRouteDefinitionLocator implements RouteDefinitionLocator {
-   public PropertiesRouteDefinitionLocator(GatewayProperties properties) {
-      /**
-       * 依赖注入得到的
-       *
-       * GatewayProperties 标注了 @ConfigurationProperties("spring.cloud.gateway")
-       * 所以会通过属性绑定设置值
-       * */
-      this.properties = properties;
-   }
+    public PropertiesRouteDefinitionLocator(GatewayProperties properties) {
+        /**
+         * 依赖注入得到的
+         *
+         * GatewayProperties 标注了 @ConfigurationProperties("spring.cloud.gateway")
+         * 所以会通过属性绑定设置值
+         * */
+        this.properties = properties;
+    }
 
-   @Override
-   public Flux<RouteDefinition> getRouteDefinitions() {
-      // 直接返回 properties.getRoutes()
-      return Flux.fromIterable(this.properties.getRoutes());
-   }
+    @Override
+    public Flux<RouteDefinition> getRouteDefinitions() {
+        // 直接返回 properties.getRoutes()
+        return Flux.fromIterable(this.properties.getRoutes());
+    }
 }
 ```
 
@@ -1133,45 +1133,45 @@ RouteDefinitionRepository 的职责是通过缓存的方式记录 RouteDefinitio
 
 ```java
 public class InMemoryRouteDefinitionRepository implements RouteDefinitionRepository {
-   // 线程安全的
-   private final Map<String, RouteDefinition> routes = synchronizedMap(new LinkedHashMap<String, RouteDefinition>());
+    // 线程安全的
+    private final Map<String, RouteDefinition> routes = synchronizedMap(new LinkedHashMap<String, RouteDefinition>());
 
-   @Override
-   public Mono<Void> save(Mono<RouteDefinition> route) {
-      /**
-       * Gateway Endpoint 会依赖 RouteDefinitionRepository 类型的bean 记录通过 Endpoint 动态添加的 RouteDefinition
-       *
-       * 源码在这里
-       *        {@link AbstractGatewayControllerEndpoint#save(String, RouteDefinition)}
-       * */
-      return route.flatMap(r -> {
-         if (ObjectUtils.isEmpty(r.getId())) {
-            return Mono.error(new IllegalArgumentException("id may not be empty"));
-         }
-         // 存到缓存中
-         routes.put(r.getId(), r);
-         return Mono.empty();
-      });
-   }
-
-   @Override
-   public Mono<Void> delete(Mono<String> routeId) {
-      return routeId.flatMap(id -> {
-         if (routes.containsKey(id)) {
-            // 从缓存中移除
-            routes.remove(id);
+    @Override
+    public Mono<Void> save(Mono<RouteDefinition> route) {
+        /**
+         * Gateway Endpoint 会依赖 RouteDefinitionRepository 类型的bean 记录通过 Endpoint 动态添加的 RouteDefinition
+         *
+         * 源码在这里
+         *        {@link AbstractGatewayControllerEndpoint#save(String, RouteDefinition)}
+         * */
+        return route.flatMap(r -> {
+            if (ObjectUtils.isEmpty(r.getId())) {
+                return Mono.error(new IllegalArgumentException("id may not be empty"));
+            }
+            // 存到缓存中
+            routes.put(r.getId(), r);
             return Mono.empty();
-         }
-         return Mono.defer(() -> Mono.error(new NotFoundException("RouteDefinition not found: " + routeId)));
-      });
-   }
+        });
+    }
 
-   @Override
-   public Flux<RouteDefinition> getRouteDefinitions() {
-      // 返回缓存中的值
-      Map<String, RouteDefinition> routesSafeCopy = new LinkedHashMap<>(routes);
-      return Flux.fromIterable(routesSafeCopy.values());
-   }
+    @Override
+    public Mono<Void> delete(Mono<String> routeId) {
+        return routeId.flatMap(id -> {
+            if (routes.containsKey(id)) {
+                // 从缓存中移除
+                routes.remove(id);
+                return Mono.empty();
+            }
+            return Mono.defer(() -> Mono.error(new NotFoundException("RouteDefinition not found: " + routeId)));
+        });
+    }
+
+    @Override
+    public Flux<RouteDefinition> getRouteDefinitions() {
+        // 返回缓存中的值
+        Map<String, RouteDefinition> routesSafeCopy = new LinkedHashMap<>(routes);
+        return Flux.fromIterable(routesSafeCopy.values());
+    }
 
 }
 ```
@@ -1195,45 +1195,45 @@ RouteRefreshListener 是由 [GatewayAutoConfiguration](#GatewayAutoConfiguration
 ```java
 public class RouteRefreshListener implements ApplicationListener<ApplicationEvent> {
 
-   @Override
-   public void onApplicationEvent(ApplicationEvent event) {
-      // 这是 IOC 容器 refresh 的最后阶段会发布的事件
-      if (event instanceof ContextRefreshedEvent) {
-         ContextRefreshedEvent refreshedEvent = (ContextRefreshedEvent) event;
-         // 不是
-         if (!WebServerApplicationContext.hasServerNamespace(refreshedEvent.getApplicationContext(), "management")) {
-            /**
-             * 重设
-             *
-             * 其实就是发布一个 RefreshRoutesEvent 事件，
-             * 该事件会由 CachingRouteLocator 接收，会对 List<Route> 进行缓存
-             *        {@link CachingRouteLocator#onApplicationEvent(RefreshRoutesEvent)}
-             * */
+    @Override
+    public void onApplicationEvent(ApplicationEvent event) {
+        // 这是 IOC 容器 refresh 的最后阶段会发布的事件
+        if (event instanceof ContextRefreshedEvent) {
+            ContextRefreshedEvent refreshedEvent = (ContextRefreshedEvent) event;
+            // 不是
+            if (!WebServerApplicationContext.hasServerNamespace(refreshedEvent.getApplicationContext(), "management")) {
+                /**
+                 * 重设
+                 *
+                 * 其实就是发布一个 RefreshRoutesEvent 事件，
+                 * 该事件会由 CachingRouteLocator 接收，会对 List<Route> 进行缓存
+                 *        {@link CachingRouteLocator#onApplicationEvent(RefreshRoutesEvent)}
+                 * */
+                reset();
+            }
+        }
+        else if (event instanceof RefreshScopeRefreshedEvent || event instanceof InstanceRegisteredEvent) {
             reset();
-         }
-      }
-      else if (event instanceof RefreshScopeRefreshedEvent || event instanceof InstanceRegisteredEvent) {
-         reset();
-      }
-      else if (event instanceof ParentHeartbeatEvent) {
-         ParentHeartbeatEvent e = (ParentHeartbeatEvent) event;
-         resetIfNeeded(e.getValue());
-      }
-      else if (event instanceof HeartbeatEvent) {
-         HeartbeatEvent e = (HeartbeatEvent) event;
-         resetIfNeeded(e.getValue());
-      }
-   }
+        }
+        else if (event instanceof ParentHeartbeatEvent) {
+            ParentHeartbeatEvent e = (ParentHeartbeatEvent) event;
+            resetIfNeeded(e.getValue());
+        }
+        else if (event instanceof HeartbeatEvent) {
+            HeartbeatEvent e = (HeartbeatEvent) event;
+            resetIfNeeded(e.getValue());
+        }
+    }
 
-   private void resetIfNeeded(Object value) {
-      if (this.monitor.update(value)) {
-         reset();
-      }
-   }
+    private void resetIfNeeded(Object value) {
+        if (this.monitor.update(value)) {
+            reset();
+        }
+    }
 
-   private void reset() {
-      this.publisher.publishEvent(new RefreshRoutesEvent(this));
-   }
+    private void reset() {
+        this.publisher.publishEvent(new RefreshRoutesEvent(this));
+    }
 
 }
 ```
@@ -1248,65 +1248,65 @@ FilteringWebHandler 是由 [GatewayAutoConfiguration](#GatewayAutoConfiguration)
 
 ```java
 public class FilteringWebHandler implements WebHandler {
-   public FilteringWebHandler(List<GlobalFilter> globalFilters) {
-      // 这是依赖注入得到的
-      this.globalFilters = loadFilters(globalFilters);
-   }
+    public FilteringWebHandler(List<GlobalFilter> globalFilters) {
+        // 这是依赖注入得到的
+        this.globalFilters = loadFilters(globalFilters);
+    }
 
-   private static List<GatewayFilter> loadFilters(List<GlobalFilter> filters) {
-      return filters.stream().map(filter -> {
-         // 装饰成 GatewayFilter 类型
-         GatewayFilterAdapter gatewayFilter = new GatewayFilterAdapter(filter);
-         if (filter instanceof Ordered) {
-            int order = ((Ordered) filter).getOrder();
-            return new OrderedGatewayFilter(gatewayFilter, order);
-         }
-         return gatewayFilter;
-      }).collect(Collectors.toList());
-   }
-   @Override
-   public Mono<Void> handle(ServerWebExchange exchange) {
-      /**
-       * 拿到 Route 实例。这个是在前一个步骤设置的
-       *        {@link RoutePredicateHandlerMapping#getHandlerInternal(ServerWebExchange)}
-       * */
-      Route route = exchange.getRequiredAttribute(GATEWAY_ROUTE_ATTR);
-      // 拿到 Route 的 GatewayFilter
-      List<GatewayFilter> gatewayFilters = route.getFilters();
-
-      // 先添加 globalFilter
-      List<GatewayFilter> combined = new ArrayList<>(this.globalFilters);
-      // 再添加 route 定义的 Filter
-      combined.addAll(gatewayFilters);
-
-      // 排序
-      AnnotationAwareOrderComparator.sort(combined);
-
-      /**
-       * 装饰成 DefaultGatewayFilterChain 执行。
-       *
-       * 其实就是遍历执行所有的 GatewayFilter
-       * */
-      return new DefaultGatewayFilterChain(combined).filter(exchange);
-   }
-
-   private static class DefaultGatewayFilterChain implements GatewayFilterChain {
-      @Override
-      public Mono<Void> filter(ServerWebExchange exchange) {
-         return Mono.defer(() -> {
-            if (this.index < filters.size()) {
-               GatewayFilter filter = filters.get(this.index);
-               // 套娃行为
-               DefaultGatewayFilterChain chain = new DefaultGatewayFilterChain(this, this.index + 1);
-               // 执行
-               return filter.filter(exchange, chain);
+    private static List<GatewayFilter> loadFilters(List<GlobalFilter> filters) {
+        return filters.stream().map(filter -> {
+            // 装饰成 GatewayFilter 类型
+            GatewayFilterAdapter gatewayFilter = new GatewayFilterAdapter(filter);
+            if (filter instanceof Ordered) {
+                int order = ((Ordered) filter).getOrder();
+                return new OrderedGatewayFilter(gatewayFilter, order);
             }
-            else {
-               return Mono.empty(); // complete
-            }
-         });
-      }
+            return gatewayFilter;
+        }).collect(Collectors.toList());
+    }
+    @Override
+    public Mono<Void> handle(ServerWebExchange exchange) {
+        /**
+         * 拿到 Route 实例。这个是在前一个步骤设置的
+         *        {@link RoutePredicateHandlerMapping#getHandlerInternal(ServerWebExchange)}
+         * */
+        Route route = exchange.getRequiredAttribute(GATEWAY_ROUTE_ATTR);
+        // 拿到 Route 的 GatewayFilter
+        List<GatewayFilter> gatewayFilters = route.getFilters();
 
-   }
+        // 先添加 globalFilter
+        List<GatewayFilter> combined = new ArrayList<>(this.globalFilters);
+        // 再添加 route 定义的 Filter
+        combined.addAll(gatewayFilters);
+
+        // 排序
+        AnnotationAwareOrderComparator.sort(combined);
+
+        /**
+         * 装饰成 DefaultGatewayFilterChain 执行。
+         *
+         * 其实就是遍历执行所有的 GatewayFilter
+         * */
+        return new DefaultGatewayFilterChain(combined).filter(exchange);
+    }
+
+    private static class DefaultGatewayFilterChain implements GatewayFilterChain {
+        @Override
+        public Mono<Void> filter(ServerWebExchange exchange) {
+            return Mono.defer(() -> {
+                if (this.index < filters.size()) {
+                    GatewayFilter filter = filters.get(this.index);
+                    // 套娃行为
+                    DefaultGatewayFilterChain chain = new DefaultGatewayFilterChain(this, this.index + 1);
+                    // 执行
+                    return filter.filter(exchange, chain);
+                }
+                else {
+                    return Mono.empty(); // complete
+                }
+            });
+        }
+
+    }
 }
 ```
