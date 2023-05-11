@@ -32,5 +32,5 @@ local.properties
 .DS_Store
 gradle.properties
 *.gh
-Redis源码分析的内容暂时现放在这个模块下，等中间件的内容多了，再将项目分成框架和中间件两大模块
 .vscode
+/node_modules
