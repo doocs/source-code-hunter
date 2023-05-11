@@ -1,0 +1,16 @@
+{
+  "name": "source-code-hunter",
+  "version": "1.0.0",
+  "description": "从源码层面，剖析挖掘互联网行业主流技术的底层实现原理，为广大开发者 “提升技术深度” 提供便利。",
+  "scripts": {
+    "dev": "docsify serve --open",
+    "convert": "docsify-pdf-converter"
+  },
+  "dependencies": {
+    "docsify-cli": "^4.4.4"
+  },
+  "devDependencies": {
+    "prettier": "2.8.8"
+  },
+  "license": "SEE LICENSE IN LICENSE"
+}
