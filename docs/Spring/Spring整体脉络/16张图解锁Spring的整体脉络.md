@@ -171,7 +171,7 @@ beanName 就是正常对象
 
 当然，这时候出场的肯定是 IOC 啦。
 
-我们都知道 IOC 是 **控制反转** ，但是别忘了 **容器** 这个词，比如 **容器的根接口 **BeanFactory ，**容器的实现** 👇
+我们都知道 IOC 是 **控制反转** ，但是别忘了 **容器** 这个词，比如 **容器的根接口** BeanFactory ，**容器的实现** 👇
 
 1. ClassPathXmlApplicationContext
 2. AnnotationConfigApplicationContext
