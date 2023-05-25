@@ -131,9 +131,9 @@ feign:
       # FeignClient 执行HTTP请求时，Content-Type 、Content-Length 满足这两个条件，就设置请求头 Content-Encoding=gzip,deflate。
       # 设置了请求头后 在发送前会对请求体进行压缩
       mimeTypes:
-        - "text/xml"
-        - "application/xml"
-        - "application/json"
+        - 'text/xml'
+        - 'application/xml'
+        - 'application/json'
       minRequestSize: 100
 ```
 
