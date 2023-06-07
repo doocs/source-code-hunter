@@ -5,7 +5,7 @@ _# springSecurity流程补充
 1. 基于spring-boot-dependencies:2.7.7
 2. 首先需要了解[springboot2.7升级](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.7-Release-Notes)
    `Changes to Auto-configuration` 以后使用`autoconfigure`进行自动注入
-
+3. 代码地址[io.github.poo0054](https://github.com/poo0054/security-study/blob/master/starter/src/main/java/io/github/poo0054/security/StarterApplication.java)
 ## 启动
 
 我们每次添加` <artifactId>spring-boot-starter-security</artifactId>`
