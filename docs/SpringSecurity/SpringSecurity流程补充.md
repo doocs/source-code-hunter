@@ -210,7 +210,7 @@ Spring Security的过滤器
 
 注意: 这里需要了解一下`DelegatingFilterProxyRegistrationBean`以及spring如何整合filter和mvc的.security核心就是filter
 
-![img.png](images/SpringSecurity/img-2023-6-7_0.png)image.png
+![img.png](../../images/SpringSecurity/img-2023-6-7_0.png)image.png
 `DelegatingFilterProxyRegistrationBean`和`FilterRegistrationBean`都是继承的`RegistrationBean`,而`RegistrationBean`
 又是`ServletContextInitializer`的实现类.其中`void onStartup(ServletContext servletContext)`方法是关键. 在`javax.servlet`
 中,存在这样一个类
@@ -310,11 +310,11 @@ public @interface EnableWebSecurity {
 这里有几个类需要了解`SecurityConfigurer`和`SecurityBuilder`
 
 先了解一下结构
-![img_1.png](images/SpringSecurity/img-2023-6-7_1.png)
+![img_1.png](../../images/SpringSecurity/img-2023-6-7_1.png)
 
 
 
-![img_2.png](images/SpringSecurity/img-2023-6-7-_2.png)
+![img_2.png](../../images/SpringSecurity/img-2023-6-7-_2.png)
 
 
 使用`WebSecurity`聚合了`private final LinkedHashMap<Class<? extends SecurityConfigurer<O, B>>, List<SecurityConfigurer<O, B>>> configurers = new LinkedHashMap<>();` 也就是`WebSecurityConfigurerAdapter`(当然还有别的,这里主要讲`WebSecurityConfigurerAdapter`)
@@ -576,7 +576,7 @@ security事先使用这个类把预加载的类全部排序好,然后每次add�
 
 后面调用的`.anyRequest()`,也就是`AbstractRequestMatcherRegistry#anyRequest()`.先了解一下结构图
 
-![img_3.png](images/SpringSecurity/img-2023-6-7-_3.png)
+![img_3.png](../../images/SpringSecurity/img-2023-6-7-_3.png)
 
 完整调用链就是`AbstractRequestMatcherRegistry#anyRequest()` -> `AbstractRequestMatcherRegistry#requestMatchers(RequestMatcher... requestMatchers)` -> `AbstractConfigAttributeRequestMatcherRegistry#chainRequestMatchers(List<RequestMatcher> requestMatchers)` -> `ExpressionUrlAuthorizationConfigurer#chainRequestMatchersInternal(List<RequestMatcher> requestMatchers)` -> `return new AuthorizedUrl(requestMatchers);`
 
