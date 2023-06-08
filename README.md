@@ -127,6 +127,7 @@
 
 - [SpringSecurity 请求全过程解析](/docs/SpringSecurity/SpringSecurity请求全过程解析.md)
 - [SpringSecurity 自定义用户认证](/docs/SpringSecurity/SpringSecurity自定义用户认证.md)
+- [SpringSecurity 流程补充](/docs/SpringSecurity/SpringSecurity流程补充.md)
 
 ## MyBatis
 
