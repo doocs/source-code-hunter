@@ -1,27 +1,26 @@
-# springSecurity 流程补充
+# SpringSecurity 流程补充
 
 注意:
 
 1. 基于 spring-boot-dependencies:2.7.7
-2. 首先需要了解[springboot2.7 升级](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.7-Release-Notes)
-   `Changes to Auto-configuration` 以后使用`autoconfigure`进行自动注入
-3.
-
-代码地址[io.github.poo0054](https://github.com/poo0054/security-study/blob/master/starter/src/main/java/io/github/poo0054/security/StarterApplication.java)
+2. 首先需要了解 [springboot2.7 升级](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.7-Release-Notes)
+   `Changes to Auto-configuration` 以后使用 `autoconfigure` 进行自动注入
+3. 代码地址 [io.github.poo0054](https://github.com/poo0054/security-study/blob/master/starter/src/main/java/io/github/poo0054/security/StarterApplication.java)
 
 ## 启动
 
-我们每次添加` <artifactId>spring-boot-starter-security</artifactId>`
-，启动的时候启动日志会有一条类似
-`Using generated springSecurity password: 1db8eb87-e2ee-4c72-88e7-9b85268c4430
+我们每次添加 `<artifactId>spring-boot-starter-security</artifactId>`，启动的时候会有一条类似的日志：
+
+```
+Using generated springSecurity password: 1db8eb87-e2ee-4c72-88e7-9b85268c4430
 
 This generated password is for development use only. Your springSecurity configuration must be updated before running your
-application in production.`
+application in production.
+```
 
-的日志。找到`UserDetailsServiceAutoConfiguration#InMemoryUserDetailsManager`类，它是 springboot 自动装配的。
+找到 `UserDetailsServiceAutoConfiguration#InMemoryUserDetailsManager` 类，它是 springboot 自动装配的。
 
-下面这些都是 springboot 自动装配类，在`spring-boot-autoconfigure-2.7.7.jar`>META-INF>spring>
-org.springframework.boot.autoconfigure.AutoConfiguration.imports 中. 这些类就是 springSecurity 的全部了.
+下面这些都是 springboot 自动装配类，在 `spring-boot-autoconfigure-2.7.7.jar` > META-INF > spring > org.springframework.boot.autoconfigure.AutoConfiguration.imports 中。这些类就是 Spring Security 的全部了。
 
 ```imports
 org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
@@ -70,8 +69,6 @@ public class SecurityAutoConfiguration {
 这个是 springSecurity 的核心配置类`SecurityProperties`，里面能配置
 `filter`: 过滤，`user` : 用户信息
 
-`这个有个问题，filter是属于tomcat的，springSecurity 中使用什么方式让filter变的有序的`
-
 ### @Import({ SpringBootWebSecurityConfiguration.class, SecurityDataConfiguration.class })
 
 这里导入了 2 个类 `SpringBootWebSecurityConfiguration`和`SecurityDataConfiguration`，`SecurityDataConfiguration`是 Spring
@@ -79,7 +76,7 @@ springSecurity 与 Spring 数据的集成，暂时不做讲解，重点是`Sprin
 
 #### SpringBootWebSecurityConfiguration
 
-这个类就是一个`Configuration`类，条件必须为`@ConditionalOnWebApplication(type = Type.SERVLET)`才会注入
+这个类就是一个 `Configuration` 类，条件必须为 `@ConditionalOnWebApplication(type = Type.SERVLET)` 才会注入
 
 ##### SecurityFilterChainConfiguration
 
@@ -193,6 +190,7 @@ UserDetailsManager 的非持久化实现，支持内存映射。
 ## SecurityFilterAutoConfiguration
 
 SpringSecurity 的过滤器
+
 自动配置。与 SpringBootWebSecurityConfiguration 分开配置，以确保在存在用户提供的 WebSecurityConfiguration 时，过滤器的顺序仍然被配置。
 
 ### DelegatingFilterProxyRegistrationBean
@@ -329,28 +327,28 @@ public @interface EnableWebSecurity {
 然后在`SecurityBuilder`的实现类`AbstractConfiguredSecurityBuilder`的`doBuild()`方法进行很多别的操作。
 
 ```java
-protected final O doBuild()throws Exception{
-synchronized (this.configurers){
-        this.buildState=BuildState.INITIALIZING;
+protected final O doBuild() throws Exception {
+    synchronized (this.configurers) {
+        this.buildState = BuildState.INITIALIZING;
         beforeInit();
         init();
-        this.buildState=BuildState.CONFIGURING;
+        this.buildState = BuildState.CONFIGURING;
         beforeConfigure();
         configure();
-        this.buildState=BuildState.BUILDING;
-        O result=performBuild();
-        this.buildState=BuildState.BUILT;
+        this.buildState = BuildState.BUILDING;
+        O result = performBuild();
+        this.buildState = BuildState.BUILT;
         return result;
-        }
-        }
+    }
+}
 ```
 
 回到原来地方，返回的`webSecurityConfigurers`，里面的
 
 ```java
-for(SecurityConfigurer<Filter, WebSecurity> webSecurityConfigurer:webSecurityConfigurers){
-        this.webSecurity.apply(webSecurityConfigurer);
-        }
+for (SecurityConfigurer<Filter, WebSecurity> webSecurityConfigurer : webSecurityConfigurers) {
+    this.webSecurity.apply(webSecurityConfigurer);
+}
 ```
 
 然后就到了`AbstractConfiguredSecurityBuilder#apply`方法，里面调用了`add(configurer);` 也就是把`SecurityConfigurer`
@@ -372,19 +370,19 @@ for(SecurityConfigurer<Filter, WebSecurity> webSecurityConfigurer:webSecurityCon
 这个里面最关键的也就是这个了。
 
 ```java
-        for(SecurityFilterChain securityFilterChain:this.securityFilterChains){
-        this.webSecurity.addSecurityFilterChainBuilder(()->securityFilterChain);
-        for(Filter filter:securityFilterChain.getFilters()){
-        if(filter instanceof FilterSecurityInterceptor){
-        this.webSecurity.securityInterceptor((FilterSecurityInterceptor)filter);
-        break;
+for (SecurityFilterChain securityFilterChain : this.securityFilterChains) {
+    this.webSecurity.addSecurityFilterChainBuilder(() -> securityFilterChain);
+    for (Filter filter : securityFilterChain.getFilters()) {
+        if (filter instanceof FilterSecurityInterceptor) {
+            this.webSecurity.securityInterceptor((FilterSecurityInterceptor) filter);
+            break;
         }
-        }
-        }
-        for(WebSecurityCustomizer customizer:this.webSecurityCustomizers){
-        customizer.customize(this.webSecurity);
-        }
-        return this.webSecurity.build();
+    }
+}
+for (WebSecurityCustomizer customizer : this.webSecurityCustomizers) {
+    customizer.customize(this.webSecurity);
+}
+return this.webSecurity.build();
 ```
 
 首先使用根据获取到的`securityFilterChains`set 入`WebSecurity#securityFilterChainBuilders`的 List 属性
@@ -419,10 +417,10 @@ static class SecurityFilterChainConfiguration {
 继续回到上面，
 
 ```java
-if(filter instanceof FilterSecurityInterceptor){
-        this.webSecurity.securityInterceptor((FilterSecurityInterceptor)filter);
-        break;
-        }
+if (filter instanceof FilterSecurityInterceptor) {
+    this.webSecurity.securityInterceptor((FilterSecurityInterceptor) filter);
+    break;
+}
 ```
 
 `FilterSecurityInterceptor`也在这里进行处理，也就是`SecurityMetadataSource`元数据
@@ -430,28 +428,28 @@ if(filter instanceof FilterSecurityInterceptor){
 然后自定义的`WebSecurityCustomizer`也在这里。可以自行改变`webSecurity`
 
 ```java
-for(WebSecurityCustomizer customizer:this.webSecurityCustomizers){
-        customizer.customize(this.webSecurity);
-        }
+for (WebSecurityCustomizer customizer : this.webSecurityCustomizers) {
+    customizer.customize(this.webSecurity);
+}
 ```
 
-接下来就是构建了，来到`AbstractConfiguredSecurityBuilder#doBuild()`
+接下来就是构建了，来到 `AbstractConfiguredSecurityBuilder#doBuild()`
 
 ```java
-protected final O doBuild()throws Exception{
-synchronized (this.configurers){
-        this.buildState=BuildState.INITIALIZING;
+protected final O doBuild() throws Exception {
+    synchronized (this.configurers) {
+        this.buildState = BuildState.INITIALIZING;
         beforeInit();
         init();
-        this.buildState=BuildState.CONFIGURING;
+        this.buildState = BuildState.CONFIGURING;
         beforeConfigure();
         configure();
-        this.buildState=BuildState.BUILDING;
-        O result=performBuild();
-        this.buildState=BuildState.BUILT;
+        this.buildState = BuildState.BUILDING;
+        O result = performBuild();
+        this.buildState = BuildState.BUILT;
         return result;
-        }
-        }
+    }
+}
 ```
 
 > init();
@@ -502,25 +500,25 @@ synchronized (this.configurers){
 其实到了这一步。后面的就是我们自己编写的代码了比如
 
 ```java
- @Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http)throws Exception{
-        // 配置认证
-        http.formLogin();
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    // 配置认证
+    http.formLogin();
 
-        // 设置URL的授权问题
-        // 多个条件取交集
-        http.authorizeRequests()
-        // 匹配 / 控制器  permitAll() 不需要被认证就可以访问
-        .antMatchers("/login").permitAll()
-        .antMatchers("/error").permitAll()
-        .antMatchers("/fail").permitAll()
-        // anyRequest() 所有请求   authenticated() 必须被认证
-        .anyRequest().authenticated();
-//				.accessDecisionManager(accessDecisionManager());
-        // 关闭csrf
-        http.csrf().disable();
-        return http.build();
-        }
+    // 设置URL的授权问题
+    // 多个条件取交集
+    http.authorizeRequests()
+            // 匹配 / 控制器  permitAll() 不需要被认证就可以访问
+            .antMatchers("/login").permitAll()
+            .antMatchers("/error").permitAll()
+            .antMatchers("/fail").permitAll()
+            // anyRequest() 所有请求   authenticated() 必须被认证
+            .anyRequest().authenticated();
+            // .accessDecisionManager(accessDecisionManager());
+    // 关闭csrf
+    http.csrf().disable();
+    return http.build();
+}
 ```
 
 或者继承 WebSecurityConfigurerAdapter 的类了。
@@ -530,12 +528,12 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http)throws Exceptio
 ```java
 @Bean
 @Order(SecurityProperties.BASIC_AUTH_ORDER)
-		SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)throws Exception{
-                http.authorizeRequests().anyRequest().authenticated();
-                http.formLogin();
-                http.httpBasic();
-                return http.build();
-                }
+SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+    http.authorizeRequests().anyRequest().authenticated();
+    http.formLogin();
+    http.httpBasic();
+    return http.build();
+}
 ```
 
 首先获取`HttpSecurity http`(这里的`HttpSecurity`是从`HttpSecurityConfiguration`
@@ -558,27 +556,27 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http)throws Exceptio
 这个有一个很有意思的类`FilterOrderRegistration`。 前面问的根据 filter 是如何包装顺序的。就在这个类里面
 
 ```java
-FilterOrderRegistration(){
-        Step order=new Step(INITIAL_ORDER,ORDER_STEP);
-        put(DisableEncodeUrlFilter.class,order.next());
-        put(ForceEagerSessionCreationFilter.class,order.next());
-        put(ChannelProcessingFilter.class,order.next());
-        order.next(); // gh-8105
-        put(WebAsyncManagerIntegrationFilter.class,order.next());
-        put(SecurityContextHolderFilter.class,order.next());
-        put(SecurityContextPersistenceFilter.class,order.next());
-        put(HeaderWriterFilter.class,order.next());
-        put(CorsFilter.class,order.next());
-        put(CsrfFilter.class,order.next());
-        put(LogoutFilter.class,order.next());
-// .....
+FilterOrderRegistration() {
+    Step order = new Step(INITIAL_ORDER, ORDER_STEP);
+    put(DisableEncodeUrlFilter.class, order.next());
+    put(ForceEagerSessionCreationFilter.class, order.next());
+    put(ChannelProcessingFilter.class, order.next());
+    order.next(); // gh-8105
+    put(WebAsyncManagerIntegrationFilter.class, order.next());
+    put(SecurityContextHolderFilter.class, order.next());
+    put(SecurityContextPersistenceFilter.class, order.next());
+    put(HeaderWriterFilter.class, order.next());
+    put(CorsFilter.class, order.next());
+    put(CsrfFilter.class, order.next());
+    put(LogoutFilter.class, order.next());
+}
 ```
 
 springSecurity 事先使用这个类把预加载的类全部排序好，然后每次 add 一个新的 filter 就会使用这个里面的序号。如果我们有自定义的类，也要提前加载到里面去，不然就会
 
 ```java
-    throw new IllegalArgumentException("The Filter class "+filter.getClass().getName()
-        +" does not have a registered order and cannot be added without a specified order. Consider using addFilterBefore or addFilterAfter instead.");
+throw new IllegalArgumentException("The Filter class "+filter.getClass().getName()
+    +" does not have a registered order and cannot be added without a specified order. Consider using addFilterBefore or addFilterAfter instead.");
 ```
 
 `WebAsyncManagerIntegrationFilter`: 与处理异步 web 请求相关的实用程序方法
@@ -678,16 +676,16 @@ public interface SecurityFilterChain {
 ```java
 @Bean
 public AuthenticationManagerBuilder authenticationManagerBuilder(ObjectPostProcessor<Object> objectPostProcessor,
-        ApplicationContext context){
-        LazyPasswordEncoder defaultPasswordEncoder=new LazyPasswordEncoder(context);
-        AuthenticationEventPublisher authenticationEventPublisher=getAuthenticationEventPublisher(context);
-        DefaultPasswordEncoderAuthenticationManagerBuilder result=new DefaultPasswordEncoderAuthenticationManagerBuilder(
-        objectPostProcessor,defaultPasswordEncoder);
-        if(authenticationEventPublisher!=null){
+                                                                 ApplicationContext context) {
+    LazyPasswordEncoder defaultPasswordEncoder = new LazyPasswordEncoder(context);
+    AuthenticationEventPublisher authenticationEventPublisher = getAuthenticationEventPublisher(context);
+    DefaultPasswordEncoderAuthenticationManagerBuilder result = new DefaultPasswordEncoderAuthenticationManagerBuilder(
+            objectPostProcessor, defaultPasswordEncoder);
+    if (authenticationEventPublisher != null) {
         result.authenticationEventPublisher(authenticationEventPublisher);
-        }
-        return result;
-        }
+    }
+    return result;
+}
 ```
 
 这里面返回了一个`AuthenticationManagerBuilder`的 bean，也就是上面``
@@ -707,24 +705,24 @@ HttpSecurityConfiguration#httpSecurity()`的时候需要的类，这个类也是
 就是`AuthenticationManagerBuilder`的真正实现了。接下来回到`getAuthenticationManager()`方法
 
 ```java
-public AuthenticationManager getAuthenticationManager()throws Exception{
-        if(this.authenticationManagerInitialized){
+public AuthenticationManager getAuthenticationManager() throws Exception {
+    if (this.authenticationManagerInitialized) {
         return this.authenticationManager;
-        }
-        AuthenticationManagerBuilder authBuilder=this.applicationContext.getBean(AuthenticationManagerBuilder.class);
-        if(this.buildingAuthenticationManager.getAndSet(true)){
+    }
+    AuthenticationManagerBuilder authBuilder = this.applicationContext.getBean(AuthenticationManagerBuilder.class);
+    if (this.buildingAuthenticationManager.getAndSet(true)) {
         return new AuthenticationManagerDelegator(authBuilder);
-        }
-        for(GlobalAuthenticationConfigurerAdapter config:this.globalAuthConfigurers){
+    }
+    for (GlobalAuthenticationConfigurerAdapter config : this.globalAuthConfigurers) {
         authBuilder.apply(config);
-        }
-        this.authenticationManager=authBuilder.build();
-        if(this.authenticationManager==null){
-        this.authenticationManager=getAuthenticationManagerBean();
-        }
-        this.authenticationManagerInitialized=true;
-        return this.authenticationManager;
-        }
+    }
+    this.authenticationManager = authBuilder.build();
+    if (this.authenticationManager == null) {
+        this.authenticationManager = getAuthenticationManagerBean();
+    }
+    this.authenticationManagerInitialized = true;
+    return this.authenticationManager;
+}
 ```
 
 > AuthenticationManagerBuilder authBuilder = this.applicationContext.getBean(AuthenticationManagerBuilder.class);
@@ -732,31 +730,31 @@ public AuthenticationManager getAuthenticationManager()throws Exception{
 获取到`DefaultPasswordEncoderAuthenticationManagerBuilder`
 
 ```java
-        for(GlobalAuthenticationConfigurerAdapter config:this.globalAuthConfigurers){
-        authBuilder.apply(config);
-        }
+for (GlobalAuthenticationConfigurerAdapter config : this.globalAuthConfigurers) {
+    authBuilder.apply(config);
+}
 ```
 
 需要注意的是，`this.globalAuthConfigurers`就是上面三个类，
 
 ```java
-    @Bean
+@Bean
 public static GlobalAuthenticationConfigurerAdapter enableGlobalAuthenticationAutowiredConfigurer(
-        ApplicationContext context){
-        return new EnableGlobalAuthenticationAutowiredConfigurer(context);
-        }
+        ApplicationContext context) {
+    return new EnableGlobalAuthenticationAutowiredConfigurer(context);
+}
 
 @Bean
 public static InitializeUserDetailsBeanManagerConfigurer initializeUserDetailsBeanManagerConfigurer(
-        ApplicationContext context){
-        return new InitializeUserDetailsBeanManagerConfigurer(context);
-        }
+        ApplicationContext context) {
+    return new InitializeUserDetailsBeanManagerConfigurer(context);
+}
 
 @Bean
 public static InitializeAuthenticationProviderBeanManagerConfigurer initializeAuthenticationProviderBeanManagerConfigurer(
-        ApplicationContext context){
-        return new InitializeAuthenticationProviderBeanManagerConfigurer(context);
-        }
+        ApplicationContext context) {
+    return new InitializeAuthenticationProviderBeanManagerConfigurer(context);
+}
 ```
 
 调用了`apply`也就是`add`方法。添加到`configurers`中
@@ -790,28 +788,28 @@ public static InitializeAuthenticationProviderBeanManagerConfigurer initializeAu
 2: `InitializeUserDetailsManagerConfigurer#configure`方法
 
 ```java
-        @Override
-public void configure(AuthenticationManagerBuilder auth)throws Exception{
-        if(auth.isConfigured()){
+@Override
+public void configure(AuthenticationManagerBuilder auth) throws Exception {
+    if (auth.isConfigured()) {
         return;
-        }
-        UserDetailsService userDetailsService=getBeanOrNull(UserDetailsService.class);
-        if(userDetailsService==null){
+    }
+    UserDetailsService userDetailsService = getBeanOrNull(UserDetailsService.class);
+    if (userDetailsService == null) {
         return;
-        }
-        PasswordEncoder passwordEncoder=getBeanOrNull(PasswordEncoder.class);
-        UserDetailsPasswordService passwordManager=getBeanOrNull(UserDetailsPasswordService.class);
-        DaoAuthenticationProvider provider=new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
-        if(passwordEncoder!=null){
+    }
+    PasswordEncoder passwordEncoder = getBeanOrNull(PasswordEncoder.class);
+    UserDetailsPasswordService passwordManager = getBeanOrNull(UserDetailsPasswordService.class);
+    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+    provider.setUserDetailsService(userDetailsService);
+    if (passwordEncoder != null) {
         provider.setPasswordEncoder(passwordEncoder);
-        }
-        if(passwordManager!=null){
+    }
+    if (passwordManager != null) {
         provider.setUserDetailsPasswordService(passwordManager);
-        }
-        provider.afterPropertiesSet();
-        auth.authenticationProvider(provider);
-        }
+    }
+    provider.afterPropertiesSet();
+    auth.authenticationProvider(provider);
+}
 ```
 
 获取所有`UserDetailsService`和`PasswordEncoder`和`UserDetailsPasswordService`，使用`DaoAuthenticationProvider`
@@ -823,16 +821,16 @@ public void configure(AuthenticationManagerBuilder auth)throws Exception{
 然后又到了熟悉的`AuthenticationManagerBuilder#performBuild`
 
 ```java
-ProviderManager providerManager=new ProviderManager(this.authenticationProviders,
+ProviderManager providerManager = new ProviderManager(this.authenticationProviders,
         this.parentAuthenticationManager);
-        if(this.eraseCredentials!=null){
-        providerManager.setEraseCredentialsAfterAuthentication(this.eraseCredentials);
-        }
-        if(this.eventPublisher!=null){
-        providerManager.setAuthenticationEventPublisher(this.eventPublisher);
-        }
-        providerManager=postProcess(providerManager);
-        return providerManager;
+if (this.eraseCredentials != null) {
+    providerManager.setEraseCredentialsAfterAuthentication(this.eraseCredentials);
+}
+if (this.eventPublisher != null) {
+    providerManager.setAuthenticationEventPublisher(this.eventPublisher);
+}
+providerManager = postProcess(providerManager);
+return providerManager;
 ```
 
 首先使用`ProviderManager`管理`authenticationProviders`和`parentAuthenticationManager`，这里的`eraseCredentials`
@@ -904,17 +902,16 @@ class MethodSecurityMetadataSourcePointcut extends StaticMethodMatcherPointcut i
 
 ```java
 @Override
-public Object invoke(MethodInvocation mi)throws Throwable{
-        InterceptorStatusToken token=super.beforeInvocation(mi);
-        Object result;
-        try{
-        result=mi.proceed();
-        }
-        finally{
+public Object invoke(MethodInvocation mi) throws Throwable {
+    InterceptorStatusToken token = super.beforeInvocation(mi);
+    Object result;
+    try {
+        result = mi.proceed();
+    } finally {
         super.finallyInvocation(token);
-        }
-        return super.afterInvocation(token,result);
-        }
+    }
+    return super.afterInvocation(token, result);
+}
 ```
 
 这个一看就是标准 aop
@@ -928,12 +925,12 @@ public Object invoke(MethodInvocation mi)throws Throwable{
 接着来到了`DelegatingMethodSecurityMetadataSource#getAttributes`
 
 ```java
-        for(MethodSecurityMetadataSource s:this.methodSecurityMetadataSources){
-        attributes=s.getAttributes(method,targetClass);
-        if(attributes!=null&&!attributes.isEmpty()){
+for (MethodSecurityMetadataSource s : this.methodSecurityMetadataSources) {
+    attributes = s.getAttributes(method, targetClass);
+    if (attributes != null && !attributes.isEmpty()) {
         break;
-        }
-        }
+    }
+}
 ```
 
 `this.methodSecurityMetadataSources`里面的值，就是`GlobalMethodSecurityConfiguration#methodSecurityMetadataSource`
@@ -976,25 +973,25 @@ public Object invoke(MethodInvocation mi)throws Throwable{
 这个就是`AbstractSecurityInterceptor#attemptAuthorization`的授权方法
 
 ```java
-    protected AccessDecisionManager accessDecisionManager(){
-        List<AccessDecisionVoter<?>>decisionVoters=new ArrayList<>();
-        if(prePostEnabled()){
+protected AccessDecisionManager accessDecisionManager(){
+    List<AccessDecisionVoter<?>>decisionVoters=new ArrayList<>();
+    if(prePostEnabled()){
         ExpressionBasedPreInvocationAdvice expressionAdvice=new ExpressionBasedPreInvocationAdvice();
         expressionAdvice.setExpressionHandler(getExpressionHandler());
         decisionVoters.add(new PreInvocationAuthorizationAdviceVoter(expressionAdvice));
-        }
-        if(jsr250Enabled()){
+    }
+    if(jsr250Enabled()){
         decisionVoters.add(new Jsr250Voter());
-        }
-        RoleVoter roleVoter=new RoleVoter();
-        GrantedAuthorityDefaults grantedAuthorityDefaults=getSingleBeanOrNull(GrantedAuthorityDefaults.class);
-        if(grantedAuthorityDefaults!=null){
+    }
+    RoleVoter roleVoter=new RoleVoter();
+    GrantedAuthorityDefaults grantedAuthorityDefaults=getSingleBeanOrNull(GrantedAuthorityDefaults.class);
+    if(grantedAuthorityDefaults!=null){
         roleVoter.setRolePrefix(grantedAuthorityDefaults.getRolePrefix());
-        }
-        decisionVoters.add(roleVoter);
-        decisionVoters.add(new AuthenticatedVoter());
-        return new AffirmativeBased(decisionVoters);
-        }
+    }
+    decisionVoters.add(roleVoter);
+    decisionVoters.add(new AuthenticatedVoter());
+    return new AffirmativeBased(decisionVoters);
+}
 ```
 
 前提条件必须开启`prePostEnabled`
@@ -1028,18 +1025,18 @@ public Object invoke(MethodInvocation mi)throws Throwable{
 首先看看我们一开始创建`HttpSecurity`的时候添加了哪些类 `HttpSecurityConfiguration#httpSecurity()`
 
 ```java
-    @Bean(HTTPSECURITY_BEAN_NAME)
+@Bean(HTTPSECURITY_BEAN_NAME)
 @Scope("prototype")
-	HttpSecurity httpSecurity()throws Exception{
-            WebSecurityConfigurerAdapter.LazyPasswordEncoder passwordEncoder=new WebSecurityConfigurerAdapter.LazyPasswordEncoder(
+HttpSecurity httpSecurity() throws Exception {
+    WebSecurityConfigurerAdapter.LazyPasswordEncoder passwordEncoder = new WebSecurityConfigurerAdapter.LazyPasswordEncoder(
             this.context);
-            AuthenticationManagerBuilder authenticationBuilder=new WebSecurityConfigurerAdapter.DefaultPasswordEncoderAuthenticationManagerBuilder(
-            this.objectPostProcessor,passwordEncoder);
-            authenticationBuilder.parentAuthenticationManager(authenticationManager());
-            authenticationBuilder.authenticationEventPublisher(getAuthenticationEventPublisher());
-            HttpSecurity http=new HttpSecurity(this.objectPostProcessor,authenticationBuilder,createSharedObjects());
-            // @formatter:off
-            http
+    AuthenticationManagerBuilder authenticationBuilder = new WebSecurityConfigurerAdapter.DefaultPasswordEncoderAuthenticationManagerBuilder(
+            this.objectPostProcessor, passwordEncoder);
+    authenticationBuilder.parentAuthenticationManager(authenticationManager());
+    authenticationBuilder.authenticationEventPublisher(getAuthenticationEventPublisher());
+    HttpSecurity http = new HttpSecurity(this.objectPostProcessor, authenticationBuilder, createSharedObjects());
+    // @formatter:off
+    http
             .csrf(withDefaults())
             .addFilter(new WebAsyncManagerIntegrationFilter())
             .exceptionHandling(withDefaults())
@@ -1050,11 +1047,11 @@ public Object invoke(MethodInvocation mi)throws Throwable{
             .anonymous(withDefaults())
             .servletApi(withDefaults())
             .apply(new DefaultLoginPageConfigurer<>());
-        http.logout(withDefaults());
-        // @formatter:on
-        applyDefaultConfigurers(http);
-        return http;
-        }
+    http.logout(withDefaults());
+    // @formatter:on
+    applyDefaultConfigurers(http);
+    return http;
+}
 ```
 
 `CsrfConfigurer`，`ExceptionHandlingConfigurer`，`HeadersConfigurer`，`SessionManagementConfigurer`，`SecurityContextConfigurer`，`RequestCacheConfigurer`，`AnonymousConfigurer`，`ServletApiConfigurer`，`DefaultLoginPageConfigurer`，`LogoutConfigurer`
@@ -1077,41 +1074,42 @@ public Object invoke(MethodInvocation mi)throws Throwable{
 首先创建对象给属性赋值
 
 ```java
-authFilter=UsernamePasswordAuthenticationFilter()
-        loginPage="/login"
-        this.authenticationEntryPoint=new LoginUrlAuthenticationEntryPoint(loginPage);
+authFilter = UsernamePasswordAuthenticationFilter()
+loginPage = "/login"
+this.authenticationEntryPoint = new LoginUrlAuthenticationEntryPoint(loginPage);
 ```
 
 接着来到`init`
 
 ```java
-    @Override
-public void init(B http)throws Exception{
-        updateAuthenticationDefaults();
-        updateAccessDefaults(http);
-        registerDefaultAuthenticationEntryPoint(http);
-        }
+@Override
+public void init(B http) throws Exception {
+    updateAuthenticationDefaults();
+    updateAccessDefaults(http);
+    registerDefaultAuthenticationEntryPoint(http);
+}
 ```
 
 > updateAuthenticationDefaults();
 
 ```java
-    /**
+/**
  * Updates the default values for authentication.
+ *
  * @throws Exception
  */
-protected final void updateAuthenticationDefaults(){
-        if(this.loginProcessingUrl==null){
+protected final void updateAuthenticationDefaults() {
+    if (this.loginProcessingUrl == null) {
         loginProcessingUrl(this.loginPage);
-        }
-        if(this.failureHandler==null){
-        failureUrl(this.loginPage+"?error");
-        }
-        LogoutConfigurer<B> logoutConfigurer=getBuilder().getConfigurer(LogoutConfigurer.class);
-        if(logoutConfigurer!=null&&!logoutConfigurer.isCustomLogoutSuccess()){
-        logoutConfigurer.logoutSuccessUrl(this.loginPage+"?logout");
-        }
-        }
+    }
+    if (this.failureHandler == null) {
+        failureUrl(this.loginPage + "?error");
+    }
+    LogoutConfigurer<B> logoutConfigurer = getBuilder().getConfigurer(LogoutConfigurer.class);
+    if (logoutConfigurer != null && !logoutConfigurer.isCustomLogoutSuccess()) {
+        logoutConfigurer.logoutSuccessUrl(this.loginPage + "?logout");
+    }
+}
 ```
 
 `loginProcessingUrl(this.loginPage);`
@@ -1172,16 +1170,16 @@ private LinkedHashMap<RequestMatcher, AccessDeniedHandler> defaultDeniedHandlerM
 过滤器，添加到了`http`中， 代码是这一段
 
 ```java
-    @Override
-public void configure(H http){
-        AuthenticationEntryPoint entryPoint=getAuthenticationEntryPoint(http);
-        ExceptionTranslationFilter exceptionTranslationFilter=new ExceptionTranslationFilter(entryPoint,
-        getRequestCache(http));
-        AccessDeniedHandler deniedHandler=getAccessDeniedHandler(http);
-        exceptionTranslationFilter.setAccessDeniedHandler(deniedHandler);
-        exceptionTranslationFilter=postProcess(exceptionTranslationFilter);
-        http.addFilter(exceptionTranslationFilter);
-        }
+@Override
+public void configure(H http) {
+    AuthenticationEntryPoint entryPoint = getAuthenticationEntryPoint(http);
+    ExceptionTranslationFilter exceptionTranslationFilter = new ExceptionTranslationFilter(entryPoint,
+            getRequestCache(http));
+    AccessDeniedHandler deniedHandler = getAccessDeniedHandler(http);
+    exceptionTranslationFilter.setAccessDeniedHandler(deniedHandler);
+    exceptionTranslationFilter = postProcess(exceptionTranslationFilter);
+    http.addFilter(exceptionTranslationFilter);
+}
 ```
 
 接着我们打开`ExceptionTranslationFilter`，这就是一个`Filter`
@@ -1191,29 +1189,28 @@ public void configure(H http){
 方法，
 
 ```java
-    private void handleSpringSecurityException(HttpServletRequest request,HttpServletResponse response,
-        FilterChain chain,RuntimeException exception)throws IOException,ServletException{
-        if(exception instanceof AuthenticationException){
-        handleAuthenticationException(request,response,chain,(AuthenticationException)exception);
-        }
-        else if(exception instanceof AccessDeniedException){
-        handleAccessDeniedException(request,response,chain,(AccessDeniedException)exception);
-        }
-        }
+private void handleSpringSecurityException(HttpServletRequest request, HttpServletResponse response,
+                                           FilterChain chain, RuntimeException exception) throws IOException, ServletException {
+    if (exception instanceof AuthenticationException) {
+        handleAuthenticationException(request, response, chain, (AuthenticationException) exception);
+    } else if (exception instanceof AccessDeniedException) {
+        handleAccessDeniedException(request, response, chain, (AccessDeniedException) exception);
+    }
+}
 ```
 
 发现最后还是到了
 
 ```java
-    protected void sendStartAuthentication(HttpServletRequest request,HttpServletResponse response,FilterChain chain,
-        AuthenticationException reason)throws ServletException,IOException{
-        // SEC-112: Clear the SecurityContextHolder's Authentication, as the
-        // existing Authentication is no longer considered valid
-        SecurityContext context=SecurityContextHolder.createEmptyContext();
-        SecurityContextHolder.setContext(context);
-        this.requestCache.saveRequest(request,response);
-        this.authenticationEntryPoint.commence(request,response,reason);
-        }
+protected void sendStartAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
+                                       AuthenticationException reason) throws ServletException, IOException {
+    // SEC-112: Clear the SecurityContextHolder's Authentication, as the
+    // existing Authentication is no longer considered valid
+    SecurityContext context = SecurityContextHolder.createEmptyContext();
+    SecurityContextHolder.setContext(context);
+    this.requestCache.saveRequest(request, response);
+    this.authenticationEntryPoint.commence(request, response, reason);
+}
 ```
 
 里面就有`this.authenticationEntryPoint.commence(request, response, reason);`这段代码，
@@ -1221,21 +1218,21 @@ public void configure(H http){
 
 ```java
 @Override
-public void commence(HttpServletRequest request,HttpServletResponse response,
-        AuthenticationException authException)throws IOException,ServletException{
-        for(RequestMatcher requestMatcher:this.entryPoints.keySet()){
-        logger.debug(LogMessage.format("Trying to match using %s",requestMatcher));
-        if(requestMatcher.matches(request)){
-        AuthenticationEntryPoint entryPoint=this.entryPoints.get(requestMatcher);
-        logger.debug(LogMessage.format("Match found! Executing %s",entryPoint));
-        entryPoint.commence(request,response,authException);
-        return;
+public void commence(HttpServletRequest request, HttpServletResponse response,
+                     AuthenticationException authException) throws IOException, ServletException {
+    for (RequestMatcher requestMatcher : this.entryPoints.keySet()) {
+        logger.debug(LogMessage.format("Trying to match using %s", requestMatcher));
+        if (requestMatcher.matches(request)) {
+            AuthenticationEntryPoint entryPoint = this.entryPoints.get(requestMatcher);
+            logger.debug(LogMessage.format("Match found! Executing %s", entryPoint));
+            entryPoint.commence(request, response, authException);
+            return;
         }
-        }
-        logger.debug(LogMessage.format("No match found. Using default entry point %s",this.defaultEntryPoint));
-        // No EntryPoint matched, use defaultEntryPoint
-        this.defaultEntryPoint.commence(request,response,authException);
-        }
+    }
+    logger.debug(LogMessage.format("No match found. Using default entry point %s", this.defaultEntryPoint));
+    // No EntryPoint matched, use defaultEntryPoint
+    this.defaultEntryPoint.commence(request, response, authException);
+}
 ```
 
 基本上流程就完成了，请求先走过滤器，然后走不同的 filter，报错就到了这一步，进行错误处理，其余都基本一致了
@@ -1275,11 +1272,11 @@ public @interface EnableWebSecurity {
 使用方法
 
 ```java
-    @GetMapping("/get")
+@GetMapping("/get")
 //	public Users getUser(String username,@CsrfToken CsrfToken token, @AuthenticationPrincipal Users customUser, @CurrentSecurityContext Authentication authentication) {
-public Users getUser(String username,@AuthenticationPrincipal Users customUser,@CurrentSecurityContext SecurityContext securityContext){
-        return userInfoService.getUsers(username);
-        }
+public Users getUser(String username, @AuthenticationPrincipal Users customUser, @CurrentSecurityContext SecurityContext securityContext) {
+    return userInfoService.getUsers(username);
+}
 ```
 
 里面的`SpringWebMvcImportSelector`类注入了`WebMvcSecurityConfiguration`，这就是 springmvc 中`HandlerMethodArgumentResolver`
