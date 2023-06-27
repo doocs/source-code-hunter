@@ -117,6 +117,10 @@
 - [SpringBoot 日志系统](/docs/SpringBoot/SpringBoot-LogSystem.md)
 - [SpringBoot ConditionalOnBean](/docs/SpringBoot/SpringBoot-ConditionalOnBean.md)
 
+### SpringBootBatch
+
+- [SpringBootBatch源码.md](/docs/SpringBootBatch/SpringBootBatch源码.md)
+
 ### Spring Cloud
 
 - [Spring Cloud Commons 源码](docs/SpringCloud/spring-cloud-commons-source-note.md)
