@@ -1,4 +1,4 @@
-# 一个简单的 servlet 容器代码设计
+# 一个简单的 Servlet 容器代码设计
 
 Servlet 算是 Java Web 开发请求链路调用栈中底层的一个技术，当客户端发起一个请求后，到达服务器内部，就会先进入 Servlet（这里不讨论更底层的链路），SpringMVC 的请求分发核心也是一个 Servlet，名叫`DispatcherServlet`，一个请求首先会进入到这个 Servlet，然后在通过 SpringMVC 的机制去分发到对应的 Controller 下。
 
