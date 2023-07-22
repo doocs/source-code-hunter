@@ -1,4 +1,4 @@
-# 简介
+# 一个简单的 servlet 容器代码设计
 
 Servlet 算是 Java Web 开发请求链路调用栈中底层的一个技术，当客户端发起一个请求后，到达服务器内部，就会先进入 Servlet（这里不讨论更底层的链路），SpringMVC 的请求分发核心也是一个 Servlet，名叫`DispatcherServlet`，一个请求首先会进入到这个 Servlet，然后在通过 SpringMVC 的机制去分发到对应的 Controller 下。
 
@@ -6,13 +6,13 @@ Servlet 算是 Java Web 开发请求链路调用栈中底层的一个技术，�
 
 而了解一个 Servlet 容器的实现有助于更好的理解 JavaWeb 开发。
 
-# Github
+## Github 地址
 
 项目最后的实现在 Github 上可以查看到
 
 https://github.com/houxinlin/jerrycat
 
-# 容器的实现
+## 容器的实现
 
 在 JavaWeb 的开发世界，有很多都要遵守规范，JDBC 也是，Servlet 容器也是，Java 很多不去做实现，只做接口，具体的实现留给各大厂商去做，而 Servlet 容器其中一个实现就是 Tomcat。
 
@@ -200,13 +200,13 @@ try {
 
 但这里，请求映射显的有点简单，因为我们少了处理通配符的情况。
 
-# 其余规范
+## 其余规范
 
 其他特性我们不说，但属于 Servlet 规范的容器一定要实现，其余规范还有如 ServletContainerInitializer、Filter 等这里我们都没有实现，ServletContainerInitializer 是一个很有用的东西，SpringBoot 打包成 war 后，就依靠它去启动。
 
 Filter 同样的做法，也是通过 ClassReader 读取，在调用 service 前一步，先调用 Filter。
 
-# 结束
+## 结束
 
 这里只实现了一个容器的雏形中的核心，一个完整的容器，至少要做到提供完整的`HttpServletRequest`的实现，还有`HttpServletResponse`，这里只做演示，没有做太多处理，比如最重要的 Cookie 管理、Session 管理，否则应用程序就无法实现用户登录状态维护。
 
