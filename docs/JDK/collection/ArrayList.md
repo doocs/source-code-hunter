@@ -159,8 +159,8 @@ public void set(E e) {
 ```java
 public E get(int index) {
     rangeCheck(index);
-    checkForComodification();
-    return ArrayList.this.elementData(offset + index);
+
+    return elementData(index);
 }
 ```
 
