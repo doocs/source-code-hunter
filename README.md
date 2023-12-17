@@ -381,17 +381,11 @@ GitHub 技术社区 [Doocs](https://github.com/doocs)，致力于打造一个内
 
 <table>
   <tr>
-    <td align="center" style="width: 200px;">
-      <a href="https://github.com/doocs">
-        <img src="./images/qrcode-for-doocs.jpg" style="width: 400px;"><br>
-        <sub>公众平台</sub>
-      </a><br>
+    <td align="center" style="width: 260px;">
+      <img src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/images/qrcode-for-doocs.png" style="width: 400px;"><br>
     </td>
-    <td align="center" style="width: 200px;">
-      <a href="https://github.com/yanglbme">
-        <img src="./images/qrcode-for-yanglbme.jpg" style="width: 400px;"><br>
-        <sub>个人微信</sub>
-      </a><br>
+    <td align="center" style="width: 260px;">
+      <img src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/images/qrcode-for-yanglbme.png" style="width: 400px;"><br>
     </td>
   </tr>
 </table>
