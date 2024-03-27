@@ -9,7 +9,7 @@
 
 ### 类图
 
-![beanFactory](/images/spring/BeanFactory.png)
+![beanFactory](../../../images/spring/BeanFactory.png)
 
 ### 方法列表
 
@@ -226,11 +226,11 @@ protected void assertBeanFactoryActive() {
 
 - 获取到的对象是`org.springframework.beans.factory.support.DefaultListableBeanFactory`
 
-![image-20200902102912716](images/image-20200902102912716.png)
+![image-20200902102912716](../../../images/spring/image-20200902102912716.png)
 
 - 整体类图
 
-![image-20200902103154580](images/image-20200902103154580.png)
+![image-20200902103154580](../../../images/spring/image-20200902103154580.png)
 
 ### doGetBean
 
@@ -299,7 +299,7 @@ private final Map<String, String> aliasMap = new ConcurrentHashMap<>(16);
 
 aliasMap 和 别名标签的对应关系
 
-![image-20200902105454958](images/image-20200902105454958.png)
+![image-20200902105454958](../../../images/spring/image-20200902105454958.png)
 
 alias 标签的 alias 值作为别名的 key ， alias 标签的 name 值作为 value
 
@@ -704,7 +704,7 @@ protected void clearMergedBeanDefinition(String beanName) {
 - 这个方法获取一个`RootBeanDefinition`对象 ， 这个对象也是 bean 的一种定义。
 - 从目前的几个方法名称来看，暂且认为这是一个合并了多个 `BeanDefinition`的对象吧
 
-![rootBeanDefinition](/images/spring/RootBeanDefinition.png)
+![rootBeanDefinition](../../../images/spring/RootBeanDefinition.png)
 
 ```java
 protected RootBeanDefinition getMergedLocalBeanDefinition(String beanName) throws BeansException {
@@ -1009,7 +1009,7 @@ private boolean isDependent(String beanName, String dependentBeanName, @Nullable
 </bean>
 ```
 
-![image-20200903091759451](images/image-20200903091759451.png)
+![image-20200903091759451](../../../images/spring/image-20200903091759451.png)
 
 #### registerDependentBean
 
@@ -1476,7 +1476,7 @@ protected Object evaluateBeanDefinitionString(@Nullable String value, @Nullable 
 
 - 类图
 
-![](/images/spring/TemplateAwareExpressionParser.png)
+![](../../../images/spring/TemplateAwareExpressionParser.png)
 
 ###### BeanExpressionContext
 
@@ -1562,7 +1562,7 @@ private Expression parseTemplate(String expressionString, ParserContext context)
 }
 ```
 
-![image-20200903111128603](images/image-20200903111128603.png)
+![image-20200903111128603](../../../images/spring/image-20200903111128603.png)
 
 - `parseExpressions`
 
@@ -2175,7 +2175,7 @@ try {
 
 pvs 属性如下
 
-![image-20200903150738285](images/image-20200903150738285.png)
+![image-20200903150738285](../../../images/spring/image-20200903150738285.png)
 
 ###### applyPropertyValues
 
@@ -2304,7 +2304,7 @@ try {
 }
 ```
 
-![image-20200903150930186](images/image-20200903150930186.png)
+![image-20200903150930186](../../../images/spring/image-20200903150930186.png)
 
 ###### initializeBean
 
@@ -2461,7 +2461,7 @@ protected void invokeInitMethods(String beanName, final Object bean, @Nullable R
 }
 ```
 
-![image-20200903153057321](images/image-20200903153057321.png)
+![image-20200903153057321](../../../images/spring/image-20200903153057321.png)
 
 我们现在的 bean 不是`InitializingBean` 会走自定义的`init-mthod`方法
 
@@ -2483,15 +2483,15 @@ protected void invokeInitMethods(String beanName, final Object bean, @Nullable R
 
 - 观察 `initMethodName` 会变成 标签属性`init-method` 的内容. 接下来就是通过反射执行方法
 
-![image-20200903153432559](images/image-20200903153432559.png)
+![image-20200903153432559](../../../images/spring/image-20200903153432559.png)
 
 - 在执行方法前将 bean 的信息先做一次截图
 
-  ![image-20200903153533141](images/image-20200903153533141.png)
+  ![image-20200903153533141](../../../images/spring/image-20200903153533141.png)
 
 - 如果按照我们代码中的编写方式 bean 的属性会被覆盖
 
-  ![image-20200903153617353](images/image-20200903153617353.png)
+  ![image-20200903153617353](../../../images/spring/image-20200903153617353.png)
 
 ###### invokeCustomInitMethod
 
