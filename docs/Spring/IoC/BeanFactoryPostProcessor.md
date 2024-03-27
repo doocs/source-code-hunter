@@ -1,6 +1,6 @@
-# BeanFactoryBeanPostProcessor 源码分析
+# BeanFactoryPostProcessor 源码分析
 
-BeanFactoryBeanPostProcessor 是当 BeanDefinition 读取完元数据（也就是从任意资源中定义的 bean 数据）后还未实例化之前可以进行修改
+BeanFactoryPostProcessor 是当 BeanDefinition 读取完元数据（也就是从任意资源中定义的 bean 数据）后还未实例化之前可以进行修改
 
 抄录并翻译官方的语句
 
