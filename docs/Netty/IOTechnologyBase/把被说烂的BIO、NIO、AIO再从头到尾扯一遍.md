@@ -263,7 +263,7 @@ Selector（选择器）用于监听多个通道的事件（比如：连接打开
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/2019112120352588.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4MDM4Mzk2,size_16,color_FFFFFF,t_70)
 
-NIO 处理方式，一个线程可以管理过个网络连接
+NIO 处理方式，一个线程可以管理多个网络连接
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20191121203602279.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM4MDM4Mzk2,size_16,color_FFFFFF,t_70)
 
