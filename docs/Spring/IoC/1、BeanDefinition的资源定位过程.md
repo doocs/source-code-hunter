@@ -211,7 +211,7 @@ protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throw
     // 继承了 DefaultResourceLoader，因此，本容器自身也是一个资源加载器
     beanDefinitionReader.setResourceLoader(this);
     // 设置 SAX 解析器，SAX（simple API for XML）是另一种 XML 解析方法。相比于 DOM，SAX 速度更快，占用内存更小。
-    // 它逐行扫描文档，一边扫描一边解析。相比于先将整个 XML 文件扫描近内存，再进行解析的 DOM，SAX 可以在解析文档的
+    // 它逐行扫描文档，一边扫描一边解析。相比于先将整个 XML 文件扫描进内存，再进行解析的 DOM，SAX 可以在解析文档的
     // 任意时刻停止解析，但操作也比 DOM 复杂。
     beanDefinitionReader.setEntityResolver(new ResourceEntityResolver(this));
 
