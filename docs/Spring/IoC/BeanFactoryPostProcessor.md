@@ -190,8 +190,8 @@ package cn.demo1;
 @Getter
 @ToString
 public class Address {
+    private String province;
     private String city;
-    private String town;
 }
 
 ```
