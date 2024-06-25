@@ -6,7 +6,7 @@ Selector、SelectionKey 和 Channel 这三个组件构成了 Java nio 包的核�
 
 ### Selector
 
-其实，不管是 Selector 还是 SelectionKey 的源码，其具体实现类都是依赖于底层操作系统的，这里我们只看一下抽象类 Selector 的源码，日后有事件，再找一些具体的实现类深入分析一下。
+其实，不管是 Selector 还是 SelectionKey 的源码，其具体实现类都是依赖于底层操作系统的，这里我们只看一下抽象类 Selector 的源码，日后有时间，再找一些具体的实现类深入分析一下。
 
 ```java
 public abstract class Selector implements Closeable {
