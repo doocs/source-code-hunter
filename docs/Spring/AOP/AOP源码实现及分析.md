@@ -298,7 +298,7 @@ public class ProxyCreatorSupport extends AdvisedSupport {
     }
 ```
 
-可以看到其根据目标对象是否实现了接口，而决定是使用 JDK 动态代理 还是 CGLIB 去生成代理对象，而 AopProxy 接口的实现类也只有 JdkDynamicAopProxy 和 CglibAopProxy 这两个。
+可以看到其根据目标对象是否为接口，而决定是使用 JDK 动态代理 还是 CGLIB 去生成代理对象，而 AopProxy 接口的实现类也只有 JdkDynamicAopProxy 和 CglibAopProxy 这两个。
 
 ### 2.5 JDK 动态代理 生成 AopProxy 代理对象
 
