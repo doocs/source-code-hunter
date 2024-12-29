@@ -85,7 +85,7 @@ MyBatis 提供的缓存功能，分别为一级缓存和二级缓存。BaseExecu
 
 为了避免上述问题，MyBatis 会在 Executor 对象中建立一个简单的一级缓存，将每次查询的结果集缓存起来。在执行查询操作时，会先查询一级缓存，如果存在完全一样的查询情况，则直接从一级缓存中取出相应的结果对象并返回给用户，减少数据库访问次数，从而减小了数据库的压力。
 
-一级缓存的生命周期与 SqlSession 相同，其实也就与 SqISession 中封装的 Executor 对象的生命周期相同。当调用 Executor 对象的 close()方法时（断开连接），该 Executor 对象对应的一级缓存就会被废弃掉。一级缓存中对象的存活时间受很多方面的影响，例如，在调用 Executor 的 update()方法时，也会先请空一级缓存。一级缓存默认是开启的，一般情况下，不需要用户进行特殊配置。
+一级缓存的生命周期与 SqlSession 相同，其实也就与 SqISession 中封装的 Executor 对象的生命周期相同。当调用 Executor 对象的 close()方法时（断开连接），该 Executor 对象对应的一级缓存就会被废弃掉。一级缓存中对象的存活时间受很多方面的影响，例如，在调用 Executor 的 update()方法时，也会先清空一级缓存。一级缓存默认是开启的，一般情况下，不需要用户进行特殊配置。
 
 ### 1.2 一级缓存的管理
 
@@ -375,7 +375,7 @@ public class SimpleExecutor extends BaseExecutor {
 
 ReuseExecutor 提供了 Statement 复用的功能，ReuseExecutor 中通过 statementMap 字段缓存使用过的 Statement 对象，key 是 SQL 语句，value 是 SQL 对应的 Statement 对象。
 
-ReuseExecutor.doQuery()、doQueryCursor()、doUpdate()方法的实现与 SimpleExecutor 中对应方法的实现一样，区别在于其中调用的 prepareStatement()方法，SimpleExecutor 每次都会通过 JDBC 的 Connection 对象创建新的 Statement 对象，而 ReuseExecutor 则会先尝试重用 StaternentMap 中缓存的 Statement 对象。
+ReuseExecutor.doQuery()、doQueryCursor()、doUpdate()方法的实现与 SimpleExecutor 中对应方法的实现一样，区别在于其中调用的 prepareStatement()方法，SimpleExecutor 每次都会通过 JDBC 的 Connection 对象创建新的 Statement 对象，而 ReuseExecutor 则会先尝试重用 StatementMap 中缓存的 Statement 对象。
 
 ```java
   // 本map用于缓存使用过的Statement，以提升本框架的性能
@@ -438,7 +438,7 @@ ReuseExecutor.doQuery()、doQueryCursor()、doUpdate()方法的实现与 SimpleE
 
 （3）缓存预编译
 
-预编译语句被 DB 的编译器编译后的执行代码被缓存下来，那么下次调用时只要是相同的预编译语句就不需要重复编译，只要将参数直接传入编译过的语句执行代码中(相当于一个函数)就会得到执行。并不是所以预编译语句都一定会被缓存，数据库本身会用一种策略（内部机制）。
+预编译语句被 DB 的编译器编译后的执行代码被缓存下来，那么下次调用时只要是相同的预编译语句就不需要重复编译，只要将参数直接传入编译过的语句执行代码中(相当于一个函数)就会得到执行。并不是所有预编译语句都一定会被缓存，数据库本身会用一种策略（内部机制）。
 
 （4） 预编译的实现方法
 
