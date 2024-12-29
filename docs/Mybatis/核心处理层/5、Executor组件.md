@@ -375,7 +375,7 @@ public class SimpleExecutor extends BaseExecutor {
 
 ReuseExecutor 提供了 Statement 复用的功能，ReuseExecutor 中通过 statementMap 字段缓存使用过的 Statement 对象，key 是 SQL 语句，value 是 SQL 对应的 Statement 对象。
 
-ReuseExecutor.doQuery()、doQueryCursor()、doUpdate()方法的实现与 SimpleExecutor 中对应方法的实现一样，区别在于其中调用的 prepareStatement()方法，SimpleExecutor 每次都会通过 JDBC 的 Connection 对象创建新的 Statement 对象，而 ReuseExecutor 则会先尝试重用 StaternentMap 中缓存的 Statement 对象。
+ReuseExecutor.doQuery()、doQueryCursor()、doUpdate()方法的实现与 SimpleExecutor 中对应方法的实现一样，区别在于其中调用的 prepareStatement()方法，SimpleExecutor 每次都会通过 JDBC 的 Connection 对象创建新的 Statement 对象，而 ReuseExecutor 则会先尝试重用 StatementMap 中缓存的 Statement 对象。
 
 ```java
   // 本map用于缓存使用过的Statement，以提升本框架的性能
