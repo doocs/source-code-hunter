@@ -163,7 +163,7 @@
 - [Mybatis-ObjectWrapper](/docs/Mybatis/核心处理层/Mybatis-ObjectWrapper.md)
 - [Mybatis-ParamNameResolver](/docs/Mybatis/核心处理层/Mybatis-ParamNameResolver.md)
 - [Mybatis-SqlCommand](/docs/Mybatis/核心处理层/Mybatis-SqlCommand.md)
-- [Mybats-GenericTokenParser](/docs/Mybatis/核心处理层/Mybats-GenericTokenParser.md)
+- [Mybatis-GenericTokenParser](/docs/Mybatis/核心处理层/Mybatis-GenericTokenParser.md)
 
 ## Netty
 
