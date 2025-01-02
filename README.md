@@ -156,14 +156,14 @@
 - [Mybatis-Alias](/docs/Mybatis/核心处理层/Mybatis-Alias.md)
 - [Mybatis-Cursor](/docs/Mybatis/核心处理层/Mybatis-Cursor.md)
 - [Mybatis-DataSource](/docs/Mybatis/核心处理层/Mybatis-DataSource.md)
-- [Mybatis-DyanmicSqlSourcce](/docs/Mybatis/核心处理层/Mybatis-DyanmicSqlSourcce.md)
+- [Mybatis-DynamicSqlSource](/docs/Mybatis/核心处理层/Mybatis-DynamicSqlSource.md)
 - [Mybatis-MapperMethod](/docs/Mybatis/核心处理层/Mybatis-MapperMethod.md)
 - [Mybatis-MetaObject](/docs/Mybatis/核心处理层/Mybatis-MetaObject.md)
 - [Mybatis-MethodSignature](/docs/Mybatis/核心处理层/Mybatis-MethodSignature.md)
 - [Mybatis-ObjectWrapper](/docs/Mybatis/核心处理层/Mybatis-ObjectWrapper.md)
 - [Mybatis-ParamNameResolver](/docs/Mybatis/核心处理层/Mybatis-ParamNameResolver.md)
 - [Mybatis-SqlCommand](/docs/Mybatis/核心处理层/Mybatis-SqlCommand.md)
-- [Mybats-GenericTokenParser](/docs/Mybatis/核心处理层/Mybats-GenericTokenParser.md)
+- [Mybatis-GenericTokenParser](/docs/Mybatis/核心处理层/Mybatis-GenericTokenParser.md)
 
 ## Netty
 

@@ -1,4 +1,4 @@
-# Mybatis DyanmicSqlSourcce
+# Mybatis DynamicSqlSource
 
 - Author: [HuiFer](https://github.com/huifer)
 - 源码阅读工程: [SourceHot-Mybatis](https://github.com/SourceHot/mybatis-read.git)
@@ -257,7 +257,7 @@ public class StaticTextSqlNode implements SqlNode {
         Statement stmt;
         // 数据库连接
         Connection connection = getConnection(statementLog);
-        // stms 创建
+        // stmt 创建
         // org.apache.ibatis.executor.statement.BaseStatementHandler.prepare
         stmt = handler.prepare(connection, transaction.getTimeout());
         // 参数放入

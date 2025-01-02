@@ -90,7 +90,7 @@
         }
 
         /**
-         * 是否uresultHandler
+         * 是否有 resultHandler
          *
          * @return
          */
