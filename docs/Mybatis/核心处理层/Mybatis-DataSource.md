@@ -133,7 +133,7 @@ public class JndiDataSourceFactory implements DataSourceFactory {
 ## PooledDataSource
 
 ```java
-	protected int poolMaximumActiveConnections = 10;
+    protected int poolMaximumActiveConnections = 10;
     protected int poolMaximumIdleConnections = 5;
     protected int poolMaximumCheckoutTime = 20000;
     protected int poolTimeToWait = 20000;
@@ -155,7 +155,7 @@ public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
 
 }
 
-	// 初始化
+    // 初始化
     public PooledDataSource() {
         dataSource = new UnpooledDataSource();
     }
