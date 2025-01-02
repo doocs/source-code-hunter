@@ -213,7 +213,7 @@ class HfReflectorTest {
           Map<String, Method> uniqueMethods = new HashMap<>();
           Class<?> currentClass = clazz;
           while (currentClass != null && currentClass != Object.class) {
-              // getDeclaredMethods 获取 public ,private , protcted 方法
+              // getDeclaredMethods 获取 public ,private , protected 方法
               addUniqueMethods(uniqueMethods, currentClass.getDeclaredMethods());
 
               // we also need to look for interface methods -
