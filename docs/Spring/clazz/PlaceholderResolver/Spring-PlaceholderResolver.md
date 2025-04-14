@@ -24,4 +24,4 @@
 
 - 类图如下
 
-![PropertyPlaceholderConfigurerResolver](/images/spring/PropertyPlaceholderConfigurerResolver.png)
+![PropertyPlaceholderConfigurerResolver](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/PropertyPlaceholderConfigurerResolver.png)

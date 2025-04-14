@@ -24,7 +24,7 @@
 
 这个 TransactionAspectSupport 的 createTransactionIfNecessary()方法 作为事务创建的入口，其具体的实现时序如下图所示。在 createTransactionIfNecessary()方法 的调用中，会向 AbstractTransactionManager 执行 getTransaction()方法，这个获取 Transaction 事务对象 的过程，在 AbstractTransactionManager 实现 中需要对事务的情况做出不同的处理，然后，创建一个 TransactionStatus，并把这个 TransactionStatus 设置到对应的 TransactionInfo 中去，同时将 TransactionInfo 和当前的线程绑定，从而完成事务的创建过程。createTransactionIfNeccessary()方法 调用中，可以看到两个重要的数据对象 TransactionStatus 和 TransactionInfo 的创建，这两个对象持有的数据是事务处理器对事务进行处理的主要依据，对这两个对象的使用贯穿着整个事务处理的全过程。
 
-![avatar](<images/springTransaction/调用createTransactionIfNecessary()方法的时序图.png>)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/springTransaction/调用createTransactionIfNecessary()方法的时序图.png)
 
 ```java
 public abstract class TransactionAspectSupport implements BeanFactoryAware, InitializingBean {
