@@ -172,7 +172,7 @@ public class ParamNameResolver {
 ```
 
 如果不写`@Param`称则返回
-![image-20191219083223084](assets/image-20191219083223084.png)
+![image-20191219083223084](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/image-20191219083223084.png)
 
 ```java
     List<HsSell> list(@Param("ID") Integer id);
@@ -180,9 +180,9 @@ public class ParamNameResolver {
 
 - 写`@Param`返回
 
-![image-20191219083344439](../../../images/mybatis/image-20191219083344439.png)
+![image-20191219083344439](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/mybatis/image-20191219083344439.png)
 
-![image-20191219083354873](../../../images/mybatis/image-20191219083354873.png)
+![image-20191219083354873](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/mybatis/image-20191219083354873.png)
 
 - `org.apache.ibatis.reflection.ParamNameResolver#getNamedParams`
 
@@ -190,7 +190,7 @@ public class ParamNameResolver {
       List<HsSell> list( Integer id);
   ```
 
-![image-20191219084455292](../../../images/mybatis/image-20191219084455292.png)
+![image-20191219084455292](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/mybatis/image-20191219084455292.png)
 
 ```java
     List<HsSell> list(@Param("ID") Integer id);
@@ -198,6 +198,6 @@ public class ParamNameResolver {
 
 ​ 写上`@Param`
 
-![image-20191219084943102](../../../images/mybatis/image-20191219084943102.png)
+![image-20191219084943102](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/mybatis/image-20191219084943102.png)
 
-![image-20191219085131167](../../../images/mybatis/image-20191219085131167.png)
+![image-20191219085131167](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/mybatis/image-20191219085131167.png)

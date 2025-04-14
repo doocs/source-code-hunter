@@ -268,43 +268,41 @@
 
 ```java
 public static void doReleaseConnection(@Nullable Connection con, @Nullable DataSource dataSource) throws SQLException {
-        if (con == null) {
+    if (con == null) {
+        return;
+    }
+    if (dataSource != null) {
+        ConnectionHolder conHolder = (ConnectionHolder) TransactionSynchronizationManager.getResource(dataSource);
+        if (conHolder != null && connectionEquals(conHolder, con)) {
+            // It's the transactional Connection: Don't close it.
+            // 连接数-1
+            conHolder.released();
             return;
         }
-        if (dataSource != null) {
-            ConnectionHolder conHolder = (ConnectionHolder) TransactionSynchronizationManager.getResource(dataSource);
-            if (conHolder != null && connectionEquals(conHolder, con)) {
-                // It's the transactional Connection: Don't close it.
-                // 连接数-1
-                conHolder.released();
-                return;
-            }
-        }
-        // 处理其他情况
-        doCloseConnection(con, dataSource);
     }
+    // 处理其他情况
+    doCloseConnection(con, dataSource);
+}
 ```
 
-### org.springframework.transaction.support.ResourceHolderSupport
-
-链接数
+- `org.springframework.transaction.support.ResourceHolderSupport`
 
 ```java
-    /**
-     * Increase the reference count by one because the holder has been requested
-     * (i.e. someone requested the resource held by it).
-     */
-    public void requested() {
-        this.referenceCount++;
-    }
+/**
+ * Increase the reference count by one because the holder has been requested
+ * (i.e. someone requested the resource held by it).
+ */
+public void requested() {
+    this.referenceCount++;
+}
 
-    /**
-     * Decrease the reference count by one because the holder has been released
-     * (i.e. someone released the resource held by it).
-     */
-    public void released() {
-        this.referenceCount--;
-    }
+/**
+ * Decrease the reference count by one because the holder has been released
+ * (i.e. someone released the resource held by it).
+ */
+public void released() {
+    this.referenceCount--;
+}
 ```
 
 ## 查询解析
@@ -427,7 +425,7 @@ public void setDataSource(@Nullable DataSource dataSource) {
 
 ```
 
-![image-20200109150841916](../../../images/spring/image-20200109150841916.png)
+![image-20200109150841916](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200109150841916.png)
 
 这样就可以获取到了
 

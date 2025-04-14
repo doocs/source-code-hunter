@@ -43,7 +43,7 @@ org.springframework.boot.autoconfigure.batch.BatchConfigurerConfiguration.Condit
 ##### SimpleBatchConfiguration
 
 这个类继承了`AbstractBatchConfiguration`。因为继承了`InitializingBean`执行`afterPropertiesSet`
-,创建出俩个类`jobBuilderFactory`和 `stepBuilderFactory`.
+, 创建出俩个类`jobBuilderFactory`和 `stepBuilderFactory`.
 
 ###### JobBuilderFactory
 
@@ -201,12 +201,12 @@ public Step step() {
             .listener(new StepExecutionListener() {
                 @Override
                 public void beforeStep(StepExecution stepExecution) {
-                    System.out.println("step-我是beforeJob--" + stepExecution);
+                    System.out.println("step-我是 beforeJob--" + stepExecution);
                 }
 
                 @Override
                 public ExitStatus afterStep(StepExecution stepExecution) {
-                    System.out.println("step-我是beforeJob--" + stepExecution);
+                    System.out.println("step-我是 beforeJob--" + stepExecution);
                     return stepExecution.getExitStatus();
                 }
             })
@@ -260,7 +260,7 @@ public<I, O> SimpleStepBuilder<I, O> chunk(int chunkSize){
 ```
 
 创建一个`SimpleStepBuilder`，并确定泛型，设置一个`chunkSize`
-大小。翻译一下注释`构建一个步骤，以提供的大小分块处理项目。要将步骤扩展为容错，请在构建器上调用SimpleStepBuilder.faultTolerant()方法。在大多数情况下，您需要参数化对此方法的调用，以保护读者和作者的类型安全`
+大小。翻译一下注释`构建一个步骤，以提供的大小分块处理项目。要将步骤扩展为容错，请在构建器上调用 SimpleStepBuilder.faultTolerant()方法。在大多数情况下，您需要参数化对此方法的调用，以保护读者和作者的类型安全`
 ，chunkSize – 块大小（提交间隔）。
 接下来都是操作`SimpleStepBuilder`类。这个大小也就是是每次读取多少次。
 `SimpleStepBuilder`继承`AbstractTaskletStepBuilder<SimpleStepBuilder<I, O>>`
@@ -410,7 +410,7 @@ public TaskletStep build() {
 注意：模板在迭代过程中累积抛出的异常，当主循环结束时（即完成对项目的处理），它们都会一起处理。不希望在引发异常时停止执行的客户端可以使用在收到异常时未完成的特定
 CompletionPolicy 。这不是默认行为。
 想要在 引发 RepeatCallback 异常时执行某些业务操作的客户端可以考虑使用自定义，而不是尝试自定义 RepeatListener
-CompletionPolicy.这通常是一个更友好的接口来实现，该方法在回调的结果中传递，如果业务处理抛出异常， RepeatListener.after(
+CompletionPolicy. 这通常是一个更友好的接口来实现，该方法在回调的结果中传递，如果业务处理抛出异常， RepeatListener.after(
 RepeatContext, RepeatStatus) 这将是一个实例 Throwable 。
 如果不将异常传播到调用方，则还需要提供非默认值 CompletionPolicy ，但这可能是现成的，业务操作仅在拦截器中实现。
 
@@ -479,7 +479,7 @@ protected CompletionPolicy getChunkCompletionPolicy() {
 }
 ```
 
-每次处理大小：`在固定数量的操作后终止批处理的策略。维护内部状态并增加计数器，因此成功使用此策略需要每个批处理项仅调用一次isComplete()。使用标准的RepeatTemplate应确保保留此合同，但需要仔细监控。`
+每次处理大小：`在固定数量的操作后终止批处理的策略。维护内部状态并增加计数器，因此成功使用此策略需要每个批处理项仅调用一次 isComplete()。使用标准的 RepeatTemplate 应确保保留此合同，但需要仔细监控。`
 留心观察一下就会发现，这个值是`.<Integer, Integer>chunk(2)`这里的
 2，里面还可以传一个` chunk(CompletionPolicy completionPolicy)`。
 
@@ -951,8 +951,8 @@ public C register(@Nullable E execution) {
 
 ```java
     /**
- * 当前执行的存储; 必须是ThreadLocal的，因为它需要在不属于步骤/作业的组件中定位上下文 (如重新补水作用域代理时)。不使用InheritableThreadLocal，因为如果一个步骤试图运行多个子步骤 (例如分区)，会有副作用。
- * 堆栈用于覆盖单线程的情况，从而使API与多线程相同。
+ * 当前执行的存储; 必须是 ThreadLocal 的，因为它需要在不属于步骤 / 作业的组件中定位上下文 (如重新补水作用域代理时)。不使用 InheritableThreadLocal，因为如果一个步骤试图运行多个子步骤 (例如分区)，会有副作用。
+ * 堆栈用于覆盖单线程的情况，从而使 API 与多线程相同。
  */
 private final ThreadLocal<Stack<E>>executionHolder=new ThreadLocal<>();
 
@@ -1041,7 +1041,7 @@ private void updateStatus(JobExecution jobExecution, BatchStatus status) {
 
 > jobExecution.setStatus(status);
 
-设置当前状态.
+设置当前状态 .
 
 > jobRepository.update(jobExecution);
 
@@ -1087,7 +1087,7 @@ public void synchronizeStatus(JobExecution jobExecution) {
 }
 ```
 
-版本不一样就更新，然后版本++，这里版本没有改变。回到`SimpleJobRepository#update(JobExecution jobExecution)`
+版本不一样就更新，然后版本 ++，这里版本没有改变。回到`SimpleJobRepository#update(JobExecution jobExecution)`
 。如果状态`STOPPING`并且结束时间不为空，就使用`jobExecution`更新。这里也没有结束，不需要更新。
 
 > jobExecutionDao.updateJobExecution(jobExecution);
@@ -2190,7 +2190,7 @@ public RepeatStatus doInTransaction(TransactionStatus status) {
 > oldVersion = new StepExecution(stepExecution.getStepName(), stepExecution.getJobExecution()); copy(stepExecution,
 > oldVersion);
 
-如果提交失败后我们需要将其推回到旧值......，赋值一份用来进行回滚。
+如果提交失败后我们需要将其推回到旧值 ......，赋值一份用来进行回滚。
 
 > result = tasklet.execute(contribution, chunkContext);
 
@@ -2482,7 +2482,7 @@ protected final O doProcess(I item) throws Exception {
 
 > write(contribution, inputs, getAdjustedOutputs(inputs, outputs));
 
-如果需要的话，调整输出以进行内务处理，然后将它们写出来......
+如果需要的话，调整输出以进行内务处理，然后将它们写出来 ......
 
 ```java
 /**
@@ -2543,7 +2543,7 @@ protected final void doWrite(List<O> items) throws Exception {
 `writeItems(items);`:自己写的`itemWriter`。执行里面的方法。
 `doAfterWrite(items)`：执行`ItemWriteListener#afterWrite`方法。
 
-这里我们要注意，这只是一次，也就是我们写的 `stepBuilders.get("test-step").<Integer, Integer>chunk(2)`,读取俩次值放入 Chunk
+这里我们要注意，这只是一次，也就是我们写的 `stepBuilders.get("test-step").<Integer, Integer>chunk(2)`, 读取俩次值放入 Chunk
 中，再`RepeatTemplate#iterate(RepeatCallback callback)`
 调用 `RepeatTemplate#executeInternal(final RepeatCallback callback)`里面。有个 while
 循环，出去条件就是`isComplete(context, result) || isMarkedComplete(context) || !deferred.isEmpty()`
@@ -2568,7 +2568,7 @@ protected final void doWrite(List<O> items) throws Exception {
 
 然后接着执行 finally 中的代码。
 semaphore.acquire(); 信号量，锁上。
-locked = true; 锁=true。
+locked = true; 锁 =true。
 
 如果步骤操作是异步的，那么我们需要将更改同步到步骤执行（至少）。在更改步骤执行之前锁定。
 
@@ -2670,7 +2670,7 @@ private boolean isMarkedComplete(RepeatContext context) {
 `doExecutionRelease();`
 
 回到`SimpleStepHandler#handleStep(Step step, JobExecution execution)`
-。刚刚我们所有方法都是在`step.execute(currentStepExecution);`中执行的。继续也是一些异常处理,关键就下面几句。
+。刚刚我们所有方法都是在`step.execute(currentStepExecution);`中执行的。继续也是一些异常处理 , 关键就下面几句。
 `currentStepExecution.getExecutionContext().put("batch.executed", true);`
 `jobRepository.updateExecutionContext(execution);`
 

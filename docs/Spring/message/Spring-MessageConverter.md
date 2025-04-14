@@ -8,7 +8,7 @@
 
 - 消息转换接口
 - 类图如下
-  ![image-20200305085013723](../../../images/springmessage/image-20200305085013723.png)
+  ![image-20200305085013723](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/springmessage/image-20200305085013723.png)
 - 两个方法
 
 1. fromMessage: 从消息转换到 Object
@@ -34,7 +34,7 @@
 
 类图:
 
-![image-20200305085845017](../../../images/springmessage/image-20200305085845017.png)
+![image-20200305085845017](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/springmessage/image-20200305085845017.png)
 
 ### fromMessage
 
@@ -181,6 +181,6 @@
 
 - 两种创建方式基本相同，如果出现异常组装异常消息对象`ErrorMessage`,成功创建`GenericMessage`
 
-![image-20200305090846313](../../../images/springmessage/image-20200305090846313.png)
+![image-20200305090846313](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/springmessage/image-20200305090846313.png)
 
 从类图上看`ErrorMessage`是`GenericMessage`的子类

@@ -829,7 +829,7 @@ class PooledConnection implements InvocationHandler {
 
 装饰器模式能够帮助我们解决上述问题，装饰器可以动态地为对象添加功能，它是基于组合的方式实现该功能的。在实践中，我们应该尽量使用组合的方式来扩展系统的功能，而非使用继承的方式。通过装饰器模式的介绍，可以帮助读者更好地理解设计模式中常见的一句话：组合优于继承。下面先来看一下装饰器模式的类图，及其核心角色。
 
-![avatar](../../../images/DesignPattern/装饰器模式类图.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/DesignPattern/装饰器模式类图.png)
 
 - Component (组件)：组件接口定义了全部 “组件实现类” 以及所有 “装饰器实现” 的行为。
 - ConcreteComponent (具体组件实现类)：通常情况下，具体组件实现类就是被装饰器装饰的原始对象，该类提供了 Component 接口中定义的最基本的功能，其他高级功能或后续添加的新功能，都是通过装饰器的方式添加到该类的对象之上的。

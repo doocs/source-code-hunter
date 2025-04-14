@@ -514,7 +514,7 @@ public class SmartTransformerFactoryImpl extends SAXTransformerFactory {
 
 该模式主要用于将复杂对象的构建过程分解成一个个简单的步骤，或者分摊到多个类中进行构建，保证构建过程层次清晰，代码不会过分臃肿，屏蔽掉了复杂对象内部的具体构建细节，其类图结构如下所示。
 
-![avatar](../../../images/DesignPattern/建造者模式类图.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/DesignPattern/建造者模式类图.png)
 
 该模式的主要角色如下：
 

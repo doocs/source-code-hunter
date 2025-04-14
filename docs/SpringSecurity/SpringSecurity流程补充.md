@@ -211,7 +211,8 @@ Arrays.asList(DispatcherType.ASYNC， DispatcherType.ERROR， DispatcherType.REQ
 
 注意: 这里需要了解一下`DelegatingFilterProxyRegistrationBean`以及 spring 如何整合 filter 和 mvc 的。 springSecurity 核心就是 filter
 
-![img.png](../../images/SpringSecurity/img-2023-6-7_0.png)image.png
+![img.png](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringSecurity/img-2023-6-7_0.png)
+
 `DelegatingFilterProxyRegistrationBean`和`FilterRegistrationBean`都是继承的`RegistrationBean`，而`RegistrationBean`
 又是`ServletContextInitializer`的实现类。其中`void onStartup(ServletContext servletContext)`方法是关键。 在`javax.servlet`
 中，存在这样一个类
@@ -312,9 +313,9 @@ public @interface EnableWebSecurity {
 这里有几个类需要了解`SecurityConfigurer`和`SecurityBuilder`
 
 先了解一下结构
-![img_1.png](../../images/SpringSecurity/img-2023-6-7_1.png)
+![img_1.png](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringSecurity/img-2023-6-7_1.png)
 
-![img_2.png](../../images/SpringSecurity/img-2023-6-7-_2.png)
+![img_2.png](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringSecurity/img-2023-6-7-_2.png)
 
 使用`WebSecurity`
 聚合了`private final LinkedHashMap<Class<? extends SecurityConfigurer<O, B>>, List<SecurityConfigurer<O, B>>> configurers = new LinkedHashMap<>();`
@@ -610,7 +611,7 @@ throw new IllegalArgumentException("The Filter class "+filter.getClass().getName
 
 后面调用的`.anyRequest()`，也就是`AbstractRequestMatcherRegistry#anyRequest()`。先了解一下结构图
 
-![img_3.png](../../images/SpringSecurity/img-2023-6-7-_3.png)
+![img_3.png](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringSecurity/img-2023-6-7-_3.png)
 
 完整调用链就是`AbstractRequestMatcherRegistry#anyRequest()` -> `AbstractRequestMatcherRegistry#requestMatchers(RequestMatcher... requestMatchers)` -> `AbstractConfigAttributeRequestMatcherRegistry#chainRequestMatchers(List<RequestMatcher> requestMatchers)` -> `ExpressionUrlAuthorizationConfigurer#chainRequestMatchersInternal(List<RequestMatcher> requestMatchers)` -> `return new AuthorizedUrl(requestMatchers);`
 
@@ -699,10 +700,11 @@ HttpSecurityConfiguration#httpSecurity()`的时候需要的类，这个类也是
 
 这个就是在`SecurityAutoConfiguration`中创建的 springSecurity 的发布订阅，用来订阅事件
 
-> DefaultPasswordEncoderAuthenticationManagerBuilder result = new DefaultPasswordEncoderAuthenticationManagerBuilder(
-> objectPostProcessor, defaultPasswordEncoder);
+```java
+DefaultPasswordEncoderAuthenticationManagerBuilder result = new DefaultPasswordEncoderAuthenticationManagerBuilder(objectPostProcessor, defaultPasswordEncoder);
+```
 
-就是`AuthenticationManagerBuilder`的真正实现了。接下来回到`getAuthenticationManager()`方法
+就是 `AuthenticationManagerBuilder`的真正实现了。接下来回到`getAuthenticationManager()`方法
 
 ```java
 public AuthenticationManager getAuthenticationManager() throws Exception {
@@ -725,9 +727,11 @@ public AuthenticationManager getAuthenticationManager() throws Exception {
 }
 ```
 
-> AuthenticationManagerBuilder authBuilder = this.applicationContext.getBean(AuthenticationManagerBuilder.class);
+```java
+AuthenticationManagerBuilder authBuilder = this.applicationContext.getBean(AuthenticationManagerBuilder.class);
+```
 
-获取到`DefaultPasswordEncoderAuthenticationManagerBuilder`
+获取到 `DefaultPasswordEncoderAuthenticationManagerBuilder`
 
 ```java
 for (GlobalAuthenticationConfigurerAdapter config : this.globalAuthConfigurers) {

@@ -8,7 +8,7 @@ JavaEE 应用中的事务处理是一个重要并且涉及范围很广的领域�
 
 Spring 事务处理模块的类层次结构如下图所示。
 
-![avatar](../../../images/springTransaction/Spring事务处理模块类层次结构.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/springTransaction/Spring事务处理模块类层次结构.png)
 
 从上图可以看到，Spring 事务处理模块 是通过 AOP 功能 来实现声明式事务处理的，比如事务属性的配置和读取，事务对象的抽象等。因此，在 Spring 事务处理 中，可以通过设计一个 TransactionProxyFactoryBean 来使用 AOP 功能，通过这个 TransactionProxyFactoryBean 可以生成 Proxy 代理对象，在这个代理对象中，通过 TransactionInterceptor 来完成对代理方法的拦截，正是这些 AOP 的拦截功能，将事务处理的功能编织进来。
 

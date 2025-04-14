@@ -2,11 +2,11 @@
 
 J.U.C 的锁组件中 类相对较少，从 JDK 相应的包中也能看出来，下图标记了其中最主要的几个接口和类，也是本文要分析的重点。
 
-![avatar](../../../images/JDK1.8/JUC的locks包.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/JDK1.8/JUC的locks包.png)
 
 下图 将这几个接口和类 以类图的方式展现出来，其中包含了它们所声明的主要方法。
 
-![avatar](../../../images/JDK1.8/JUC锁组件类图.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/JDK1.8/JUC锁组件类图.png)
 
 ## Lock 组件
 

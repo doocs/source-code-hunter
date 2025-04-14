@@ -14,7 +14,7 @@ dubbo 自己实现了一套 SPI 机制，并对 JDK 的 SPI 进行了改进。
 
 下面我们看一下 Dubbo 的 SPI 扩展机制实现的结构目录。
 
-![avatar](../../../images/Dubbo/SPI组件目录结构.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Dubbo/SPI组件目录结构.png)
 
 ### SPI 注解
 

@@ -5,7 +5,7 @@
 
 Netty 采用了典型的三层网络架构进行设计和开发，其逻辑架构图如下所示。
 
-![avatar](../../../images/Netty/Netty逻辑架构图.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/Netty逻辑架构图.png)
 
 ### 通信调度层 Reactor
 

@@ -114,7 +114,7 @@ Netty 主从多线程模型 代码示例如下。
 
 为了尽可能提升性能，Netty 对消息的处理 采用了串行无锁化设计，在 I/O 线程 内部进行串行操作，避免多线程竞争导致的性能下降。Netty 的串行化设计工作原理图如下图所示。
 
-![avatar](../../../images/Netty/Netty串行化设计工作原理.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/Netty串行化设计工作原理.png)
 
 Netty 的 NioEventLoop 读取到消息之后，直接调用 ChannelPipeline 的 fireChannelRead(Object msg)，只要用户不主动切换线程，一直会由 NioEventLoop 调用到 用户的 Handler，期间不进行线程切换。这种串行化处理方式避免了多线程操作导致的锁的竞争，从性能角度看是最优的。
 

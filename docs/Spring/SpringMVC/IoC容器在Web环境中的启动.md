@@ -37,7 +37,7 @@ DispatchServlet 和 ContextLoaderListener 提供了在 Web 容器 中对 Spring 
 
 IoC 容器 的启动过程就是建立上下文的过程，该上下文是与 ServletContext 相伴而生的，同时也是 IoC 容器 在 Web 应用环境 中的具体表现之一。由 ContextLoaderListener 启动的上下文为根上下文。在根上下文的基础上，还有一个与 Web MVC 相关的上下文用来保存控制器(DispatcherServlet)需要的 MVC 对象，作为根上下文的子上下文，构成一个层次化的上下文体系。在 Web 容器 中启动 Spring 应用程序 时，首先建立根上下文，然后建立这个上下文体系，这个上下文体系的建立是由 ContextLoder 来完成的，其 UML 时序图 如下图所示。
 
-![avatar](../../../images/springMVC/Web容器启动spring应用程序过程图.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/springMVC/Web容器启动spring应用程序过程图.png)
 
 在 web.xml 中，已经配置了 ContextLoaderListener，它是 Spring 提供的类，是为在 Web 容器 中建立 IoC 容器 服务的，它实现了 ServletContextListener 接口，这个接口是在 Servlet API 中定义的，提供了与 Servlet 生命周期 结合的回调，比如上下文初始化 contextInitialized()方法 和 上下文销毁 contextDestroyed()方法。而在 Web 容器 中，建立 WebApplicationContext 的过程，是在 contextInitialized()方法 中完成的。另外，ContextLoaderListener 还继承了 ContextLoader，具体的载入 IoC 容器 的过程是由 ContextLoader 来完成的。
 
@@ -48,7 +48,7 @@ IoC 容器 的启动过程就是建立上下文的过程，该上下文是与 Se
 先从 Web 容器 中的上下文入手，看看 Web 环境 中的上下文设置有哪些特别之处，然后再到 ContextLoaderListener 中去了解整个容器启动的过程。为了方便在 Web 环境 中使用 IoC 容器，
 Spring 为 Web 应用 提供了上下文的扩展接口 WebApplicationContext 来满足启动过程的需要，其继承关系如下图所示。
 
-![avatar](../../../images/springMVC/WebApplicationContext接口的类继承关系.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/springMVC/WebApplicationContext接口的类继承关系.png)
 
 在这个类继承关系中，可以从熟悉的 XmlWebApplicationContext 入手来了解它的接口实现。在接口设计中，最后是通过 ApplicationContex 接口 与 BeanFactory 接口 对接的，而对于具体的功能实现，很多都是封装在其基类 AbstractRefreshableWebApplicationContext 中完成的。
 

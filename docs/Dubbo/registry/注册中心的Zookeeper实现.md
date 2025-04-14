@@ -2,7 +2,7 @@ Dubbo 的注册中心虽然提供了多种实现，但生产上的事实标准�
 
 由于 Dubbo 是一个分布式 RPC 开源框架，各服务之间单独部署，往往会出现资源之间数据不一致的问题，比如：某一个服务增加或减少了几台机器，某个服务提供者变更了服务地址，那么服务消费者是很难感知到这种变化的。而 Zookeeper 本身就有保证分布式数据一致性的特性。那么 Dubbo 服务是如何被 Zookeeper 的数据结构存储管理的呢，zookeeper 采用的是树形结构来组织数据节点，它类似于一个标准的文件系统，如下图所示。
 
-![avatar](../../../images/Dubbo/dubbo注册中心在zookeeper中的结构.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Dubbo/dubbo注册中心在zookeeper中的结构.png)
 
 该图展示了 dubbo 在 zookeeper 中存储的形式以及节点层级。dubbo 的 Root 层是根目录，通过<dubbo:registry group="dubbo" />的“group”来设置 zookeeper 的根节点，缺省值是“dubbo”。Service 层是服务接口的全名。Type 层是分类，一共有四种分类，分别是 providers 服务提供者列表、consumers 服务消费者列表、routes 路由规则列表、configurations 配置规则列表。URL 层 根据不同的 Type 目录：可以有服务提供者 URL 、服务消费者 URL 、路由规则 URL 、配置规则 URL 。不同的 Type 关注的 URL 不同。
 
@@ -10,7 +10,7 @@ zookeeper 以斜杠来分割每一层的 znode 节点，比如第一层根节点
 
 dubbo-registry-zookeeper 模块的工程结构如下图所示，里面就俩类，非常简单。
 
-![avatar](../../../images/Dubbo/dubbo-registry-zookeeper模块工程结构图.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Dubbo/dubbo-registry-zookeeper模块工程结构图.png)
 
 ### ZookeeperRegistry
 

@@ -53,7 +53,7 @@ public class ContextNamespaceHandler extends NamespaceHandlerSupport {
 
 ### org.springframework.context.annotation.ComponentScanBeanDefinitionParser
 
-![image-20200115093602651](../../../images/spring/image-20200115093602651.png)
+![image-20200115093602651](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200115093602651.png)
 
 - 实现`BeanDefinitionParser`直接看`parse`方法
 
@@ -302,7 +302,7 @@ public int scan(String... basePackages) {
 
 ```
 
-![image-20200115141708702](../../../images/spring/image-20200115141708702.png)
+![image-20200115141708702](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200115141708702.png)
 
 #### org.springframework.beans.factory.support.BeanNameGenerator#generateBeanName
 
@@ -363,7 +363,7 @@ public class DemoService {
 }
 ```
 
-![image-20200115143315633](../../../images/spring/image-20200115143315633.png)
+![image-20200115143315633](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200115143315633.png)
 
 - `org.springframework.context.annotation.AnnotationBeanNameGenerator#buildDefaultBeanName(org.springframework.beans.factory.config.BeanDefinition, org.springframework.beans.factory.support.BeanDefinitionRegistry)`
   - `org.springframework.context.annotation.AnnotationBeanNameGenerator#buildDefaultBeanName(org.springframework.beans.factory.config.BeanDefinition)`
@@ -393,7 +393,7 @@ public class BeanConfig {
 
 ```
 
-![image-20200115143456554](../../../images/spring/image-20200115143456554.png)
+![image-20200115143456554](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200115143456554.png)
 
 #### org.springframework.context.annotation.ClassPathBeanDefinitionScanner#postProcessBeanDefinition
 

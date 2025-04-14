@@ -58,7 +58,7 @@ public interface MultiValueMap<K, V> extends Map<K, List<V>> {
 
 类图
 
-![](/images/spring/MultiValueMap.png)
+![](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/MultiValueMap.png)
 
 ## LinkedMultiValueMap
 

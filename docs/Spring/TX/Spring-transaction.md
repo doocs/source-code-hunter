@@ -257,7 +257,7 @@ public class ProxyTransactionManagementConfiguration extends AbstractTransaction
 
 ### TransactionInterceptor
 
-![image-20200729144622440](/images/spring/image-20200729144622440.png)
+![image-20200729144622440](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200729144622440.png)
 
 - 实现了`org.aopalliance.intercept.MethodInterceptor`接口的方法
 
@@ -310,19 +310,19 @@ public class DeclarativeTransactionTest {
 }
 ```
 
-![image-20200729145518089](/images/spring/image-20200729145518089.png)
+![image-20200729145518089](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200729145518089.png)
 
 断点开始进行查阅. 再断点后执行一步会直接进入 cglib 代理对象
 
 `org.springframework.aop.framework.CglibAopProxy.DynamicAdvisedInterceptor#intercept` 具体不展开，继续往下执行
 
-![image-20200729145637688](/images/spring/image-20200729145637688.png)
+![image-20200729145637688](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200729145637688.png)
 
 走到`invoke`方法了
 
 入参对象查看
 
-![image-20200729145835608](/images/spring/image-20200729145835608.png)
+![image-20200729145835608](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200729145835608.png)
 
 - 获取事务属性
 
@@ -377,7 +377,7 @@ public class DeclarativeTransactionTest {
 
   ```
 
-![image-20200729162023837](/images/spring/image-20200729162023837.png)
+![image-20200729162023837](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200729162023837.png)
 
 - 此处方法已经获取到了这个方法就是后面的一个切面
 
@@ -423,7 +423,7 @@ public class DeclarativeTransactionTest {
   }
   ```
 
-![image-20200729160650401](/images/spring/image-20200729160650401.png)
+![image-20200729160650401](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200729160650401.png)
 
 - 类型转换
 
@@ -462,7 +462,7 @@ public class DeclarativeTransactionTest {
   }
   ```
 
-![image-20200729161647214](/images/spring/image-20200729161647214.png)
+![image-20200729161647214](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200729161647214.png)
 
 - 创建一个新的事务根据事务传播性
 
@@ -501,7 +501,7 @@ public class DeclarativeTransactionTest {
 
   ```
 
-![image-20200729163303000](/images/spring/image-20200729163303000.png)
+![image-20200729163303000](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200729163303000.png)
 
 - `tm.getTransaction`
 
@@ -878,7 +878,7 @@ void rollback(TransactionStatus status) throws TransactionException;
 
 - 贴出一部分
 
-![image-20200728105926218](/images/spring/image-20200728105926218.png)
+![image-20200728105926218](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200728105926218.png)
 
 - AbstractPlatformTransactionManager 定义了一些基础属性 以及一些需要子类实现的方法
 
@@ -939,7 +939,7 @@ doCleanupAfterCompletion
 
   - bean 的属性注入就不具体描述了
 
-![image-20200728133037075](/images/spring/image-20200728133037075.png)
+![image-20200728133037075](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200728133037075.png)
 
 - `InitializingBean`
 
@@ -1603,7 +1603,7 @@ public static void bindResource(Object key, Object value) throws IllegalStateExc
 
 - debug 使用的是 druid 的数据源
 
-![image-20200729090322058](/images/spring/image-20200729090322058.png)
+![image-20200729090322058](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200729090322058.png)
 
 - `unwrapResourceIfNecessary` 方法
 
@@ -1741,7 +1741,7 @@ map 对象的 remove 操作
 
 - 事务操作模板类图
 
-  ![image-20200728094658684](/images/spring/image-20200728094658684.png)
+  ![image-20200728094658684](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200728094658684.png)
 
 - `org.springframework.beans.factory.InitializingBean`接口的实现
 

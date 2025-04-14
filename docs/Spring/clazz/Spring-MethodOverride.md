@@ -47,7 +47,7 @@ public abstract boolean matches(Method method);
 
 类图
 
-![MethodOverride](/images/spring/MethodOverride.png)
+![MethodOverride](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/MethodOverride.png)
 
 - 在 Spring 中有两种可以重写的机制(XML)
 

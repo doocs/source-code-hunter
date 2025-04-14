@@ -45,7 +45,7 @@
 
 读取 xml 配置文件
 
-![image-20200119141937915](../../../images/spring/image-20200119141937915.png)
+![image-20200119141937915](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200119141937915.png)
 
 ## getMessage
 
@@ -173,14 +173,14 @@
 
   ```
 
-![image-20200119143046066](../../../images/spring/image-20200119143046066.png)
+![image-20200119143046066](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200119143046066.png)
 
 - 加载后截图
 
   获取方法`String result = getStringOrNull(bundle, code);`就是 map 获取
 
-![image-20200119144019171](../../../images/spring/image-20200119144019171.png)
+![image-20200119144019171](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200119144019171.png)
 
 - 没有配置文件的情况
 
-  ![image-20200119145138205](../../../images/spring/image-20200119145138205.png)
+  ![image-20200119145138205](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200119145138205.png)

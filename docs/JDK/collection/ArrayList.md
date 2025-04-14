@@ -121,7 +121,7 @@ private void rangeCheck(int index) {
 }
 ```
 
-![arraylist添加集合的方法](../../../images/JDK1.8/arraylist的add方法.png)
+![arraylist添加集合的方法](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/JDK1.8/arraylist的add方法.png)
 
 先判断当前数组元素是否满了，如果塞满了就会进行数组扩容，随后进行数组拷贝。
 
@@ -207,7 +207,7 @@ public E remove(int index) {
 }
 ```
 
-![arrayList删除元素的过程.png](../../../images/JDK1.8/arrayList删除元素的过程.png)
+![arrayList删除元素的过程.png](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/JDK1.8/arrayList删除元素的过程.png)
 
 1、先进行下标是否越界的判断，获取 index 处的元素值（这是要删除的值）
 

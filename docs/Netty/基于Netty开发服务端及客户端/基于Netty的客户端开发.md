@@ -6,7 +6,7 @@ Netty 为了向使用者屏蔽 NIO 通信 的底层细节，在和用户交互�
 
 ### 基于 Netty 创建客户端 时序图
 
-![avatar](../../../images/Netty/基于Netty创建客户端时序图.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/基于Netty创建客户端时序图.png)
 
 ### Netty 创建客户端 流程分析
 

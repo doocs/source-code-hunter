@@ -55,11 +55,11 @@ public static <A extends Annotation> A getAnnotation(Method method, Class<A> ann
 
 - method
 
-![image-20200116085344737](../../../images/spring/image-20200116085344737.png)
+![image-20200116085344737](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200116085344737.png)
 
 - annotationType
 
-![image-20200116085423073](../../../images/spring/image-20200116085423073.png)
+![image-20200116085423073](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200116085423073.png)
 
 ```java
 @Nullable
@@ -239,9 +239,9 @@ public static void makeAccessible(Method method) {
 
 处理结果
 
-![image-20200116085726577](../../../images/spring/image-20200116085726577.png)
+![image-20200116085726577](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200116085726577.png)
 
-![image-20200116085737632](../../../images/spring/image-20200116085737632.png)
+![image-20200116085737632](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200116085737632.png)
 
 处理结果和 Order 定义相同
 
@@ -265,7 +265,7 @@ public @interface Order {
 
 最终返回
 
-![image-20200116085927359](../../../images/spring/image-20200116085927359.png)
+![image-20200116085927359](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200116085927359.png)
 
 ## findAnnotation
 
@@ -402,7 +402,7 @@ private static <A extends Annotation> A findAnnotation(
 
 ```
 
-![image-20200116092259944](../../../images/spring/image-20200116092259944.png)
+![image-20200116092259944](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200116092259944.png)
 
 - `synthesizeAnnotation`方法就不再重复一遍了可以看上文
 

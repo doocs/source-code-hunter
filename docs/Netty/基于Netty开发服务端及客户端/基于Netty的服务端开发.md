@@ -4,7 +4,7 @@
 
 ### Netty 服务端创建时序图
 
-![avatar](../../../images/Netty/Netty服务端创建时序图.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/Netty服务端创建时序图.png)
 
 下面我们对 Netty 服务端创建 的关键步骤和原理进行详细解析。
 
@@ -84,7 +84,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
 
 8、**当轮询到 准备就绪的 Channel 之后，就由 Reactor 线程 NioEventLoop 执行 ChannelPipeline 的相应方法，最终调度并执行 ChannelHandler**，接口如下图所示。
 
-![avatar](../../../images/Netty/ChannelPipeline的调度相关方法.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/ChannelPipeline的调度相关方法.png)
 
 9、**执行 Netty 中 系统的 ChannelHandler 和 用户添加定制的 ChannelHandler** 。ChannelPipeline 根据网络事件的类型，调度并执行 ChannelHandler，相关代码如下。
 
@@ -190,7 +190,7 @@ backlog 指定了内核为此套接口排队的最大连接个数，对于给定
 
 TCP 参数 设置完成后，用户可以为启动辅助类和其父类分别指定 Handler。两者 Handler 的用途不同：子类中的 Handler 是 NioServerSocketChannel 对应的 ChannelPipeline 的 Handler；父类中的 Handler 是客户端新接入的连接 SocketChannel 对应的 ChannelPipeline 的 Handler。两者的区别可以通过下图来展示。
 
-![avatar](../../../images/Netty/ServerBootstrap的Handler模型.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/ServerBootstrap的Handler模型.png)
 
 本质区别就是：ServerBootstrap 中的 Handler 是 NioServerSocketChannel 使用的，所有连接该监听端口的客户端都会执行它；父类 AbstractBootstrap 中的 Handler 是个工厂类，它为每个新接入的客户端都创建一个新的 Handler。
 
@@ -326,7 +326,7 @@ NioServerSocketChannel 创建成功后，对它进行初始化，初始化工作
 ```
 
 到此，Netty 服务端监听的相关资源已经初始化完毕，就剩下最后一步，注册 NioServerSocketChannel 到 Reactor 线程 的多路复用器上，然后轮询客户端连接事件。在分析注册代码之前，我们先通过下图，看看目前 NioServerSocketChannel 的 ChannelPipeline 的组成。
-![avatar](../../../images/Netty/NioServerSocketChannel的ChannelPipeline.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/NioServerSocketChannel的ChannelPipeline.png)
 最后，我们看下 NioServerSocketChannel 的注册。当 NioServerSocketChannel 初始化完成之后，需要将它注册到 Reactor 线程 的多路复用器上监听新客户端的接入，代码如下。
 
 ```java

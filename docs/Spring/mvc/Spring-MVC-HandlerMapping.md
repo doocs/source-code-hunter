@@ -14,7 +14,7 @@ public interface HandlerMapping {
 }
 ```
 
-![image](/images/springMVC/HandlerMapping.png)
+![image](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/springMVC/HandlerMapping.png)
 
 ```java
 @Override

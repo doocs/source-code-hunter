@@ -86,7 +86,7 @@ public class DemoController {
 
 先将对象截图出来方便后续理解
 
-![image-20200918130340555](/images/springMVC/clazz/image-20200918130340555.png)
+![image-20200918130340555](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/springMVC/clazz/image-20200918130340555.png)
 
 ## createHandlerMethod
 

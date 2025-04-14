@@ -332,10 +332,6 @@
 
 - [初级开发者应该从 Spring 源码中学什么](docs/LearningExperience/PersonalExperience/初级开发者应该从spring源码中学什么.md)
 
-### 编码规范
-
-- [一个程序员的自我修养](docs/LearningExperience/EncodingSpecification/一个程序员的自我修养.md)
-
 ### 设计模式
 
 - [从 Spring 及 Mybatis 框架源码中学习设计模式(创建型)](<docs/LearningExperience/DesignPattern/从Spring及Mybatis框架源码中学习设计模式(创建型).md>)
