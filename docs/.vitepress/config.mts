@@ -171,13 +171,6 @@ export default defineConfig({
               { text: 'SpringBoot ConditionalOnBean', link: '/SpringBoot/SpringBoot-ConditionalOnBean' },
             ],
           },
-          // {
-          //   text: 'SpringBootBatch',
-          //   collapsed: true,
-          //   items: [
-          //     { text: 'SpringBootBatch 源码', link: '/SpringBootBatch/SpringBootBatch源码' },
-          //   ],
-          // },
           {
             text: 'Spring Cloud',
             collapsed: true,

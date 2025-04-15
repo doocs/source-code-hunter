@@ -11,7 +11,7 @@
 
 我们每次添加 `<artifactId>spring-boot-starter-security</artifactId>`，启动的时候会有一条类似的日志：
 
-```
+```txt
 Using generated springSecurity password: 1db8eb87-e2ee-4c72-88e7-9b85268c4430
 
 This generated password is for development use only. Your springSecurity configuration must be updated before running your
@@ -20,9 +20,9 @@ application in production.
 
 找到 `UserDetailsServiceAutoConfiguration#InMemoryUserDetailsManager` 类，它是 springboot 自动装配的。
 
-下面这些都是 springboot 自动装配类，在 `spring-boot-autoconfigure-2.7.7.jar` > META-INF > spring > org.springframework.boot.autoconfigure.AutoConfiguration.imports 中。这些类就是 Spring Security 的全部了。
+下面这些都是 springboot 自动装配类：
 
-```imports
+```java
 org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
 org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration
@@ -284,7 +284,7 @@ public @interface EnableWebSecurity {
 
 ### WebSecurityConfiguration
 
-首先先看类注释(以后都默认翻译成简体中文.ali 翻译):
+首先先看类注释 (以后都默认翻译成简体中文 .ali 翻译):
 
 使用 WebSecurity 创建执行 Spring 安全 web 安全的 FilterChainProxy。然后导出必要的 bean。
 可以通过实现 WebSecurityConfigurer WebSecurityConfigurer 并将其公开为 Configuration 或公开 WebSecurityCustomizer bean 来进行自定义。
@@ -476,7 +476,7 @@ protected final O doBuild() throws Exception {
 
 剩下的都是一些创建一些 bean 了。
 
-`SecurityExpressionHandler`: 默认为`DefaultWebSecurityExpressionHandler`类(Facade 将 springSecurity 评估安全表达式的要求与基础表达式对象的实现隔离)
+`SecurityExpressionHandler`: 默认为`DefaultWebSecurityExpressionHandler`类 (Facade 将 springSecurity 评估安全表达式的要求与基础表达式对象的实现隔离)
 
 `WebInvocationPrivilegeEvaluator`: 为 `WebSecurity#performBuild()`中创建的 `requestMatcherPrivilegeEvaluatorsEntries`
 使用`RequestMatcherDelegatingWebInvocationPrivilegeEvaluator`包装。(允许用户确定他们是否具有给定 web URI 的特权。)
@@ -506,7 +506,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
     // 配置认证
     http.formLogin();
 
-    // 设置URL的授权问题
+    // 设置 URL 的授权问题
     // 多个条件取交集
     http.authorizeRequests()
             // 匹配 / 控制器  permitAll() 不需要被认证就可以访问
@@ -516,7 +516,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             // anyRequest() 所有请求   authenticated() 必须被认证
             .anyRequest().authenticated();
             // .accessDecisionManager(accessDecisionManager());
-    // 关闭csrf
+    // 关闭 csrf
     http.csrf().disable();
     return http.build();
 }
@@ -589,14 +589,14 @@ throw new IllegalArgumentException("The Filter class "+filter.getClass().getName
 提示: 这个里面每次添加一个类，如果在`HttpSecurity`中调用`getOrApply`
 。比如这个代码调用的是`exceptionHandlingCustomizer.customize(getOrApply(new ExceptionHandlingConfigurer<>()));`。
 打开`ExceptionHandlingConfigurer`类，发现是一个`HttpSecurityBuilder`， 这样只需要看`configure`方法大概就能明白这个是一个什么类。
-这个就是在 filter 中添加了一个`ExceptionTranslationFilter`filter.主要就是`SecurityConfigurer`
+这个就是在 filter 中添加了一个`ExceptionTranslationFilter`filter. 主要就是`SecurityConfigurer`
 的俩个方法。先调用`init(B builder)`，然后`configure(B builder)`
 
 后面都是一样，就跳过了
 
 > applyDefaultConfigurers(http);
 
-这里的这一句，就是从"META-INF/spring.factories" 中加载并实例化给定类型的工厂实现
+这里的这一句，就是从 "META-INF/spring.factories" 中加载并实例化给定类型的工厂实现
 `SpringFactoriesLoader.loadFactories(AbstractHttpConfigurer.class, classLoader)`
 然后调用`http.apply(configurer);` 添加到`configurers`里面
 
@@ -637,7 +637,7 @@ throw new IllegalArgumentException("The Filter class "+filter.getClass().getName
 进行构建，这个就是非常重要的一个方法，build 对象，老规矩。进入`AbstractConfiguredSecurityBuilder#doBuild()`方法
 `beforeInit();`: 还是没有什么
 
-`init()`: 调用里面所有的`configurers`里面的`init方法`，后面`HttpSecurity#doBuild`统一讲解，先把流程捋一遍
+`init()`: 调用里面所有的`configurers`里面的`init 方法`，后面`HttpSecurity#doBuild`统一讲解，先把流程捋一遍
 
 接下来`SecurityFilterChain`就已经创建好了，看一下里面的方法
 
@@ -689,22 +689,25 @@ public AuthenticationManagerBuilder authenticationManagerBuilder(ObjectPostProce
 }
 ```
 
-这里面返回了一个`AuthenticationManagerBuilder`的 bean，也就是上面``
-HttpSecurityConfiguration#httpSecurity()`的时候需要的类，这个类也是一个`SecurityBuilder`。
+这里面返回了一个`AuthenticationManagerBuilder`的 bean，也就是上面`HttpSecurityConfiguration#httpSecurity()`的时候需要的类，这个类也是一个`SecurityBuilder`。
 
-> LazyPasswordEncoder defaultPasswordEncoder = new LazyPasswordEncoder(context);
+```java
+LazyPasswordEncoder defaultPasswordEncoder = new LazyPasswordEncoder(context);
+```
 
 首先创建了一个`LazyPasswordEncoder`，就是`PasswordEncoder`，用来管理密码的
 
-> AuthenticationEventPublisher authenticationEventPublisher = getAuthenticationEventPublisher(context);
+```java
+AuthenticationEventPublisher authenticationEventPublisher = getAuthenticationEventPublisher(context);
+```
 
-这个就是在`SecurityAutoConfiguration`中创建的 springSecurity 的发布订阅，用来订阅事件
+这个就是在 `SecurityAutoConfiguration` 中创建的 springSecurity 的发布订阅，用来订阅事件
 
 ```java
 DefaultPasswordEncoderAuthenticationManagerBuilder result = new DefaultPasswordEncoderAuthenticationManagerBuilder(objectPostProcessor, defaultPasswordEncoder);
 ```
 
-就是 `AuthenticationManagerBuilder`的真正实现了。接下来回到`getAuthenticationManager()`方法
+就是 `AuthenticationManagerBuilder` 的真正实现了。接下来回到`getAuthenticationManager()`方法
 
 ```java
 public AuthenticationManager getAuthenticationManager() throws Exception {
@@ -1128,7 +1131,7 @@ protected final void updateAuthenticationDefaults() {
 2. `this.failureHandler`设置为`new SimpleUrlAuthenticationFailureHandler(authenticationFailureUrl)`
    里面的`authenticationFailureUrl`是`/login + "?error"`
 
-`getBuilder().getConfigurer(LogoutConfigurer.class);` 就是前面加入的那一堆`Configurer`中的一个.这个默认就是当前设置的值，不用理会
+`getBuilder().getConfigurer(LogoutConfigurer.class);` 就是前面加入的那一堆`Configurer`中的一个 . 这个默认就是当前设置的值，不用理会
 
 > updateAccessDefaults(http);
 
@@ -1144,8 +1147,8 @@ protected final void updateAuthenticationDefaults() {
 ```java
 /**
  * 开始一个身份验证方案。
- 在调用该方法之前， ExceptionTranslationFilter将使用请求的目标URL填充HttpSession属性abstractathenticationprocessingfilter.SPRING_SECURITY_SAVED_REQUEST _key。
- 实现应根据需要修改ServletResponse上的标头，以开始身份验证过程。
+ 在调用该方法之前， ExceptionTranslationFilter 将使用请求的目标 URL 填充 HttpSession 属性 abstractathenticationprocessingfilter.SPRING_SECURITY_SAVED_REQUEST _key。
+ 实现应根据需要修改 ServletResponse 上的标头，以开始身份验证过程。
  */
 private LinkedHashMap<RequestMatcher, AuthenticationEntryPoint> defaultEntryPointMappings=new LinkedHashMap<>();
 

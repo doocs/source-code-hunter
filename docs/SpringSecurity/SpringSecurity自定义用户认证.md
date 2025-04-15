@@ -6,7 +6,7 @@
 
 为了方便起见，我们直接在`src/main/resources/resources`目录下创建一个`login.html`（不需要 Controller 跳转）：
 
-```
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -27,7 +27,7 @@
 </html>
 ```
 
-要怎么做才能让 Spring Security 跳转到我们自己定义的登录页面呢？很简单，只需要在`BrowserSecurityConfig`的`configure`中添加一些配置：
+要怎么做才能让 Spring Security 跳转到我们自己定义的登录页面呢？很简单，只需要在 `BrowserSecurityConfig` 的 `configure` 中添加一些配置：
 
 ```java
 @Configuration
@@ -58,7 +58,7 @@ public class BrowserConfig extends WebSecurityConfigurerAdapter {
 
 Spring Security 默认会为我们生成一个用户名为 user，密码随机的用户实例，当然我们也可以定义自己用户信息的获取逻辑，只需要实现 Spring Security 提供的**_UserDetailService_**接口即可，该接口只有一个抽象方法**_loadUserByUsername_**，具体实现如下：
 
-```
+```java
 @Service
 public class UserDetailService implements UserDetailsService {
     @Autowired
@@ -76,13 +76,13 @@ public class UserDetailService implements UserDetailsService {
 
 ### BrowserConfig 配置解析
 
-我们首先来梳理下`BrowserConfig`中的配置是如何被 Spring Security 所加载的。
+我们首先来梳理下 `BrowserConfig` 中的配置是如何被 Spring Security 所加载的。
 
-首先找到调用`BrowserConfig`的`configure()`的地方，在其父类`WebSecurityConfigurerAdapter`的`getHttp()`中：
+首先找到调用 `BrowserConfig` 的 `configure()` 的地方，在其父类 `WebSecurityConfigurerAdapter` 的 `getHttp()` 中：
 
 ![img](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringSecurity/12629a18-56ef-4286-9ab9-c124dc3d6791.png)
 
-往上一步找到调用`getHttp()`的地方，在同个类的`init()`中：
+往上一步找到调用 `getHttp()` 的地方，在同个类的 `init()` 中：
 
 ![img](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringSecurity/2b54af34-7d68-4f40-8726-d02d18e03dea.png)
 
