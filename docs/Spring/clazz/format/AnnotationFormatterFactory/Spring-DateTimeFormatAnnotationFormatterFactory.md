@@ -3,7 +3,7 @@
 - 类全路径: `org.springframework.format.datetime.DateTimeFormatAnnotationFormatterFactory`
 
 - 类图
-  ![EmbeddedValueResolutionSupport](/images/spring/DateTimeFormatAnnotationFormatterFactory.png)
+  ![EmbeddedValueResolutionSupport](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/DateTimeFormatAnnotationFormatterFactory.png)
 
 ```java
 public class DateTimeFormatAnnotationFormatterFactory extends EmbeddedValueResolutionSupport

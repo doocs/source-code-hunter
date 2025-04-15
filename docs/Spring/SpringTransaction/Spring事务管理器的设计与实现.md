@@ -4,7 +4,7 @@
 
 可以看到，在 PlatformTransactionManager 组件 的设计中 ，通过 PlatformTransactionManager 接口 设计了一系列与事务处理息息相关的接口方法，如 getTransaction()、commit()、rollback() 这些和事务处理相关的统一接口。对于这些接口的实现，很大一部分是由 AbstractTransactionManager 抽象类 来完成的，这个类中的 doGetTransaction()、doCommit() 等方法和 PlatformTransactionManager 的方法对应，实现的是事务处理中相对通用的部分。在这个 AbstractPlatformManager 下，为具体的数据源配置了不同的事务处理器，以处理不同数据源的事务处理，从而形成了一个从抽象到具体的事务处理中间平台设计，使应用通过声明式事务处理，即开即用事务处理服务，隔离那些与特定的数据源相关的具体实现。
 
-![avatar](../../../images/springTransaction/PlatformTransactionManager组件的设计.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/springTransaction/PlatformTransactionManager组件的设计.png)
 
 ## 2 DataSourceTransactionManager 的实现
 
@@ -14,7 +14,7 @@
 
 上面介绍了使用 DataSourceTransactionManager 实现事务创建、提交和回滚的过程，基本上与单独使用 Connection 实现事务处理是一样的，也是通过设置 autoCommit 属性，调用 Connection 的 commit() 和 rollback()方法 来完成的。而我们在声明式事务处理中看到的那些事务处理属性，并不在 DataSourceTransactionManager 中完成，这和我们在前面分析中看到的是一致的。
 
-![avatar](../../../images/springTransaction/实现DataSourceTransactionManager的时序图.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/springTransaction/实现DataSourceTransactionManager的时序图.png)
 
 ```java
 public class DataSourceTransactionManager extends AbstractPlatformTransactionManager

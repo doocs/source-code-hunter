@@ -175,4 +175,4 @@ public class GenericTokenParser {
 
 ```
 
-![image-20191219100446796](../../../images/mybatis/image-20191219100446796.png)
+![image-20191219100446796](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/mybatis/image-20191219100446796.png)

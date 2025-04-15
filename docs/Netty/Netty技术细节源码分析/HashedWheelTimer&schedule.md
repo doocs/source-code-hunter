@@ -21,7 +21,7 @@
 
 # HashedWheelTimer 实现图示
 
-![HashedWheelTimer实现图示.png](../../../images/Netty/image_1595752125587.png)
+![HashedWheelTimer实现图示.png](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/image_1595752125587.png)
 
 大致有个理解就行，关于蓝色格子中的数字，其实就是剩余时钟轮数，这里听不懂也没关系，等后面看到源码解释就懂了~~（大概）~~。
 
@@ -50,7 +50,7 @@ public void handlerAdded(final ChannelHandlerContext ctx) {
 
 ### 继承关系、方法
 
-![继承关系&方法.png](../../../images/Netty/image_1595751597062.png)
+![继承关系&方法.png](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/image_1595751597062.png)
 
 ### 构造函数、属性
 
@@ -425,25 +425,25 @@ PriorityQueue<ScheduledFutureTask<?>> scheduledTaskQueue() {
 这里我就直接贴下网上大佬给出的解释：
 
 如果使用最小堆实现的优先级队列：
-![最小堆.png](../../../images/Netty/image_1595756711656.png)
+![最小堆.png](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/image_1595756711656.png)
 
 - 大致意思就是你的任务如果插入到堆顶，时间复杂度为 O(log(n))。
 
 如果使用链表（既然有说道，那就扩展下）：
-![链表.png](../../../images/Netty/image_1595756928493.png)
+![链表.png](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/image_1595756928493.png)
 
 - 中间插入后的事件复杂度为 O(n)
 
 单个时间轮：
-![单个时间轮.png](../../../images/Netty/image_1595757035360.png)
+![单个时间轮.png](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/image_1595757035360.png)
 
 - 复杂度可以降至 O(1)。
 
 记录轮数的时间轮（其实就是文章开头的那个）：
-![记录轮数的时间轮.png](../../../images/Netty/image_1595757110003.png)
+![记录轮数的时间轮.png](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/image_1595757110003.png)
 
 层级时间轮：
-![层级时间轮.png](../../../images/Netty/image_1595757328715.png)
+![层级时间轮.png](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/image_1595757328715.png)
 
 - 时间复杂度是 O(n)，n 是轮子的数量，除此之外还要计算一个轮子上的 bucket。
 
@@ -451,7 +451,7 @@ PriorityQueue<ScheduledFutureTask<?>> scheduledTaskQueue() {
 
 根据上面的图其实不难理解，如果任务是很久之后才执行的、同时要保证任务低延迟，那么单个时间轮所需的 bucket 数就会变得非常多，从而导致内存占用持续升高（CPU 空转时间还是不变的，仅仅是内存需求变高了），如下图：
 
-![image.png](../../../images/Netty/image_1595758329809.png)
+![image.png](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/image_1595758329809.png)
 
 Netty 对于单个时间轮的优化方式就是记录下 remainingRounds，从而减少 bucket 过多的内存占用。
 

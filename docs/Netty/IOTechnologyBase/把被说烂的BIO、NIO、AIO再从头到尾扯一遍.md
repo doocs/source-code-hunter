@@ -20,7 +20,7 @@ Java 中将输入输出抽象称为流，就好像水管，将两个容器连接
 
 在内核将数据准备好之前，系统调用会一直等待所有的套接字（Socket），默认的是阻塞方式。
 
-![avatar](../../../images/Netty/阻塞IO模型.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/阻塞IO模型.png)
 
 Java 中的 socket.read()会调用 native read()，而 Java 中的 native 方法会调用操作系统底层的 dll，而 dll 是 C/C++编写的，图中的 recvfrom 其实是 C 语言 socket 编程中的一个方法。所以其实我们在 Java 中调用 socket.read()最后也会调用到图中的 recvfrom 方法。
 
@@ -35,7 +35,7 @@ BIO 中的阻塞，就是阻塞在 2 个地方：
 
 ##### 2.2 非阻塞 IO（Noblocking I/O）
 
-![avatar](../../../images/Netty/非阻塞IO模型.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/非阻塞IO模型.png)
 
 每次应用进程询问内核是否有数据报准备好，当有数据报准备好时，就进行拷贝数据报的操作，从内核拷贝到用户空间，和拷贝完成返回的这段时间，应用进程是阻塞的。但在没有数据报准备好时，并不会阻塞程序，内核直接返回未准备就绪的信号，等待应用进程的下一个轮询。但是，轮询对于 CPU 来说是较大的浪费，一般只有在特定的场景下才使用。
 
@@ -58,7 +58,7 @@ serverSocketChannel.configureBlocking(false);
 
 ##### 2.3 IO 多路复用（I/O Multiplexing）
 
-![avatar](../../../images/Netty/IO复用模型.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/IO复用模型.png)
 
 传统情况下 client 与 server 通信需要 3 个 socket(客户端的 socket，服务端的 server socket，服务端中用来和客户端通信的 socket)，而在 IO 多路复用中，客户端与服务端通信需要的不是 socket，而是 3 个 channel，通过 channel 可以完成与 socket 同样的操作，channel 的底层还是使用的 socket 进行通信，但是多个 channel 只对应一个 socket(可能不只是一个，但是 socket 的数量一定少于 channel 数量)，这样仅仅通过少量的 socket 就可以完成更多的连接，提高了 client 容量。
 
@@ -73,13 +73,13 @@ serverSocketChannel.configureBlocking(false);
 
 ##### 2.4 信号驱动（Signal driven IO）
 
-![avatar](../../../images/Netty/信号驱动IO模型.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/信号驱动IO模型.png)
 
 信号驱动 IO 模型，应用进程告诉内核：当数据报准备好的时候，给我发送一个信号，对 SIGIO 信号进行捕捉，并且调用我的信号处理函数来获取数据报。
 
 ##### 2.5 异步 IO（Asynchronous I/O）
 
-![avatar](../../../images/Netty/异步IO模型.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/异步IO模型.png)
 
 Asynchronous IO 调用中是真正的无阻塞，其他 IO model 中多少会有点阻塞。程序发起 read 操作之后，立刻就可以开始去做其它的事。而在内核角度，当它受到一个 asynchronous read 之后，首先它会立刻返回，所以不会对用户进程产生任何 block。然后，kernel 会等待数据准备完成，然后将数据拷贝到用户内存，当这一切都完成之后，kernel 会给用户进程发送一个 signal，告诉它 read 操作完成了。
 

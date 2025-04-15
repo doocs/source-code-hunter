@@ -2,13 +2,13 @@
 
 服务治理框架 大致可分为 “服务通信” 和 “服务管理” 两部分，前面我们分析了有关注册中心的源码，也就是服务管理，接下来要分析的就是跟服务通信有关的源码，也就是远程通讯模块。该模块中提供了多种客户端和服务端通信的功能，而在对 NIO 框架选型上，dubbo 交由用户选择，它集成了 mina、netty、grizzly 等各类 NIO 框架来搭建 NIO 服务器和客户端，并且利用 dubbo 的 SPI 扩展机制可以让用户自定义选择。dubbo-remoting 的工程结构如下。
 
-![在这里插入图片描述](../../../images/Dubbo/dubbo-remoting的工程结构.png)
+![在这里插入图片描述](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Dubbo/dubbo-remoting的工程结构.png)
 
 ## dubbo-remoting-api 模块整体结构设计
 
 本篇我们先来看一下 dubbo-remoting 中 dubbo-remoting-api 的项目结构。
 
-![在这里插入图片描述](../../../images/Dubbo/dubbo-remoting-api的项目结构.png)
+![在这里插入图片描述](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Dubbo/dubbo-remoting-api的项目结构.png)
 
 dubbo-remoting-api 定义了远程通信模块最核心的 API，对于 dubbo-remoting-api 的解读会分为如下五个部分，其中第五部分会在本文介绍。
 
@@ -20,7 +20,7 @@ dubbo-remoting-api 定义了远程通信模块最核心的 API，对于 dubbo-re
 
 结合 dubbo-remoting-api 模块 的外层类和包划分，我们看看下面的官方架构图。
 
-![在这里插入图片描述](../../../images/Dubbo/Dubbo整体架构图.png)
+![在这里插入图片描述](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Dubbo/Dubbo整体架构图.png)
 
 红框标注的部分是 dubbo 整体架构中的 远程通讯架构，其中 Exchange 组件 和 Transport 组件 在框架设计中起到了很重要的作用，也是支撑 Remoting 的核心。
 

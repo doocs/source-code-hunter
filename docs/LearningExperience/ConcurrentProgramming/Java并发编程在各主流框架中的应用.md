@@ -608,7 +608,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
 
 线程池执行流程，如下图所示。
 
-![avatar](images/ConcurrentProgramming/线程池流程.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/ConcurrentProgramming/线程池流程.png)
 
 #### Executors 提供的 4 种线程池
 

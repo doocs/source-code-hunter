@@ -118,10 +118,6 @@
 - [SpringBoot 日志系统](/docs/SpringBoot/SpringBoot-LogSystem.md)
 - [SpringBoot ConditionalOnBean](/docs/SpringBoot/SpringBoot-ConditionalOnBean.md)
 
-### SpringBootBatch
-
-- [SpringBootBatch 源码](/docs/SpringBootBatch/SpringBootBatch源码.md)
-
 ### Spring Cloud
 
 - [Spring Cloud Commons 源码](docs/SpringCloud/spring-cloud-commons-source-note.md)
@@ -331,10 +327,6 @@
 ### 个人经验
 
 - [初级开发者应该从 Spring 源码中学什么](docs/LearningExperience/PersonalExperience/初级开发者应该从spring源码中学什么.md)
-
-### 编码规范
-
-- [一个程序员的自我修养](docs/LearningExperience/EncodingSpecification/一个程序员的自我修养.md)
 
 ### 设计模式
 

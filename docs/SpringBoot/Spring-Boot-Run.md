@@ -141,11 +141,11 @@ private <T> List<T> createSpringFactoriesInstances(Class<T> type, Class<?>[] par
 - `SpringFactoriesLoader.loadFactoryNames(type, classLoader)` 是 spring 提供的方法，主要目的是读取`spring.factories`文件
   - 读取需要创建的内容
 
-![image-20200318080601725](../../images/SpringBoot/image-20200318080601725.png)
+![image-20200318080601725](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringBoot/image-20200318080601725.png)
 
 - 创建完成
 
-  ![image-20200318080901881](../../images/SpringBoot/image-20200318080901881.png)
+  ![image-20200318080901881](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringBoot/image-20200318080901881.png)
 
 - `AnnotationAwareOrderComparator.sort(instances)`排序
 
@@ -153,21 +153,21 @@ private <T> List<T> createSpringFactoriesInstances(Class<T> type, Class<?>[] par
 
     `SharedMetadataReaderFactoryContextInitializer`
 
-    ![image-20200318081112670](../../images/SpringBoot/image-20200318081112670.png)
+    ![image-20200318081112670](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringBoot/image-20200318081112670.png)
 
   - 同样的再找一个`DelegatingApplicationContextInitializer`
 
-    ![image-20200318081322781](../../images/SpringBoot/image-20200318081322781.png)
+    ![image-20200318081322781](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringBoot/image-20200318081322781.png)
 
 - 下图中的所有类都有 Order 数值返回
 
   排序前:
 
-![image-20200318081352639](../../images/SpringBoot/image-20200318081352639.png)
+![image-20200318081352639](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringBoot/image-20200318081352639.png)
 
 排序后：
 
-![image-20200318081458019](../../images/SpringBoot/image-20200318081458019.png)
+![image-20200318081458019](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringBoot/image-20200318081458019.png)
 
 ### listeners.starting()
 
@@ -360,7 +360,7 @@ private <T> List<T> createSpringFactoriesInstances(Class<T> type, Class<?>[] par
 
 ### exceptionReporters
 
-![image-20200318085243888](../../images/SpringBoot/image-20200318085243888.png)
+![image-20200318085243888](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringBoot/image-20200318085243888.png)
 
 ### prepareContext
 
@@ -439,9 +439,9 @@ private <T> List<T> createSpringFactoriesInstances(Class<T> type, Class<?>[] par
   context.getBeanFactory().setConversionService(ApplicationConversionService.getSharedInstance());
   ```
 
-![image-20200318090128983](../../images/SpringBoot/image-20200318090128983.png)
+![image-20200318090128983](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringBoot/image-20200318090128983.png)
 
-![image-20200318090312626](../../images/SpringBoot/image-20200318090312626.png)
+![image-20200318090312626](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringBoot/image-20200318090312626.png)
 
 ### applyInitializers
 
@@ -466,7 +466,7 @@ private <T> List<T> createSpringFactoriesInstances(Class<T> type, Class<?>[] par
 
 - 数据结果
 
-![image-20200318090935285](../../images/SpringBoot/image-20200318090935285.png)
+![image-20200318090935285](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringBoot/image-20200318090935285.png)
 
 - 子类的具体实现不展开了
 
@@ -488,7 +488,7 @@ private <T> List<T> createSpringFactoriesInstances(Class<T> type, Class<?>[] par
 
 - `primarySources` 就是我们的项目启动类，在`SpringApplication`的构造器中有`this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources))`
 
-![image-20200318091558233](../../images/SpringBoot/image-20200318091558233.png)
+![image-20200318091558233](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringBoot/image-20200318091558233.png)
 
 ### load
 
@@ -552,7 +552,7 @@ private int load(Object source) {
 
 - 通过前文我们已经知道 `source`就是一个 class
 
-  ![image-20200318092027020](../../images/SpringBoot/image-20200318092027020.png)
+  ![image-20200318092027020](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringBoot/image-20200318092027020.png)
 
 ```java
 	private int load(Class<?> source) {

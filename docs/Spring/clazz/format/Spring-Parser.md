@@ -24,4 +24,4 @@ public interface Parser<T> {
 
 - 类图
 
-![Parser](/images/spring/Parser.png)
+![Parser](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/Parser.png)

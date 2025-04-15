@@ -8,7 +8,7 @@
 
 去年看了蛮多源码，发现 框架的开发者在实际使用设计模式时，大都会根据实际情况 使用其变体，老老实实按照书上的类图及定义去设计代码的比较少。不过我们依然还是先看一下书上的定义，然后比较一下理论与实践的一些差别吧。策略模式的类图及定义如下。
 
-![avatar](../../../images/DesignPattern/策略模式类图.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/DesignPattern/策略模式类图.png)
 
 定义一系列算法，封装每个算法 并使它们可以互换。该模式的主要角色如下：
 
@@ -967,7 +967,7 @@ public class ArrayList<E> extends AbstractList<E>
 
 这个模式也是平时很少使用的，所以就简单介绍一下，然后结合 JDK 中的源码加深理解。该模式用于定义对象之间的一对多依赖，当一个对象状态改变时，它的所有依赖都会收到通知，然后自动更新。类图和主要角色如下：
 
-![avatar](../../../images/DesignPattern/观察者模式类图.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/DesignPattern/观察者模式类图.png)
 
 - Subject 主题：具有注册、移除及通知观察者的功能，主题是通过维护一个观察者列表来实现这些功能的；
 - Observer 观察者：其注册需要 Subject 的 registerObserver()方法。
@@ -1102,12 +1102,12 @@ public class Observable {
 
 在责任链模式中，将上述臃肿的请求处理逻辑 拆分到多个 功能逻辑单一的 Handler 处理类中，这样我们就可以根据业务需求，将多个 Handler 对象组合成一条责任链，实现请求的处理。在一条责任链中，每个 Handler 对象 都包含对下一个 Handler 对象 的引用，一个 Handler 对象 处理完请求消息（或不能处理该请求）时， 会把请求传给下一个 Handler 对象 继续处理，依此类推，直至整条责任链结束。简单看一下责任链模式的类图。
 
-![avatar](../../../images/DesignPattern/责任链模式.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/DesignPattern/责任链模式.png)
 
 #### Netty 中的应用
 
 在 Netty 中，将 Channel 的数据管道抽象为 ChannelPipeline，消息在 ChannelPipeline 中流动和传递。ChannelPipeline 是 ChannelHandler 的容器，持有 I/O 事件拦截器 ChannelHandler 的链表，负责对 ChannelHandler 的管理和调度。由 ChannelHandler 对 I/O 事件 进行拦截和处理，并可以通过接口方便地新增和删除 ChannelHandler 来实现不同业务逻辑的处理。下图是 ChannelPipeline 源码中描绘的责任链事件处理过程。
-![avatar](../../../images/Netty/ChannelPipeline责任链事件处理过程.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/ChannelPipeline责任链事件处理过程.png)
 其具体过程处理如下：
 
 1. 底层 SocketChannel 的 read 方法 读取 ByteBuf，触发 ChannelRead 事件，由 I/O 线程 NioEventLoop 调用 ChannelPipeline 的 fireChannelRead()方法，将消息传输到 ChannelPipeline 中。

@@ -5,7 +5,7 @@
 Netty 的 **Channel 组件 是 Netty 对网络操作的封装**，**如 网络数据的读写，与客户端建立连接**，主动关闭连接 等，也包含了 Netty 框架 相关的一些功能，如 获取该 Chanel 的 **EventLoop、ChannelPipeline** 等。另外，Netty 并没有直接使用 java.nio 包 的 SocketChannel 和 ServerSocketChannel，而是**使用 NioSocketChannel 和 NioServerSocketChannel 对其进行了进一步的封装**。下面我们先从 Channel 接口 的 API 开始分析，然后看一下其重要子类的源码实现。
 
 为了便于后面的阅读源码，我们先看下 NioSocketChannel 和 NioServerSocketChannel 的继承关系类图。
-![在这里插入图片描述](../../../images/Netty/Netty的Channel组件.png)
+![在这里插入图片描述](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/Netty的Channel组件.png)
 
 #### Channel 接口
 

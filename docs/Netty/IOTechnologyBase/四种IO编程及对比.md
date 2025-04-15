@@ -9,7 +9,7 @@
 通过下面的通信模型图可以发现，采用 BIO 通信模型的服务端，通常由一个独立的 Acceptor 线程 负责监听客户端的连接，它接收到客户
 端连接请求之后为每个客户端创建一个新的线程进行链路处理，处理完成之后，通过输出流返回应答给客户端，线程销毁。这就是典型的 “一请求一应答” 通信模型。
 
-![avatar](../../../images/Netty/BIO通信模型.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/BIO通信模型.png)
 
 该模型最大的问题就是缺乏弹性伸缩能力，当客户端并发访问量增加后，服务端的线程个数和客户端并发访问数呈 1: 1 的正比关系，由于线程是 Java 虚拟机 非常宝贵的系统资源，当线程数膨胀之后，系统的性能将急剧下降，随着并发访问量的继续增大，系统会发生线程堆栈溢出、创建新线程失败等问题，并最终导致进程宕机或者僵死，不能对外提供服务。
 
@@ -23,7 +23,7 @@
 
 采用线程池和任务队列可以实现一种叫做 伪异步的 IO 通信框架，其模型图下。当有新的客户端接入时，将客户端的 Socket 封装成一个 Task 对象 (该类实现了 java.lang.Runnable 接口)，投递到后端的线程池中进行处理，JDK 的线程池维护一个消息队列和 N 个活跃线程，对消息队列中的任务进行处理。由于线程池可以设置消息队列的大小和最大线程数，因此，它的资源占用是可控的，无论多少个客户端并发访问，都不会导致资源的耗尽和宕机。
 
-![avatar](../../../images/Netty/伪异步IO通信模型.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/伪异步IO通信模型.png)
 
 伪异步 IO 通信框架 采用了线程池实现，因此避免了为每个请求都创建一个独立线程造成的线程资源耗尽问题。但是由于它底层的通信依然采用同步阻塞模型，因此无法从根本上解决问题。
 
@@ -105,14 +105,14 @@ Buffer 对象 包含了一些要写入或者要读出的数据。在 NIO 类库 
 
 缓冲区实质上是一个数组。通常它是一个字节数组（ByteBuffer），也可以使用其他种类的数组。但是一个缓冲区不仅仅是一个数组，缓冲区提供了对数据的结构化访问以及维护读写位置（limit）等信息。最常用的缓冲区是 ByteBuffer，一个 ByteBuffer 提供了一组功能用于操作 byte 数组。除了 ByteBuffer，还有其他的一些缓冲区，事实上，每一种 Java 基本类型（除了 boolean）都对应有一种与之对应的缓冲区，如：CharBuffer、IntBuffer、DoubleBuffer 等等。Buffer 组件中主要类的类图如下所示。
 
-![avatar](../../../images/Netty/Buffer组件类图.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/Buffer组件类图.png)
 
 除了 ByteBuffer，每一个 Buffer 类 都有完全一样的操作，只是它们所处理的数据类型不一样。因为大多数 标准 IO 操作 都使用 ByteBuffer，所以它在具有一般缓冲区的操作之外还提供了一些特有的操作，以方便网络读写。
 
 **2、通道 Channel**  
 Channel 是一个通道，它就像自来水管一样，网络数据通过 Channel 读取和写入。通道与流的不同之处在于通道是双向的，可以用于读、写，或者二者同时进行；流是单向的，要么是 InputStream，要么是 OutputStream。因为 Channel 是全双工的，所以它可以比流更好地映射底层操作系统的 API。特别是在 UNIX 网络编程模型 中，底层操作系统的通道都是全双工的，同时支持读写操作。Channel 组件中 主要类的类图如下所示，从中我们可以看到最常用的 ServerSocketChannel 和 SocketChannel。
 
-![avatar](../../../images/Netty/Channel组件类图.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/Channel组件类图.png)
 
 **3、多路复用器 Selector**  
 多路复用器 Selector 是 Java NIO 编程 的基础，熟练地掌握 Selector 对于 NIO 编程 至关重要。多路复用器提供选择已经就绪的任务的能力。简单来讲，Selector 会不断地轮询 “注册在其上的 Channel”，如果某个 Channel 上面发生读或者写事件，这个 Channel 就处于就绪状态，会被 Selector 轮询出来，然后通过 SelectionKey 可以获取 “就绪 Channel 的集合”，进行后续的 IO 操作。
@@ -121,7 +121,7 @@ Channel 是一个通道，它就像自来水管一样，网络数据通过 Chann
 
 ### NIO 服务端序列图
 
-![avatar](../../../images/Netty/NIO服务端序列图.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/NIO服务端序列图.png)
 
 下面，我们看一下 NIO 服务端 的主要创建过程。
 
@@ -224,7 +224,7 @@ Channel 是一个通道，它就像自来水管一样，网络数据通过 Chann
 
 ### NIO 客户端序列图
 
-![avatar](../../../images/Netty/NIO客户端序列图.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/NIO客户端序列图.png)
 
 1、打开 SocketChannel，绑定客户端本地地址 (可选，默认系统会随机分配一个可用的本地地址)，示例代码如下。
 
@@ -356,7 +356,7 @@ NIO2.0 的异步套接字通道是真正的 异步非阻塞 IO，对应于 UNIX 
 
 对比之前，这里再澄清一下 “伪异步 IO” 的概念。伪异步 IO 的概念完全来源于实践，并没有官方说法。在 JDK NIO 编程 没有流行之前，为了解决 Tomcat 通信线程同步 IO 导致业务线程被挂住的问题，大家想到了一个办法，在通信线程和业务线程之间做个缓冲区，这个缓冲区用于隔离 IO 线程 和业务线程间的直接访问，这样业务线程就不会被 IO 线程 阻塞。而对于后端的业务侧来说，将消息或者 Task 放到线程池后就返回了，它不再直接访问 IO 线程 或者进行 IO 读写，这样也就不会被同步阻塞。
 
-![avatar](../../../images/Netty/四种IO模型的功能特性对比图.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/四种IO模型的功能特性对比图.png)
 
 ## 选择 Netty 开发项目的理由
 

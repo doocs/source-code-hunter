@@ -215,7 +215,7 @@ public interface ServletResponse {
 
 其主要部分的类图 如下。
 
-![avatar](../../images/Tomcat/Servlet主要类图.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Tomcat/Servlet主要类图.png)
 
 下面看一下 javax.servlet.http 包下的内容，它提供了很多 我经常用到的类和接口，比如：HttpServlet、HttpServletRequest、HttpServletResponse。其源码如下。
 

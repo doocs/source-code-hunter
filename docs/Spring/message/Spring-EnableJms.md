@@ -49,7 +49,7 @@ public class JmsBootstrapConfiguration {
 
 类图
 
-![image-20200304085303580](../../../images/springmessage/image-20200304085303580.png)
+![image-20200304085303580](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/springmessage/image-20200304085303580.png)
 
 - 主要关注
 
@@ -316,7 +316,7 @@ public class JmsBootstrapConfiguration {
   }
   ```
 
-  ![image-20200304092154712](../../../images/springmessage/image-20200304092154712.png)
+  ![image-20200304092154712](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/springmessage/image-20200304092154712.png)
 
 - 注册完成后是否立即启动
 

@@ -34,3 +34,6 @@ gradle.properties
 *.gh
 .vscode
 /node_modules
+
+docs/.vitepress/dist
+docs/.vitepress/cache

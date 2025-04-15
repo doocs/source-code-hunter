@@ -190,7 +190,7 @@
     HsSell[] list(@Param("ID") Integer id);
 ```
 
-![image-20191219092442456](../../../images/mybatis/image-20191219092442456.png)
+![image-20191219092442456](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/mybatis/image-20191219092442456.png)
 
 - 修改 mapper,对`org.apache.ibatis.binding.MapperMethod#convertToDeclaredCollection`进行测试
 
@@ -198,4 +198,4 @@
       LinkedList<HsSell> list(@Param("ID") Integer id);
   ```
 
-![image-20191219093043035](../../../images/mybatis/image-20191219093043035.png)
+![image-20191219093043035](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/mybatis/image-20191219093043035.png)

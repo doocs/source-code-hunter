@@ -22,7 +22,7 @@ public interface BeanNameGenerator {
 }
 ```
 
-![](/images/spring/BeanNameGenerator.png)
+![](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/BeanNameGenerator.png)
 
 ## DefaultBeanNameGenerator
 

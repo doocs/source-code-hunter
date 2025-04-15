@@ -11,7 +11,7 @@
 
 - 类图如下
 
-  ![images](/images/spring/PropertyValues.png)
+  ![images](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/PropertyValues.png)
 
 - 在 Spring IoC 中,**非 Web 工程**,使用 xml 或者注解进行配置主要使用到的是 `PropertyValues` ，`PropertyValue` ，`MutablePropertyValues` 三个
 
@@ -27,7 +27,7 @@
 
 - 类图
 
-  ![](/images/spring/PropertyValue.png)
+  ![](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/PropertyValue.png)
 
 - 这个类暂时只关注两个属性
 
@@ -285,7 +285,7 @@ public interface Mergeable {
 }
 ```
 
-![](/images/spring/Mergeable.png)
+![](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/Mergeable.png)
 
 - 看一下 List 怎么实现`merge`
 

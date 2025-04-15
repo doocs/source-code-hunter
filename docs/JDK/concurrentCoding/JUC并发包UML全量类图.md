@@ -2,4 +2,4 @@
 
 根据功能，主要划分了六个部分，其中比较重要的是：线程池及其相关类、并发容器、AQS 与锁与同步工具类、原子类。图可能整理的不够细致，但看着这些类，回想一下其中的源码实现，感觉能侃一天。
 
-![avatar](../../../images/JDK1.8/JUC全量UML地图.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/JDK1.8/JUC全量UML地图.png)

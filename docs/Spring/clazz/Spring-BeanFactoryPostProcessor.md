@@ -248,9 +248,9 @@ public class BeanFactoryPostProcessorSourceCode {
       }
   ```
 
-![image-20200119085346675](../../../images/spring/image-20200119085346675.png)
+![image-20200119085346675](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200119085346675.png)
 
-![image-20200119085655734](../../../images/spring/image-20200119085655734.png)
+![image-20200119085655734](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200119085655734.png)
 
 ## InstantiationAwareBeanPostProcessor
 
@@ -361,13 +361,13 @@ public class DemoInstantiationAwareBeanPostProcessor implements InstantiationAwa
 
 - 按照笔者的注释,可以知道`DemoInstantiationAwareBeanPostProcessor` 这个类是一个无序 Bean
 
-![image-20200119101026726](../../../images/spring/image-20200119101026726.png)
+![image-20200119101026726](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200119101026726.png)
 
-![image-20200119101017989](../../../images/spring/image-20200119101017989.png)
+![image-20200119101017989](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200119101017989.png)
 
 - 注册方法信息截图
 
-![image-20200119101107820](../../../images/spring/image-20200119101107820.png)
+![image-20200119101107820](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200119101107820.png)
 
 ### 使用阶段(调用阶段)
 
@@ -425,4 +425,4 @@ public class DemoInstantiationAwareBeanPostProcessor implements InstantiationAwa
 
 这个地方已经可以看到`InstantiationAwareBeanPostProcessor`出现了,并且调用了方法`postProcessBeforeInstantiation`，此处就可以调用我们的自定义方法了
 
-![image-20200119101516591](../../../images/spring/image-20200119101516591.png)
+![image-20200119101516591](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200119101516591.png)

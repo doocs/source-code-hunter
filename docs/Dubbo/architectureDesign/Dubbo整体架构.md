@@ -2,7 +2,7 @@
 
 首先从 GitHub 上 clone 下来 Dubbo 项目，我们根据其中各子项目的项目名，也能大概猜出来各个模块的作用。
 
-![avatar](../../../images/Dubbo/dubbo项目结构.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Dubbo/dubbo项目结构.png)
 
 ### dubbo-common
 
@@ -54,7 +54,7 @@
 
 其运行原理如下图所示。
 
-![avatar](../../../images/Dubbo/Dubbo工作原理图.png)
+![avatar](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Dubbo/Dubbo工作原理图.png)
 
 ### 工作原理
 

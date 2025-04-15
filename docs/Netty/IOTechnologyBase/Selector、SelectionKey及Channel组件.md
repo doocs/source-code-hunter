@@ -1,6 +1,6 @@
 Selector、SelectionKey 和 Channel 这三个组件构成了 Java nio 包的核心，也是 Reactor 模型在代码层面的体现。Selector 能让单线程同时处理多个客户端 Channel，非常适用于高并发，传输数据量较小的场景。要使用 Selector，首先要将对应的 Channel 及 IO 事件（读、写、连接）注册到 Selector，注册后会产生一个 SelectionKey 对象，用于关联 Selector 和 Channel，及后续的 IO 事件处理。这三者的关系如下图所示。
 
-![在这里插入图片描述](../../../images/Netty/Selector和SelectionKey和Channel关系图.png)
+![在这里插入图片描述](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/Selector和SelectionKey和Channel关系图.png)
 
 对 nio 编程不熟的同学可以搜索一些简单的 demo 跑一下，下面 我们直接进入源码，窥探一些 nio 的奥秘。
 
@@ -160,7 +160,7 @@ public abstract class SelectionKey {
 
 平时编码用的比较多的就是 SocketChannel 和 ServerSocketChannel，而将 Channel 与 Selecor 关联到一起的核心 API 则定义在它们的公共父类 SelectableChannel 中，整个 Channel 组件的核心类图如下所示。
 
-![在这里插入图片描述](../../../images/Netty/Channel组件.png)
+![在这里插入图片描述](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/Channel组件.png)
 
 #### SelectableChannel
 

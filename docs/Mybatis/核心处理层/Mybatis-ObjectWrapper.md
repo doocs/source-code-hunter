@@ -6,7 +6,7 @@
 
 类图：
 
-![image-20191223100956713](../../../images/mybatis/image-20191223100956713.png)
+![image-20191223100956713](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/mybatis/image-20191223100956713.png)
 
 ```java
 public interface ObjectWrapper {

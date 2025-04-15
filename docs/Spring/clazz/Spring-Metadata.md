@@ -85,7 +85,7 @@ public interface ClassMetadata {
 }
 ```
 
-![image-20200824094154847](/images/spring/image-20200824094154847.png)
+![image-20200824094154847](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200824094154847.png)
 
 ## AnnotatedTypeMetadata
 
@@ -775,7 +775,7 @@ qulifiter:transactionManager
 readOnlay:false
 ```
 
-![image-20200824104529315](/images/spring/image-20200824104529315.png)
+![image-20200824104529315](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200824104529315.png)
 
 ## SimpleMetadataReader
 

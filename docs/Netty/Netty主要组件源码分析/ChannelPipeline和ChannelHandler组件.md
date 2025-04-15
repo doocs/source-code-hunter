@@ -257,4 +257,4 @@ ChannelHandler 负责对 I/O 事件 进行拦截处理，它可以选择性地 �
 
 ChannelHandler 组件 的核心类及常用类的类图如下。
 
-![在这里插入图片描述](../../../images/Netty/ChannelHandler组件.png)
+![在这里插入图片描述](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/Netty/ChannelHandler组件.png)

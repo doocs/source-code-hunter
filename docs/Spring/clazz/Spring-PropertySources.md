@@ -484,4 +484,4 @@ public abstract class PropertySource<T> {
 
 类图
 
-![PropertySource.png](/images/spring/PropertySource.png)
+![PropertySource.png](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/PropertySource.png)

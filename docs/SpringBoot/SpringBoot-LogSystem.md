@@ -19,7 +19,7 @@
 
 - `org.springframework.boot.logging.java.JavaLoggingSystem`
 
-  ![image-20200323144523848](../../images/SpringBoot/image-20200323144523848.png)
+  ![image-20200323144523848](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringBoot/image-20200323144523848.png)
 
   ```java
   static {
@@ -125,7 +125,7 @@ private static LoggingSystem get(ClassLoader classLoader, String loggingSystemCl
 
 ```
 
-![image-20200323151409473](../../images/SpringBoot/image-20200323151409473.png)
+![image-20200323151409473](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringBoot/image-20200323151409473.png)
 
 - 默认日志: `org.springframework.boot.logging.logback.LogbackLoggingSystem`
 
@@ -133,7 +133,7 @@ private static LoggingSystem get(ClassLoader classLoader, String loggingSystemCl
 
 - 初始化之前
 
-  ![image-20200323154205484](../../images/SpringBoot/image-20200323154205484.png)
+  ![image-20200323154205484](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringBoot/image-20200323154205484.png)
 
 - 链路
 
@@ -344,9 +344,9 @@ private static LoggingSystem get(ClassLoader classLoader, String loggingSystemCl
 
 - 添加配置文件
 
-  ![image-20200323161442058](../../images/SpringBoot/image-20200323161442058.png)
+  ![image-20200323161442058](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringBoot/image-20200323161442058.png)
 
-  ![image-20200323161522570](../../images/SpringBoot/image-20200323161522570.png)
+  ![image-20200323161522570](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringBoot/image-20200323161522570.png)
 
 - 此时配置文件地址出现了
 

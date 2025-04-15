@@ -102,7 +102,7 @@ public class ListenerSourceCode {
 
 ```
 
-![image-20200119163638222](../../../images/spring/image-20200119163638222.png)
+![image-20200119163638222](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200119163638222.png)
 
 ## finishRefresh 发布
 
@@ -172,7 +172,7 @@ protected void publishEvent(Object event, @Nullable ResolvableType eventType) {
 
 - 执行监听方法
 
-![image-20200119164149650](../../../images/spring/image-20200119164149650.png)
+![image-20200119164149650](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200119164149650.png)
 
 ```java
     protected void invokeListener(ApplicationListener<?> listener, ApplicationEvent event) {
@@ -217,6 +217,6 @@ protected void publishEvent(Object event, @Nullable ResolvableType eventType) {
 
 ```
 
-![image-20200119164402137](../../../images/spring/image-20200119164402137.png)
+![image-20200119164402137](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200119164402137.png)
 
-![image-20200119164410301](../../../images/spring/image-20200119164410301.png)
+![image-20200119164410301](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/image-20200119164410301.png)

@@ -42,7 +42,7 @@ private static final PropertyPlaceholderHelper nonStrictHelper =
 
 - 解析属性
 
-![SystemPropertyUtils-resolvePlaceholders.png](/images/spring/SystemPropertyUtils-resolvePlaceholders.png)
+![SystemPropertyUtils-resolvePlaceholders.png](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/spring/SystemPropertyUtils-resolvePlaceholders.png)
 
 时序图因为有递归所以看着有点长, 其核心方法最后会指向 PlaceholderResolver
 

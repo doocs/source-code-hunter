@@ -94,6 +94,6 @@
 
 ```
 
-![image-20191218191512184](../../../images/mybatis/image-20191218191512184.png)
+![image-20191218191512184](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/mybatis/image-20191218191512184.png)
 
-![image-20191218191550550](../../../images/mybatis/image-20191218191550550.png)
+![image-20191218191550550](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/mybatis/image-20191218191550550.png)
