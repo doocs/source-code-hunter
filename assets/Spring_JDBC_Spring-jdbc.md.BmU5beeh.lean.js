@@ -1,0 +1,1 @@
+import{_ as e,c as r,o as t}from"./chunks/framework.TS84ywiI.js";const m=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"Spring/JDBC/Spring-jdbc.md","filePath":"Spring/JDBC/Spring-jdbc.md"}'),n={name:"Spring/JDBC/Spring-jdbc.md"};function a(c,p,i,o,s,d){return t(),r("div")}const f=e(n,[["render",a]]);export{m as __pageData,f as default};
