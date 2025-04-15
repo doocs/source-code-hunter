@@ -65,7 +65,7 @@ public final HandlerExecutionChain getHandler(HttpServletRequest request) throws
 
   存在的实现方法
 
-  ![image-20200915135933146](images/image-20200915135933146.png)
+  ![image-20200915135933146](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/image-20200915135933146.png)
 
 - 先看`org.springframework.web.servlet.handler.AbstractHandlerMethodMapping#getHandlerInternal`方法是怎么一回事.
 

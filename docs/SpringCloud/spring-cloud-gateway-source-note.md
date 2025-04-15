@@ -102,13 +102,13 @@ public class GatewayClassPathWarningAutoConfiguration {
 >
 > Route 是由 AsyncPredicate 和 GatewayFilter 组成的。而 AsyncPredicate 由 RoutePredicateFactory 生成，GatewayF 创建 ilter 由 GatewayFilterFactory
 
-![RouteLocator](../../images/SpringCloud/spring-cloud-gateway-source-note_imgs/RouteLocator.png)
+![RouteLocator](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringCloud/spring-cloud-gateway-source-note_imgs/RouteLocator.png)
 
 > RoutePredicateHandlerMapping 通过 RouteLocator 得到的 `Flux<Route>` ，遍历执行`Route.getPredicate().apply(ServerWebExchange)` 返回`true`说明命中了路由规则，将命中的 Route 存到 ServerWebExchange 中，然后执行 FilteringWebHandler 。
 >
 > FilteringWebHandler 的逻辑就是执行 GlobalFilter + GatewayFilter
 
-![Route](../../images/SpringCloud/spring-cloud-gateway-source-note_imgs/Route.png)
+![Route](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringCloud/spring-cloud-gateway-source-note_imgs/Route.png)
 
 ### 源码
 
@@ -633,7 +633,7 @@ public @interface ConditionalOnEnabledPredicate {
 
 因为 @ConditionalOnEnabledGlobalFilter 上标注了 @Conditional，所以在 [ConfigurationClassPostProcessor](https://github.com/haitaoss/spring-framework/blob/source-v5.3.10/note/spring-source-note.md#conditional) 解析配置类时，会执行 `OnEnabledGlobalFilter#matches(ConditionContext,AnnotatedTypeMetadata)` 结果是`true`才会将 bean 注册到 BeanFactory 中
 
-![OnEnabledComponent](../../images/SpringCloud/spring-cloud-gateway-source-note_imgs/OnEnabledComponent.png)
+![OnEnabledComponent](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringCloud/spring-cloud-gateway-source-note_imgs/OnEnabledComponent.png)
 
 ```java
 /**
@@ -1121,7 +1121,7 @@ public class PropertiesRouteDefinitionLocator implements RouteDefinitionLocator 
 
 看 PredicateDefinition、FilterDefinition 的构造器，就能明白属性文件为啥可以写 `Weight=group1,8`
 
-![image-20230428141218057](../../images/SpringCloud/spring-cloud-gateway-source-note_imgs/image-20230428141218057-1682662351478.png)
+![image-20230428141218057](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringCloud/spring-cloud-gateway-source-note_imgs/image-20230428141218057-1682662351478.png)
 
 ## InMemoryRouteDefinitionRepository
 
@@ -1129,7 +1129,7 @@ InMemoryRouteDefinitionRepository 是由 [GatewayAutoConfiguration](#GatewayAuto
 
 RouteDefinitionRepository 的职责是通过缓存的方式记录 RouteDefinition，而不是通过属性 映射成 RouteDefinition。而 [AbstractGatewayControllerEndpoint](#AbstractGatewayControllerEndpoint) 会依赖 RouteDefinitionWriter 的实例，用来缓存通过接口方式注册的 RouteDefinition。
 
-![RouteDefinitionRepository](../../images/SpringCloud/spring-cloud-gateway-source-note_imgs/RouteDefinitionRepository.png)
+![RouteDefinitionRepository](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringCloud/spring-cloud-gateway-source-note_imgs/RouteDefinitionRepository.png)
 
 ```java
 public class InMemoryRouteDefinitionRepository implements RouteDefinitionRepository {
@@ -1186,7 +1186,7 @@ GatewayControllerEndpoint 和 GatewayLegacyControllerEndpoint 是由 [GatewayAut
 
 刷新 RouteDefinition 是会发布 RefreshRoutesEvent 事件，该事件会有 [CachingRouteLocator](#RouteLocator) 处理
 
-![AbstractGatewayControllerEndpoint](../../images/SpringCloud/spring-cloud-gateway-source-note_imgs/AbstractGatewayControllerEndpoint.png)
+![AbstractGatewayControllerEndpoint](https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/SpringCloud/spring-cloud-gateway-source-note_imgs/AbstractGatewayControllerEndpoint.png)
 
 ## RouteRefreshListener
 

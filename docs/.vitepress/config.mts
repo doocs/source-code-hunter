@@ -8,6 +8,7 @@ export default defineConfig({
     ['meta', { name: 'description', content: '读尽天下源码，心中自然无码——源码猎人' }],
     ['link', { rel: 'icon', type: 'image/png', href: 'https://fastly.jsdelivr.net/gh/doocs/source-code-hunter@main/images/favicon-32x32.png' }]
   ],
+  ignoreDeadLinks: true,
   themeConfig: {
     search: {
       provider: 'local'
