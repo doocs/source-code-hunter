@@ -4,7 +4,7 @@ String 的源码大家应该都能看懂，这里就不一一分析咯，重点�
 public final class String
     implements java.io.Serializable, Comparable<String>, CharSequence {
 
-    /** 保存String的字节数组 */
+    /** 保存String的字符数组 */
     private final char value[];
 
     /** 缓存这个String的hash值 */
