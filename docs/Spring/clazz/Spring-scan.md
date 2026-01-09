@@ -31,7 +31,7 @@ public AnnotationConfigApplicationContext(String... basePackages) {
     }
 ```
 
-- `context:component-scan`寻找方式:冒号`:`钱+NamespaceHandler 或者全文搜索`component-scan`,最终找到`org.springframework.context.config.ContextNamespaceHandler`
+- `context:component-scan`寻找方式:冒号`:`前+NamespaceHandler 或者全文搜索`component-scan`,最终找到`org.springframework.context.config.ContextNamespaceHandler`
 
 ```java
 public class ContextNamespaceHandler extends NamespaceHandlerSupport {
