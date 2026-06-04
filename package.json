@@ -13,5 +13,13 @@
   },
   "devDependencies": {
     "vitepress": "2.0.0-alpha.17"
+  },
+  "pnpm": {
+    "overrides": {
+      "mdast-util-to-hast": "13.2.1",
+      "picomatch": "4.0.4",
+      "postcss": "8.5.15",
+      "rollup": "4.61.1"
+    }
   }
 }
