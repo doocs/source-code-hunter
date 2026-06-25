@@ -2,7 +2,7 @@
   "name": "source-code-hunter",
   "version": "1.0.0",
   "private": true,
-  "packageManager": "pnpm@9.15.0",
+  "packageManager": "pnpm@11.9.0",
   "scripts": {
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
@@ -13,13 +13,5 @@
   },
   "devDependencies": {
     "vitepress": "2.0.0-alpha.17"
-  },
-  "pnpm": {
-    "overrides": {
-      "mdast-util-to-hast": "13.2.1",
-      "picomatch": "4.0.4",
-      "postcss": "8.5.15",
-      "rollup": "4.61.1"
-    }
   }
 }
