@@ -342,7 +342,7 @@
 
 ## Stars 趋势
 
-[![Star History Chart](https://api.star-history.com/svg?repos=doocs/source-code-hunter&type=Date)](https://star-history.com/#doocs/source-code-hunter&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=doocs/source-code-hunter&type=date)](https://star-history.dera.page/#doocs/source-code-hunter&type=date)
 
 ## Doocs 社区优质项目
 
