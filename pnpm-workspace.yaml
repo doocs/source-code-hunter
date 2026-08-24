@@ -5,8 +5,10 @@ allowBuilds:
   esbuild: true
 
 overrides:
-  esbuild: 0.28.1
+  esbuild: 0.28.2
   mdast-util-to-hast: 13.2.1
+  nanoid: 3.3.18
   picomatch: 4.0.4
-  postcss: 8.5.15
+  postcss: 8.5.26
   rollup: 4.62.2
+  vite: 8.2.2

@@ -515,5 +515,10 @@ export default defineConfig({
     socialLinks: [
       { icon: 'github', link: 'https://github.com/doocs/source-code-hunter' }
     ],
-  }
+  },
+  vite: {
+    build: {
+      chunkSizeWarningLimit: 2000,
+    },
+  },
 })
