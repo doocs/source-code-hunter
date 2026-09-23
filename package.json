@@ -2,7 +2,7 @@
   "name": "source-code-hunter",
   "version": "1.0.0",
   "private": true,
-  "packageManager": "pnpm@11.9.0",
+  "packageManager": "pnpm@11.27.1",
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
   },

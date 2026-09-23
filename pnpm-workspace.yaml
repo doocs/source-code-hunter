@@ -7,8 +7,8 @@ allowBuilds:
 overrides:
   esbuild: 0.28.2
   mdast-util-to-hast: 13.2.1
-  nanoid: 3.3.18
-  picomatch: 4.0.4
-  postcss: 8.5.26
-  rollup: 4.62.2
-  vite: 8.2.2
+  nanoid: 3.3.19
+  picomatch: 4.0.7
+  postcss: 8.5.28
+  rollup: 4.63.4
+  vite: 8.3.0
