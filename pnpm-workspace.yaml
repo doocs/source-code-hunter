@@ -9,6 +9,6 @@ overrides:
   mdast-util-to-hast: 13.2.1
   nanoid: 3.3.19
   picomatch: 4.0.7
-  postcss: 8.5.28
-  rollup: 4.63.4
-  vite: 8.3.0
+  postcss: 8.5.30
+  rollup: 4.64.7
+  vite: 8.3.4
