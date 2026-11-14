@@ -4,11 +4,15 @@ packages:
 allowBuilds:
   esbuild: true
 
+minimumReleaseAgeExclude:
+  - mdast-util-to-hast@13.2.2
+  - postcss@8.5.33
+
 overrides:
   esbuild: 0.28.2
-  mdast-util-to-hast: 13.2.1
-  nanoid: 3.3.19
+  mdast-util-to-hast: 13.2.2
+  nanoid: 3.3.20
   picomatch: 4.0.7
-  postcss: 8.5.30
-  rollup: 4.64.7
-  vite: 8.3.4
+  postcss: 8.5.33
+  rollup: 4.68.3
+  vite: 8.3.8
